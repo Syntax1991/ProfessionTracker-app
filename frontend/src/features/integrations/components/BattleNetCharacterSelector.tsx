@@ -1,7 +1,15 @@
-import { BattleNetCharacterFilters } from "./BattleNetCharacterFilters";
-import { BattleNetCharacterTable } from "./BattleNetCharacterTable";
-import { useBattleNetCharacterSelection } from "../hooks/useBattleNetCharacterSelection";
-import type { BattleNetCharacterPreview } from "../types/battlenet.types";
+import {
+  useBattleNetCharacterSelection
+} from "../hooks/useBattleNetCharacterSelection";
+import type {
+  BattleNetCharacterPreview
+} from "../types/battlenet.types";
+import {
+  BattleNetCharacterFilters
+} from "./BattleNetCharacterFilters";
+import {
+  BattleNetCharacterTable
+} from "./BattleNetCharacterTable";
 
 type BattleNetCharacterSelectorProps = {
   characters:
@@ -25,6 +33,11 @@ export function BattleNetCharacterSelector({
       defaultMinimumLevel
     );
 
+  const visibleCount =
+    selection
+      .visibleCharacters
+      .length;
+
   return (
     <section className="panel battlenet-selector">
       <div className="panel-header">
@@ -36,8 +49,8 @@ export function BattleNetCharacterSelector({
           <h2>
             {selection.selectedCount}
             {" von "}
-            {characters.length}
-            {" ausgewählt"}
+            {visibleCount}
+            {" sichtbaren ausgewählt"}
           </h2>
         </div>
 
@@ -45,25 +58,31 @@ export function BattleNetCharacterSelector({
           className="button button-primary"
           disabled={
             isImporting ||
-            selection.selectedCount === 0
+            selection.selectedCount ===
+              0
           }
           onClick={() => {
             void onImport(
-              selection.selectedCharacterKeys
+              selection
+                .selectedCharacterKeys
             );
           }}
           type="button"
         >
           {isImporting
             ? "Synchronisierung läuft…"
-            : `${selection.selectedCount} Charaktere synchronisieren`}
+            : `${selection.selectedCount} sichtbare Charaktere synchronisieren`}
         </button>
       </div>
 
       <div className="battlenet-selector-content">
         <BattleNetCharacterFilters
-          classes={selection.classes}
-          className={selection.className}
+          classes={
+            selection.classes
+          }
+          className={
+            selection.className
+          }
           minimumLevel={
             selection.minimumLevel
           }
@@ -71,7 +90,8 @@ export function BattleNetCharacterSelector({
             selection.setClassName
           }
           onMinimumLevelChange={
-            selection.setMinimumLevel
+            selection
+              .setMinimumLevel
           }
           onRealmChange={
             selection.setRealm
@@ -79,19 +99,34 @@ export function BattleNetCharacterSelector({
           onSearchChange={
             selection.setSearch
           }
-          realm={selection.realm}
-          realms={selection.realms}
-          search={selection.search}
+          realm={
+            selection.realm
+          }
+          realms={
+            selection.realms
+          }
+          search={
+            selection.search
+          }
         />
 
         <div className="selection-toolbar">
           <span>
-            {
-              selection
-                .visibleCharacters
-                .length
-            }
+            {visibleCount}
             {" sichtbar"}
+
+            {selection
+              .hiddenSelectedCount >
+              0 && (
+              <>
+                {" · "}
+                {
+                  selection
+                    .hiddenSelectedCount
+                }
+                {" außerhalb des Filters werden nicht synchronisiert"}
+              </>
+            )}
           </span>
 
           <div>
@@ -130,7 +165,8 @@ export function BattleNetCharacterSelector({
 
       <BattleNetCharacterTable
         characters={
-          selection.visibleCharacters
+          selection
+            .visibleCharacters
         }
         onToggle={
           selection.toggleCharacter

@@ -3,7 +3,13 @@ import {
   useMemo,
   useState
 } from "react";
-import type { BattleNetCharacterPreview } from "../types/battlenet.types";
+import type {
+  BattleNetCharacterPreview
+} from "../types/battlenet.types";
+import {
+  createBattleNetFilterOptions,
+  filterBattleNetCharacters
+} from "../utils/battleNetCharacterSelection";
 
 type CharacterSelectionState = {
   search: string;
@@ -17,18 +23,28 @@ type CharacterSelectionState = {
   selectedCharacterKeys: string[];
   selectedKeys: Set<string>;
   selectedCount: number;
-  setSearch: (value: string) => void;
-  setRealm: (value: string) => void;
-  setClassName: (value: string) => void;
-  setMinimumLevel: (value: number) => void;
-  toggleCharacter: (key: string) => void;
-  selectVisible: () => void;
-  clearVisible: () => void;
-  clearSelection: () => void;
+  hiddenSelectedCount: number;
+  setSearch:
+    (value: string) => void;
+  setRealm:
+    (value: string) => void;
+  setClassName:
+    (value: string) => void;
+  setMinimumLevel:
+    (value: number) => void;
+  toggleCharacter:
+    (key: string) => void;
+  selectVisible:
+    () => void;
+  clearVisible:
+    () => void;
+  clearSelection:
+    () => void;
 };
 
 export function useBattleNetCharacterSelection(
-  characters: BattleNetCharacterPreview[],
+  characters:
+    BattleNetCharacterPreview[],
   defaultMinimumLevel: number
 ): CharacterSelectionState {
   const [search, setSearch] =
@@ -43,16 +59,18 @@ export function useBattleNetCharacterSelection(
   const [
     minimumLevel,
     setMinimumLevel
-  ] = useState(
-    defaultMinimumLevel
-  );
+  ] =
+    useState(
+      defaultMinimumLevel
+    );
 
   const [
     selectedKeys,
     setSelectedKeys
-  ] = useState<Set<string>>(
-    new Set()
-  );
+  ] =
+    useState<Set<string>>(
+      new Set()
+    );
 
   useEffect(() => {
     setMinimumLevel(
@@ -78,104 +96,79 @@ export function useBattleNetCharacterSelection(
     defaultMinimumLevel
   ]);
 
-  const realms = useMemo(
-    () =>
-      [...new Set(
-        characters.map(
-          (character) =>
-            character.realm
-        )
-      )].sort(
-        (left, right) =>
-          left.localeCompare(
-            right,
-            "de"
+  const realms =
+    useMemo(
+      () =>
+        createBattleNetFilterOptions(
+          characters.map(
+            (character) =>
+              character.realm
           )
-      ),
-    [characters]
-  );
+        ),
+      [characters]
+    );
 
-  const classes = useMemo(
-    () =>
-      [...new Set(
-        characters.map(
-          (character) =>
-            character.className
-        )
-      )].sort(
-        (left, right) =>
-          left.localeCompare(
-            right,
-            "de"
+  const classes =
+    useMemo(
+      () =>
+        createBattleNetFilterOptions(
+          characters.map(
+            (character) =>
+              character.className
           )
-      ),
-    [characters]
-  );
+        ),
+      [characters]
+    );
 
   const visibleCharacters =
-    useMemo(() => {
-      const normalizedSearch =
-        search
-          .trim()
-          .toLocaleLowerCase(
-            "de"
-          );
-
-      return characters.filter(
-        (character) => {
-          if (
-            character.level <
+    useMemo(
+      () =>
+        filterBattleNetCharacters(
+          characters,
+          {
+            search,
+            realm,
+            className,
             minimumLevel
-          ) {
-            return false;
           }
-
-          if (
-            realm !== "ALL" &&
-            character.realm !== realm
-          ) {
-            return false;
-          }
-
-          if (
-            className !== "ALL" &&
-            character.className !==
-              className
-          ) {
-            return false;
-          }
-
-          if (!normalizedSearch) {
-            return true;
-          }
-
-          const searchableText = [
-            character.name,
-            character.realm,
-            character.className
-          ]
-            .join(" ")
-            .toLocaleLowerCase(
-              "de"
-            );
-
-          return searchableText.includes(
-            normalizedSearch
-          );
-        }
-      );
-    }, [
-      characters,
-      className,
-      minimumLevel,
-      realm,
-      search
-    ]);
+        ),
+      [
+        characters,
+        className,
+        minimumLevel,
+        realm,
+        search
+      ]
+    );
 
   const selectedCharacterKeys =
     useMemo(
-      () => [...selectedKeys],
-      [selectedKeys]
+      () =>
+        visibleCharacters
+          .filter(
+            (character) =>
+              selectedKeys.has(
+                character.key
+              )
+          )
+          .map(
+            (character) =>
+              character.key
+          ),
+      [
+        selectedKeys,
+        visibleCharacters
+      ]
+    );
+
+  const selectedCount =
+    selectedCharacterKeys.length;
+
+  const hiddenSelectedCount =
+    Math.max(
+      0,
+      selectedKeys.size -
+        selectedCount
     );
 
   const toggleCharacter = (
@@ -254,8 +247,8 @@ export function useBattleNetCharacterSelection(
     visibleCharacters,
     selectedCharacterKeys,
     selectedKeys,
-    selectedCount:
-      selectedKeys.size,
+    selectedCount,
+    hiddenSelectedCount,
     setSearch,
     setRealm,
     setClassName,
