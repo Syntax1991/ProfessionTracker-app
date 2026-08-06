@@ -1,0 +1,272 @@
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 8px 30px;
+}
+
+.brand-mark {
+  width: 43px;
+  height: 43px;
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 13px;
+  background:
+    linear-gradient(
+      145deg,
+      #986df3,
+      #5d2caf
+    );
+  box-shadow:
+    0 12px 28px
+    rgb(111 60 201 / 28%);
+  font-weight: 850;
+}
+
+.brand strong,
+.brand span {
+  display: block;
+}
+
+.brand strong {
+  font-size: 0.92rem;
+}
+
+.brand span {
+  margin-top: 4px;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.main-navigation {
+  display: grid;
+  gap: 6px;
+}
+
+.navigation-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 12px;
+  border: 1px solid transparent;
+  border-radius:
+    var(--radius-medium);
+  color: var(--text-secondary);
+  transition:
+    color 140ms ease,
+    background 140ms ease,
+    border-color 140ms ease;
+}
+
+.navigation-item:hover,
+.navigation-item.active {
+  color: var(--text);
+  border-color: #3a334d;
+  background: var(--primary-soft);
+}
+
+.navigation-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.75;
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 14px 10px;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.online-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--success);
+  box-shadow:
+    0 0 0 4px
+    rgb(71 213 151 / 10%);
+}
+
+.eyebrow {
+  color: #a987ef;
+  font-size: 0.68rem;
+  font-weight: 850;
+  letter-spacing: 0.16em;
+}
+
+.button {
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 14px;
+  border: 1px solid transparent;
+  border-radius:
+    var(--radius-medium);
+  font-weight: 750;
+  transition:
+    transform 120ms ease,
+    background 120ms ease,
+    border-color 120ms ease;
+}
+
+.button:hover {
+  transform: translateY(-1px);
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+  transform: none;
+}
+
+.button-primary {
+  color: white;
+  border-color: var(--primary);
+  background: var(--primary);
+}
+
+.button-primary:hover {
+  background: var(--primary-hover);
+}
+
+.button-secondary {
+  color: var(--text);
+  border-color: var(--border-strong);
+  background: var(--surface-elevated);
+}
+
+.panel {
+  margin-top: 24px;
+  overflow: hidden;
+  border:
+    1px solid var(--border);
+  border-radius:
+    var(--radius-large);
+  background: rgb(18 21 29 / 92%);
+  box-shadow: var(--shadow);
+}
+
+.characters-layout .panel {
+  margin-top: 0;
+}
+
+.panel-header {
+  min-height: 82px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px 23px;
+  border-bottom:
+    1px solid var(--border);
+}
+
+.stat-card {
+  min-height: 145px;
+  display: flex;
+  flex-direction: column;
+  padding: 21px;
+  border:
+    1px solid var(--border);
+  border-radius:
+    var(--radius-large);
+  background: rgb(20 23 32 / 90%);
+  box-shadow: var(--shadow);
+}
+
+.stat-card > span,
+.stat-card small {
+  color: var(--text-secondary);
+}
+
+.stat-card strong {
+  margin: auto 0 5px;
+  font-size: 2.2rem;
+  letter-spacing: -0.045em;
+}
+
+.accent-card {
+  border-color: #4a3b6b;
+  background:
+    linear-gradient(
+      145deg,
+      rgb(128 88 221 / 20%),
+      rgb(20 23 32 / 92%)
+    );
+}
+
+.status-message,
+.loading-panel {
+  margin-top: 22px;
+  padding: 15px 17px;
+  border-radius:
+    var(--radius-medium);
+}
+
+.status-message-error {
+  color: #ffc9cd;
+  border: 1px solid #754148;
+  background: var(--danger-soft);
+}
+
+.status-message-info {
+  color: #d8ccf7;
+  border: 1px solid #4b3f68;
+  background: var(--primary-soft);
+}
+
+.loading-panel {
+  color: var(--text-secondary);
+  border:
+    1px solid var(--border);
+  background: var(--surface);
+}
+
+.empty-state {
+  padding: 52px 24px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.profession-card {
+  min-height: 150px;
+  display: flex;
+  flex-direction: column;
+  padding: 18px;
+  border:
+    1px solid var(--border);
+  border-radius:
+    var(--radius-medium);
+  background:
+    var(--surface-elevated);
+}
+
+.profession-card h3 {
+  margin-top: 10px;
+}
+
+.profession-card > strong {
+  margin-top: auto;
+  font-size: 1.85rem;
+}
+
+.profession-card small {
+  margin-top: 3px;
+  color: var(--text-secondary);
+}
+
+.category-badge {
+  color: #cbb8f4;
+  font-size: 0.67rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}

@@ -1,0 +1,49 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Character {
+  id           String   @id @default(cuid())
+  name         String
+  realm        String
+  region       String   @default("eu")
+  className    String
+  level        Int      @default(80)
+  source       String   @default("MANUAL")
+  lastSyncedAt DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  professions CharacterProfession[]
+
+  @@unique([name, realm, region])
+}
+
+model Profession {
+  id       String @id @default(cuid())
+  key      String @unique
+  name     String
+  category String
+  order    Int    @default(0)
+
+  assignments CharacterProfession[]
+}
+
+model CharacterProfession {
+  id                    String  @id @default(cuid())
+  characterId           String
+  professionId          String
+  skill                 Int     @default(0)
+  knowledgePoints       Int     @default(0)
+  specializationSummary String?
+
+  character  Character  @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  profession Profession @relation(fields: [professionId], references: [id], onDelete: Cascade)
+
+  @@unique([characterId, professionId])
+}
