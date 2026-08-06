@@ -1,24 +1,59 @@
 import {
+  useCallback,
   useEffect,
   useState
 } from "react";
+import {
+  useSearchParams
+} from "react-router-dom";
 import { LoadingPanel } from "../../../shared/components/LoadingPanel";
 import { PageHeader } from "../../../shared/components/PageHeader";
 import { StatusMessage } from "../../../shared/components/StatusMessage";
-import { getBattleNetStatus } from "../api/battlenetApi";
-import type { BattleNetStatus } from "../types/battlenet.types";
+import {
+  disconnectBattleNet,
+  getBattleNetConnectUrl,
+  getBattleNetStatus,
+  importBattleNetCharacters
+} from "../api/battlenetApi";
+import { BattleNetImportResultCard } from "../components/BattleNetImportResult";
+import { BattleNetStatusCard } from "../components/BattleNetStatusCard";
+import type {
+  BattleNetImportResult,
+  BattleNetStatus
+} from "../types/battlenet.types";
 
 export function BattleNetPage() {
+  const [searchParams] =
+    useSearchParams();
+
   const [status, setStatus] =
     useState<BattleNetStatus | null>(
       null
     );
 
+  const [importResult, setImportResult] =
+    useState<BattleNetImportResult | null>(
+      null
+    );
+
+  const [isLoading, setIsLoading] =
+    useState(true);
+
+  const [isImporting, setIsImporting] =
+    useState(false);
+
+  const [
+    isDisconnecting,
+    setIsDisconnecting
+  ] = useState(false);
+
   const [error, setError] =
     useState<string | null>(null);
 
-  useEffect(() => {
-    async function loadStatus() {
+  const loadStatus = useCallback(
+    async () => {
+      setError(null);
+
       try {
         setStatus(
           await getBattleNetStatus()
@@ -31,18 +66,96 @@ export function BattleNetPage() {
             : "Battle.net-Status konnte nicht geladen werden."
         );
       }
+      finally {
+        setIsLoading(false);
+      }
+    },
+    []
+  );
+
+  useEffect(() => {
+    void loadStatus();
+  }, [loadStatus]);
+
+  const handleImport = async () => {
+    setError(null);
+    setImportResult(null);
+    setIsImporting(true);
+
+    try {
+      const result =
+        await importBattleNetCharacters();
+
+      setImportResult(result);
+      await loadStatus();
+    }
+    catch (importError) {
+      setError(
+        importError instanceof Error
+          ? importError.message
+          : "Charakterimport fehlgeschlagen."
+      );
+    }
+    finally {
+      setIsImporting(false);
+    }
+  };
+
+  const handleDisconnect = async () => {
+    const confirmed = window.confirm(
+      "Battle.net-Verbindung wirklich trennen?"
+    );
+
+    if (!confirmed) {
+      return;
     }
 
-    void loadStatus();
-  }, []);
+    setError(null);
+    setIsDisconnecting(true);
+
+    try {
+      await disconnectBattleNet();
+      setImportResult(null);
+      await loadStatus();
+    }
+    catch (disconnectError) {
+      setError(
+        disconnectError instanceof Error
+          ? disconnectError.message
+          : "Verbindung konnte nicht getrennt werden."
+      );
+    }
+    finally {
+      setIsDisconnecting(false);
+    }
+  };
+
+  const callbackError =
+    searchParams.get("error");
+
+  const wasConnected =
+    searchParams.get("connected") ===
+    "1";
 
   return (
     <>
       <PageHeader
-        description="OAuth und Charakterimport werden im nächsten Schritt angebunden."
+        description="Verbinde dein Battle.net-Konto und synchronisiere deine World-of-Warcraft-Charaktere."
         eyebrow="INTEGRATION"
         title="Battle.net"
       />
+
+      {callbackError && (
+        <StatusMessage type="error">
+          {callbackError}
+        </StatusMessage>
+      )}
+
+      {wasConnected && !callbackError && (
+        <StatusMessage type="info">
+          Battle.net wurde erfolgreich verbunden. Du kannst deine Charaktere jetzt synchronisieren.
+        </StatusMessage>
+      )}
 
       {error && (
         <StatusMessage type="error">
@@ -50,71 +163,31 @@ export function BattleNetPage() {
         </StatusMessage>
       )}
 
-      {!status ? (
+      {isLoading || !status ? (
         <LoadingPanel />
       ) : (
-        <section className="panel integration-panel">
-          <div className="integration-status-row">
-            <div>
-              <p className="eyebrow">
-                API CLIENT
-              </p>
+        <BattleNetStatusCard
+          connectUrl={
+            getBattleNetConnectUrl()
+          }
+          isDisconnecting={
+            isDisconnecting
+          }
+          isImporting={isImporting}
+          onDisconnect={() => {
+            void handleDisconnect();
+          }}
+          onImport={() => {
+            void handleImport();
+          }}
+          status={status}
+        />
+      )}
 
-              <h2>
-                {status.configured
-                  ? "Zugangsdaten erkannt"
-                  : "Noch nicht konfiguriert"}
-              </h2>
-            </div>
-
-            <span
-              className={
-                status.configured
-                  ? "integration-badge configured"
-                  : "integration-badge pending"
-              }
-            >
-              {status.configured
-                ? "Bereit"
-                : "Ausstehend"}
-            </span>
-          </div>
-
-          <dl className="integration-details">
-            <div>
-              <dt>Region</dt>
-              <dd>
-                {status.region.toUpperCase()}
-              </dd>
-            </div>
-
-            <div>
-              <dt>Redirect URI</dt>
-              <dd>{status.redirectUri}</dd>
-            </div>
-
-            <div>
-              <dt>
-                Konfigurationsdatei
-              </dt>
-              <dd>backend/.env</dd>
-            </div>
-          </dl>
-
-          <div className="instruction-box">
-            <strong>
-              Nächster Schritt
-            </strong>
-
-            <p>
-              Client-ID und Client-Secret
-              lokal in die Backend-.env
-              eintragen. Das Secret wird
-              niemals an das Frontend
-              ausgeliefert.
-            </p>
-          </div>
-        </section>
+      {importResult && (
+        <BattleNetImportResultCard
+          result={importResult}
+        />
       )}
     </>
   );

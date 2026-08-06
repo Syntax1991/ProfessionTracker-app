@@ -1,16 +1,44 @@
-import { env } from "../../../config/env.js";
+import { BattleNetAuthService } from "./battlenet-auth.service.js";
+import { BattleNetImportService } from "./battlenet-import.service.js";
+import type { BattleNetImportResult } from "./battlenet.types.js";
 
 export class BattleNetService {
+  constructor(
+    private readonly authService:
+      BattleNetAuthService,
+
+    private readonly importService:
+      BattleNetImportService
+  ) {}
+
+  createAuthorizationUrl():
+    Promise<string> {
+    return this.authService
+      .createAuthorizationUrl();
+  }
+
+  handleCallback(
+    code: string,
+    state: string
+  ): Promise<void> {
+    return this.authService
+      .handleCallback(
+        code,
+        state
+      );
+  }
+
   getStatus() {
-    return {
-      configured: Boolean(
-        env.BATTLENET_CLIENT_ID &&
-        env.BATTLENET_CLIENT_SECRET
-      ),
-      region:
-        env.BATTLENET_REGION,
-      redirectUri:
-        env.BATTLENET_REDIRECT_URI
-    };
+    return this.authService.getStatus();
+  }
+
+  importCharacters():
+    Promise<BattleNetImportResult> {
+    return this.importService
+      .importCharacters();
+  }
+
+  disconnect(): Promise<void> {
+    return this.authService.disconnect();
   }
 }

@@ -63,6 +63,13 @@
   overflow-wrap: anywhere;
 }
 
+.integration-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 24px;
+}
+
 .instruction-box {
   margin-top: 24px;
   padding: 17px;
@@ -76,4 +83,90 @@
   margin-top: 7px;
   color: #c9c0dc;
   line-height: 1.55;
+}
+
+.import-result {
+  margin-top: 20px;
+}
+
+.import-result-content {
+  padding: 22px;
+}
+
+.import-result-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.import-result-grid > div {
+  min-height: 105px;
+  display: flex;
+  flex-direction: column;
+  padding: 17px;
+  border: 1px solid var(--border);
+  border-radius:
+    var(--radius-medium);
+  background:
+    var(--surface-elevated);
+}
+
+.import-result-grid span {
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+}
+
+.import-result-grid strong {
+  margin-top: auto;
+  font-size: 1.9rem;
+}
+
+.failed-imports {
+  margin-top: 24px;
+}
+
+.failed-imports ul {
+  display: grid;
+  gap: 8px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.failed-imports li {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px;
+  border: 1px solid #754148;
+  border-radius:
+    var(--radius-small);
+  background: var(--danger-soft);
+}
+
+.failed-imports li span {
+  color: #ffc9cd;
+  font-size: 0.78rem;
+}
+
+@media (max-width: 620px) {
+  .integration-status-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .integration-details > div {
+    grid-template-columns: 1fr;
+    gap: 5px;
+  }
+
+  .integration-actions,
+  .integration-actions .button {
+    width: 100%;
+  }
+
+  .import-result-grid {
+    grid-template-columns: 1fr;
+  }
 }

@@ -10,15 +10,12 @@ const environmentSchema = z.object({
 
   FRONTEND_ORIGIN: z
     .string()
-    .default(
-      "http://localhost:5173"
-    ),
+    .url()
+    .default("http://localhost:5173"),
 
   DATABASE_URL: z
     .string()
-    .default(
-      "file:./prisma/dev.db"
-    ),
+    .default("file:./prisma/dev.db"),
 
   CRAFTING_MIN_LEVEL: z.coerce
     .number()
@@ -28,15 +25,22 @@ const environmentSchema = z.object({
     .default(80),
 
   BATTLENET_REGION: z
-    .string()
+    .enum(["us", "eu", "kr", "tw"])
     .default("eu"),
+
+  BATTLENET_LOCALE: z
+    .string()
+    .min(2)
+    .default("de_DE"),
 
   BATTLENET_CLIENT_ID: z
     .string()
+    .trim()
     .default(""),
 
   BATTLENET_CLIENT_SECRET: z
     .string()
+    .trim()
     .default(""),
 
   BATTLENET_REDIRECT_URI: z
@@ -47,10 +51,9 @@ const environmentSchema = z.object({
     )
 });
 
-const parsedEnvironment =
-  environmentSchema.safeParse(
-    process.env
-  );
+const parsedEnvironment = environmentSchema.safeParse(
+  process.env
+);
 
 if (!parsedEnvironment.success) {
   throw new Error(
@@ -58,5 +61,4 @@ if (!parsedEnvironment.success) {
   );
 }
 
-export const env =
-  parsedEnvironment.data;
+export const env = parsedEnvironment.data;

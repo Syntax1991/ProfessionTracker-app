@@ -1,5 +1,8 @@
 import { prisma } from "../../infrastructure/database/prismaClient.js";
-import type { CharacterInput } from "./character.types.js";
+import type {
+  BattleNetCharacterInput,
+  CharacterInput
+} from "./character.types.js";
 
 const characterInclude = {
   professions: {
@@ -24,9 +27,7 @@ export class CharacterRepository {
     });
   }
 
-  findById(
-    characterId: string
-  ) {
+  findById(characterId: string) {
     return prisma.character.findUnique({
       where: {
         id: characterId
@@ -51,9 +52,15 @@ export class CharacterRepository {
     });
   }
 
-  create(
-    input: CharacterInput
-  ) {
+  countBySource(source: string) {
+    return prisma.character.count({
+      where: {
+        source
+      }
+    });
+  }
+
+  create(input: CharacterInput) {
     return prisma.character.create({
       data: {
         name: input.name,
@@ -62,12 +69,11 @@ export class CharacterRepository {
         className: input.className,
         level: input.level,
         professions: {
-          create:
-            input.professionIds.map(
-              (professionId) => ({
-                professionId
-              })
-            )
+          create: input.professionIds.map(
+            (professionId) => ({
+              professionId
+            })
+          )
         }
       },
       include: characterInclude
@@ -90,21 +96,90 @@ export class CharacterRepository {
         level: input.level,
         professions: {
           deleteMany: {},
-          create:
-            input.professionIds.map(
-              (professionId) => ({
-                professionId
-              })
-            )
+          create: input.professionIds.map(
+            (professionId) => ({
+              professionId
+            })
+          )
         }
       },
       include: characterInclude
     });
   }
 
-  delete(
-    characterId: string
+  async upsertFromBattleNet(
+    input: BattleNetCharacterInput
   ) {
+    const existingCharacter =
+      await prisma.character.findFirst({
+        where: {
+          OR: [
+            {
+              battleNetId: input.battleNetId,
+              region: input.region
+            },
+            {
+              name: input.name,
+              realm: input.realm,
+              region: input.region
+            }
+          ]
+        }
+      });
+
+    const professionCreates =
+      input.professions.map((profession) => ({
+        professionId: profession.professionId,
+        skill: profession.skill,
+        knowledgePoints: profession.knowledgePoints,
+        specializationSummary:
+          profession.specializationSummary
+      }));
+
+    if (existingCharacter) {
+      return prisma.character.update({
+        where: {
+          id: existingCharacter.id
+        },
+        data: {
+          battleNetId: input.battleNetId,
+          name: input.name,
+          realm: input.realm,
+          realmSlug: input.realmSlug,
+          region: input.region,
+          className: input.className,
+          level: input.level,
+          source: "BATTLENET",
+          lastSyncedAt: new Date(),
+          professions: {
+            deleteMany: {},
+            create: professionCreates
+          }
+        },
+        include: characterInclude
+      });
+    }
+
+    return prisma.character.create({
+      data: {
+        battleNetId: input.battleNetId,
+        name: input.name,
+        realm: input.realm,
+        realmSlug: input.realmSlug,
+        region: input.region,
+        className: input.className,
+        level: input.level,
+        source: "BATTLENET",
+        lastSyncedAt: new Date(),
+        professions: {
+          create: professionCreates
+        }
+      },
+      include: characterInclude
+    });
+  }
+
+  delete(characterId: string) {
     return prisma.character.delete({
       where: {
         id: characterId

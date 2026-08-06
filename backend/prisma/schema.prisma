@@ -9,8 +9,10 @@ datasource db {
 
 model Character {
   id           String   @id @default(cuid())
+  battleNetId  String?
   name         String
   realm        String
+  realmSlug    String?
   region       String   @default("eu")
   className    String
   level        Int      @default(80)
@@ -22,6 +24,8 @@ model Character {
   professions CharacterProfession[]
 
   @@unique([name, realm, region])
+  @@index([battleNetId, region])
+  @@index([source])
 }
 
 model Profession {
@@ -46,4 +50,23 @@ model CharacterProfession {
   profession Profession @relation(fields: [professionId], references: [id], onDelete: Cascade)
 
   @@unique([characterId, professionId])
+}
+
+model BattleNetConnection {
+  id          String   @id
+  battleTag   String?
+  accessToken String
+  tokenType   String
+  scope       String?
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model BattleNetOAuthState {
+  id        String   @id
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([expiresAt])
 }

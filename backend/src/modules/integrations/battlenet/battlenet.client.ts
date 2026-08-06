@@ -1,0 +1,269 @@
+import { env } from "../../../config/env.js";
+import { AppError } from "../../../shared/errors/AppError.js";
+import type {
+  BattleNetAccountProfile,
+  BattleNetProfessionsResponse,
+  BattleNetTokenResponse,
+  BattleNetUserInfo
+} from "./battlenet.types.js";
+
+const authorizationUrl =
+  "https://oauth.battle.net/authorize";
+
+const tokenUrl =
+  "https://oauth.battle.net/token";
+
+const userInfoUrl =
+  "https://oauth.battle.net/userinfo";
+
+export class BattleNetClient {
+  createAuthorizationUrl(
+    state: string
+  ): string {
+    const url = new URL(authorizationUrl);
+
+    url.searchParams.set(
+      "client_id",
+      env.BATTLENET_CLIENT_ID
+    );
+
+    url.searchParams.set(
+      "redirect_uri",
+      env.BATTLENET_REDIRECT_URI
+    );
+
+    url.searchParams.set(
+      "response_type",
+      "code"
+    );
+
+    url.searchParams.set(
+      "scope",
+      "openid wow.profile"
+    );
+
+    url.searchParams.set(
+      "state",
+      state
+    );
+
+    return url.toString();
+  }
+
+  async exchangeAuthorizationCode(
+    code: string
+  ): Promise<BattleNetTokenResponse> {
+    const basicCredentials = Buffer.from(
+      `${env.BATTLENET_CLIENT_ID}:${env.BATTLENET_CLIENT_SECRET}`
+    ).toString("base64");
+
+    const response = await fetch(tokenUrl, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        Authorization:
+          `Basic ${basicCredentials}`,
+        "Content-Type":
+          "application/x-www-form-urlencoded"
+      },
+      body: new URLSearchParams({
+        grant_type: "authorization_code",
+        code,
+        redirect_uri:
+          env.BATTLENET_REDIRECT_URI
+      })
+    });
+
+    const payload =
+      await this.readJsonResponse(response);
+
+    if (
+      !response.ok ||
+      !this.isTokenResponse(payload)
+    ) {
+      throw new AppError(
+        502,
+        "Battle.net konnte den Autorisierungscode nicht einlösen.",
+        payload
+      );
+    }
+
+    return payload;
+  }
+
+  async getUserInfo(
+    accessToken: string
+  ): Promise<BattleNetUserInfo> {
+    const response = await fetch(
+      userInfoUrl,
+      {
+        headers: {
+          Accept: "application/json",
+          Authorization:
+            `Bearer ${accessToken}`
+        }
+      }
+    );
+
+    const payload =
+      await this.readJsonResponse(response);
+
+    if (!response.ok) {
+      throw new AppError(
+        502,
+        "Battle.net-Benutzerinformationen konnten nicht geladen werden.",
+        payload
+      );
+    }
+
+    return payload as BattleNetUserInfo;
+  }
+
+  async getAccountProfile(
+    accessToken: string
+  ): Promise<BattleNetAccountProfile> {
+    const result =
+      await this.getProfileResource<
+        BattleNetAccountProfile
+      >(
+        "/profile/user/wow",
+        accessToken
+      );
+
+    if (!result) {
+      throw new AppError(
+        404,
+        "Für dieses Battle.net-Konto wurde kein World-of-Warcraft-Profil gefunden."
+      );
+    }
+
+    return result;
+  }
+
+  async getCharacterProfessions(
+    accessToken: string,
+    realmSlug: string,
+    characterName: string
+  ): Promise<BattleNetProfessionsResponse> {
+    const encodedRealm = encodeURIComponent(
+      realmSlug.toLowerCase()
+    );
+
+    const encodedName = encodeURIComponent(
+      characterName.toLowerCase()
+    );
+
+    const result =
+      await this.getProfileResource<
+        BattleNetProfessionsResponse
+      >(
+        `/profile/wow/character/${encodedRealm}/${encodedName}/professions`,
+        accessToken,
+        true
+      );
+
+    return result ?? {
+      primaries: [],
+      secondaries: []
+    };
+  }
+
+  private async getProfileResource<T>(
+    path: string,
+    accessToken: string,
+    allowNotFound = false
+  ): Promise<T | null> {
+    const baseUrl =
+      `https://${env.BATTLENET_REGION}.api.blizzard.com`;
+
+    const url = new URL(path, baseUrl);
+
+    url.searchParams.set(
+      "namespace",
+      `profile-${env.BATTLENET_REGION}`
+    );
+
+    url.searchParams.set(
+      "locale",
+      env.BATTLENET_LOCALE
+    );
+
+    const response = await fetch(
+      url,
+      {
+        headers: {
+          Accept: "application/json",
+          Authorization:
+            `Bearer ${accessToken}`
+        }
+      }
+    );
+
+    if (
+      response.status === 404 &&
+      allowNotFound
+    ) {
+      return null;
+    }
+
+    const payload =
+      await this.readJsonResponse(response);
+
+    if (response.status === 401) {
+      throw new AppError(
+        401,
+        "Die Battle.net-Verbindung ist abgelaufen. Bitte erneut verbinden."
+      );
+    }
+
+    if (!response.ok) {
+      throw new AppError(
+        502,
+        `Battle.net-Anfrage fehlgeschlagen (${response.status}).`,
+        payload
+      );
+    }
+
+    return payload as T;
+  }
+
+  private async readJsonResponse(
+    response: Response
+  ): Promise<unknown> {
+    const text = await response.text();
+
+    if (!text) {
+      return {};
+    }
+
+    try {
+      return JSON.parse(text) as unknown;
+    }
+    catch {
+      return {
+        response: text.slice(0, 500)
+      };
+    }
+  }
+
+  private isTokenResponse(
+    payload: unknown
+  ): payload is BattleNetTokenResponse {
+    if (
+      typeof payload !== "object" ||
+      payload === null
+    ) {
+      return false;
+    }
+
+    const candidate =
+      payload as Record<string, unknown>;
+
+    return (
+      typeof candidate.access_token ===
+        "string" &&
+      typeof candidate.token_type ===
+        "string"
+    );
+  }
+}

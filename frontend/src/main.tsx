@@ -9,10 +9,13 @@ import "./styles/integration.css";
 import "./styles/forms.css";
 import "./styles/tables.css";
 
-const rootElement = document.getElementById("root");
+const rootElement =
+  document.getElementById("root");
 
 if (!rootElement) {
-  throw new Error("Root element was not found.");
+  throw new Error(
+    "Root element was not found."
+  );
 }
 
 createRoot(rootElement).render(

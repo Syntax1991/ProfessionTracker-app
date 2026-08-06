@@ -1,11 +1,13 @@
 import { Router } from "express";
 import { characterRouter } from "../modules/characters/character.routes.js";
 import { dashboardRouter } from "../modules/dashboard/dashboard.routes.js";
-import { battleNetRouter } from "../modules/integrations/battlenet/battlenet.routes.js";
+import {
+  battleNetAuthRouter,
+  battleNetIntegrationRouter
+} from "../modules/integrations/battlenet/battlenet.routes.js";
 import { professionRouter } from "../modules/professions/profession.routes.js";
 
-export const apiRouter =
-  Router();
+export const apiRouter = Router();
 
 apiRouter.get(
   "/health",
@@ -37,5 +39,10 @@ apiRouter.use(
 
 apiRouter.use(
   "/integrations/battlenet",
-  battleNetRouter
+  battleNetIntegrationRouter
+);
+
+apiRouter.use(
+  "/auth/battlenet",
+  battleNetAuthRouter
 );
