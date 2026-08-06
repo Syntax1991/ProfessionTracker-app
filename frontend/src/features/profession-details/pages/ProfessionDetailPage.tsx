@@ -6,6 +6,7 @@ import { LoadingPanel } from "../../../shared/components/LoadingPanel";
 import { PageHeader } from "../../../shared/components/PageHeader";
 import { StatusMessage } from "../../../shared/components/StatusMessage";
 import { ProfessionCharacterCard } from "../components/ProfessionCharacterCard";
+import { ProfessionCoverageMatrix } from "../components/ProfessionCoverageMatrix";
 import { useProfessionDetail } from "../hooks/useProfessionDetail";
 
 function getCategoryLabel(
@@ -97,7 +98,9 @@ export function ProfessionDetailPage() {
 
       <section className="profession-detail-summary-grid">
         <article className="panel profession-detail-summary-card">
-          <span>Charaktere</span>
+          <span>
+            Charaktere
+          </span>
 
           <strong>
             {
@@ -112,7 +115,9 @@ export function ProfessionDetailPage() {
         </article>
 
         <article className="panel profession-detail-summary-card">
-          <span>Erfasst</span>
+          <span>
+            Erfasst
+          </span>
 
           <strong>
             {
@@ -127,7 +132,9 @@ export function ProfessionDetailPage() {
         </article>
 
         <article className="panel profession-detail-summary-card">
-          <span>Spezialisierungen</span>
+          <span>
+            Spezialisierungen
+          </span>
 
           <strong>
             {
@@ -142,7 +149,9 @@ export function ProfessionDetailPage() {
         </article>
 
         <article className="panel profession-detail-summary-card">
-          <span>Slots</span>
+          <span>
+            Slots
+          </span>
 
           <strong>
             {
@@ -156,6 +165,10 @@ export function ProfessionDetailPage() {
           </small>
         </article>
       </section>
+
+      <ProfessionCoverageMatrix
+        detail={detail}
+      />
 
       <section className="profession-detail-character-section">
         <div className="profession-detail-section-heading">
