@@ -1,0 +1,126 @@
+.character-detail-summary {
+  display: grid;
+  grid-template-columns:
+    minmax(300px, 1.4fr)
+    minmax(420px, 2fr);
+  gap: 16px;
+}
+
+.character-detail-identity {
+  min-height: 148px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 24px;
+}
+
+.character-detail-identity h2 {
+  margin-top: 5px;
+  font-size: 1.55rem;
+}
+
+.character-detail-identity p:last-child {
+  margin-top: 8px;
+  color: var(--text-secondary);
+}
+
+.character-detail-avatar {
+  width: 68px;
+  height: 68px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border:
+    1px solid #584477;
+  border-radius: 18px;
+  color: #e5d9ff;
+  background:
+    var(--primary-soft);
+  font-size: 1.35rem;
+  font-weight: 850;
+}
+
+.character-detail-stat-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.character-detail-stat {
+  min-height: 148px;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+
+.character-detail-stat > span {
+  color: var(--text-secondary);
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.character-detail-stat strong {
+  margin-top: auto;
+  font-size: 2rem;
+}
+
+.character-detail-stat small {
+  margin-top: 4px;
+  color: var(--text-muted);
+  font-size: 0.7rem;
+}
+
+.character-detail-section {
+  margin-top: 28px;
+}
+
+.character-detail-section-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content:
+    space-between;
+  gap: 24px;
+  margin-bottom: 14px;
+}
+
+.character-detail-section-heading h2 {
+  margin-top: 5px;
+}
+
+.character-detail-section-heading > p {
+  max-width: 520px;
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  line-height: 1.55;
+  text-align: right;
+}
+
+.character-detail-empty {
+  margin-top: 20px;
+}
+
+@media (max-width: 1150px) {
+  .character-detail-summary {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .character-detail-stat-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .character-detail-stat {
+    min-height: 110px;
+  }
+
+  .character-detail-section-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .character-detail-section-heading > p {
+    text-align: left;
+  }
+}

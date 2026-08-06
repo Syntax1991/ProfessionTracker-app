@@ -5,9 +5,12 @@ import {
   battleNetAuthRouter,
   battleNetIntegrationRouter
 } from "../modules/integrations/battlenet/battlenet.routes.js";
+import { professionDetailRouter } from "../modules/profession-details/profession-detail.routes.js";
 import { professionRouter } from "../modules/professions/profession.routes.js";
+import { specializationRouter } from "../modules/specializations/specialization.routes.js";
 
-export const apiRouter = Router();
+export const apiRouter =
+  Router();
 
 apiRouter.get(
   "/health",
@@ -29,12 +32,22 @@ apiRouter.use(
 
 apiRouter.use(
   "/characters",
+  specializationRouter
+);
+
+apiRouter.use(
+  "/characters",
   characterRouter
 );
 
 apiRouter.use(
   "/professions",
   professionRouter
+);
+
+apiRouter.use(
+  "/profession-details",
+  professionDetailRouter
 );
 
 apiRouter.use(

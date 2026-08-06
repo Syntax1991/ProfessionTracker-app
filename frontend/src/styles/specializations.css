@@ -1,0 +1,232 @@
+.profession-specialization-panel {
+  margin-top: 22px;
+}
+
+.profession-specialization-actions {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.profession-skill-summary {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  color: var(--text-secondary);
+  font-size: 0.76rem;
+}
+
+.profession-skill-summary strong {
+  color: var(--text);
+  font-size: 1.15rem;
+}
+
+.specialization-tree-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  padding: 20px;
+}
+
+.specialization-tree-card {
+  overflow: hidden;
+  border:
+    1px solid var(--border);
+  border-radius:
+    var(--radius-medium);
+  background:
+    var(--surface-elevated);
+}
+
+.specialization-tree-card > header {
+  display: flex;
+  align-items: center;
+  justify-content:
+    space-between;
+  gap: 16px;
+  padding: 18px;
+  border-bottom:
+    1px solid var(--border);
+}
+
+.specialization-tree-card h3 {
+  margin-top: 7px;
+  font-size: 1.08rem;
+}
+
+.specialization-tree-description {
+  padding: 14px 18px;
+  border-bottom:
+    1px solid var(--border);
+  color:
+    var(--text-secondary);
+  font-size: 0.78rem;
+  line-height: 1.55;
+}
+
+.specialization-node-list {
+  display: grid;
+  padding: 12px;
+}
+
+.specialization-node-group {
+  min-width: 0;
+}
+
+.specialization-node {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content:
+    space-between;
+  gap: 14px;
+  padding: 8px 10px;
+  border:
+    1px solid transparent;
+  border-radius:
+    var(--radius-small);
+}
+
+.specialization-node:hover {
+  background:
+    var(--surface-hover);
+}
+
+.specialization-node.selected {
+  border-color:
+    #554272;
+  background:
+    var(--primary-soft);
+}
+
+.specialization-node-toggle {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.specialization-node-toggle input {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  accent-color:
+    var(--primary);
+}
+
+.specialization-node-toggle span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.specialization-node-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.specialization-source {
+  padding: 4px 7px;
+  border-radius: 999px;
+  color: #cdbcf4;
+  background:
+    rgb(128 88 221 / 14%);
+  font-size: 0.62rem;
+  font-weight: 800;
+}
+
+.specialization-rank {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color:
+    var(--text-secondary);
+  font-size: 0.68rem;
+}
+
+.specialization-rank input {
+  width: 64px;
+  min-height: 31px;
+  padding: 5px 7px;
+  border:
+    1px solid var(--border-strong);
+  border-radius:
+    var(--radius-small);
+  outline: none;
+  color: var(--text);
+  background: #0f1219;
+}
+
+.specialization-rank input:focus {
+  border-color:
+    var(--primary);
+}
+
+.specialization-rank input:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.specialization-rank small {
+  color:
+    var(--text-muted);
+}
+
+.specialization-node-description {
+  margin-top: -5px;
+  padding: 0 10px 8px;
+  color:
+    var(--text-muted);
+  font-size: 0.7rem;
+  line-height: 1.45;
+}
+
+.character-table-actions {
+  min-width: 260px;
+}
+
+@media (max-width: 1100px) {
+  .specialization-tree-grid {
+    grid-template-columns:
+      1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .profession-specialization-panel
+    .panel-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .profession-specialization-actions {
+    width: 100%;
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .profession-specialization-actions
+    .button {
+    width: 100%;
+  }
+
+  .specialization-tree-grid {
+    padding: 12px;
+  }
+
+  .specialization-node {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .specialization-node-meta {
+    width: 100%;
+    justify-content:
+      space-between;
+  }
+}

@@ -15,6 +15,20 @@ export type ImportableBattleNetCharacter = {
   level: number;
 };
 
+type BattleNetCharacterIdentity = {
+  battleNetId: string;
+  realmSlug: string;
+};
+
+export function createBattleNetCharacterKey(
+  character: BattleNetCharacterIdentity
+): string {
+  return [
+    character.battleNetId,
+    character.realmSlug.toLowerCase()
+  ].join(":");
+}
+
 export function normalizeBattleNetCharacters(
   profile: BattleNetAccountProfile
 ): ImportableBattleNetCharacter[] {
@@ -33,43 +47,31 @@ export function normalizeBattleNetCharacters(
       account.characters ?? []
     ) {
       if (
-        typeof character.id !==
-          "number" ||
-        typeof character.name !==
-          "string" ||
-        typeof character.level !==
-          "number" ||
-        typeof character.realm?.name !==
-          "string" ||
-        typeof character.realm?.slug !==
-          "string" ||
-        typeof character
-          .playable_class?.name !==
+        typeof character.id !== "number" ||
+        typeof character.name !== "string" ||
+        typeof character.level !== "number" ||
+        typeof character.realm?.name !== "string" ||
+        typeof character.realm?.slug !== "string" ||
+        typeof character.playable_class?.name !==
           "string"
       ) {
         continue;
       }
 
       const normalizedCharacter = {
-        battleNetId:
-          String(character.id),
-        name:
-          character.name,
-        realm:
-          character.realm.name,
-        realmSlug:
-          character.realm.slug,
+        battleNetId: String(character.id),
+        name: character.name,
+        realm: character.realm.name,
+        realmSlug: character.realm.slug,
         className:
           character.playable_class.name,
-        level:
-          character.level
+        level: character.level
       };
 
-      const identityKey =
-        `${normalizedCharacter.battleNetId}:${normalizedCharacter.realmSlug}`;
-
       characterMap.set(
-        identityKey,
+        createBattleNetCharacterKey(
+          normalizedCharacter
+        ),
         normalizedCharacter
       );
     }

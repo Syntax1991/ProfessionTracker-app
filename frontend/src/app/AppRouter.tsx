@@ -6,31 +6,73 @@ import {
 import { CharactersPage } from "../features/characters/pages/CharactersPage";
 import { DashboardPage } from "../features/dashboard/pages/DashboardPage";
 import { BattleNetPage } from "../features/integrations/pages/BattleNetPage";
+import { ProfessionDetailPage } from "../features/profession-details/pages/ProfessionDetailPage";
 import { ProfessionsPage } from "../features/professions/pages/ProfessionsPage";
+import { CharacterSpecializationsPage } from "../features/specializations/pages/CharacterSpecializationsPage";
 import { AppLayout } from "../shared/layouts/AppLayout";
 
 export function AppRouter() {
   return (
     <Routes>
       <Route element={<AppLayout />}>
-        <Route index element={<DashboardPage />} />
+        <Route
+          index
+          element={
+            <DashboardPage />
+          }
+        />
+
         <Route
           path="characters"
-          element={<CharactersPage />}
+          element={
+            <CharactersPage />
+          }
         />
+
+        <Route
+          path="characters/:characterId"
+          element={
+            <CharacterSpecializationsPage />
+          }
+        />
+
+        <Route
+          path="characters/:characterId/specializations"
+          element={
+            <CharacterSpecializationsPage />
+          }
+        />
+
         <Route
           path="professions"
-          element={<ProfessionsPage />}
+          element={
+            <ProfessionsPage />
+          }
         />
+
+        <Route
+          path="professions/:professionId"
+          element={
+            <ProfessionDetailPage />
+          }
+        />
+
         <Route
           path="battlenet"
-          element={<BattleNetPage />}
+          element={
+            <BattleNetPage />
+          }
         />
       </Route>
 
       <Route
         path="*"
-        element={<Navigate replace to="/" />}
+        element={
+          <Navigate
+            replace
+            to="/"
+          />
+        }
       />
     </Routes>
   );

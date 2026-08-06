@@ -3,9 +3,9 @@ import type { BattleNetStatus } from "../types/battlenet.types";
 type BattleNetStatusCardProps = {
   status: BattleNetStatus;
   connectUrl: string;
-  isImporting: boolean;
+  isLoadingCharacters: boolean;
   isDisconnecting: boolean;
-  onImport: () => void;
+  onLoadCharacters: () => void;
   onDisconnect: () => void;
 };
 
@@ -24,9 +24,9 @@ function formatExpiry(
 export function BattleNetStatusCard({
   status,
   connectUrl,
-  isImporting,
+  isLoadingCharacters,
   isDisconnecting,
-  onImport,
+  onLoadCharacters,
   onDisconnect
 }: BattleNetStatusCardProps) {
   return (
@@ -117,19 +117,27 @@ export function BattleNetStatusCard({
           <>
             <button
               className="button button-primary"
-              disabled={isImporting}
-              onClick={onImport}
+              disabled={
+                isLoadingCharacters
+              }
+              onClick={
+                onLoadCharacters
+              }
               type="button"
             >
-              {isImporting
-                ? "Charaktere werden importiert…"
-                : "Charaktere synchronisieren"}
+              {isLoadingCharacters
+                ? "Charaktere werden geladen…"
+                : "Charaktere auswählen"}
             </button>
 
             <button
               className="button button-secondary"
-              disabled={isDisconnecting}
-              onClick={onDisconnect}
+              disabled={
+                isDisconnecting
+              }
+              onClick={
+                onDisconnect
+              }
               type="button"
             >
               {isDisconnecting

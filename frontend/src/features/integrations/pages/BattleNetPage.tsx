@@ -11,13 +11,16 @@ import { PageHeader } from "../../../shared/components/PageHeader";
 import { StatusMessage } from "../../../shared/components/StatusMessage";
 import {
   disconnectBattleNet,
+  getBattleNetCharacters,
   getBattleNetConnectUrl,
   getBattleNetStatus,
   importBattleNetCharacters
 } from "../api/battlenetApi";
+import { BattleNetCharacterSelector } from "../components/BattleNetCharacterSelector";
 import { BattleNetImportResultCard } from "../components/BattleNetImportResult";
 import { BattleNetStatusCard } from "../components/BattleNetStatusCard";
 import type {
+  BattleNetCharacterPreviewResult,
   BattleNetImportResult,
   BattleNetStatus
 } from "../types/battlenet.types";
@@ -31,6 +34,14 @@ export function BattleNetPage() {
       null
     );
 
+  const [
+    characterPreview,
+    setCharacterPreview
+  ] =
+    useState<BattleNetCharacterPreviewResult | null>(
+      null
+    );
+
   const [importResult, setImportResult] =
     useState<BattleNetImportResult | null>(
       null
@@ -38,6 +49,11 @@ export function BattleNetPage() {
 
   const [isLoading, setIsLoading] =
     useState(true);
+
+  const [
+    isLoadingCharacters,
+    setIsLoadingCharacters
+  ] = useState(false);
 
   const [isImporting, setIsImporting] =
     useState(false);
@@ -73,21 +89,51 @@ export function BattleNetPage() {
     []
   );
 
+  const loadCharacters =
+    useCallback(async () => {
+      setError(null);
+      setIsLoadingCharacters(true);
+
+      try {
+        setCharacterPreview(
+          await getBattleNetCharacters()
+        );
+      }
+      catch (loadError) {
+        setError(
+          loadError instanceof Error
+            ? loadError.message
+            : "Battle.net-Charaktere konnten nicht geladen werden."
+        );
+      }
+      finally {
+        setIsLoadingCharacters(false);
+      }
+    }, []);
+
   useEffect(() => {
     void loadStatus();
   }, [loadStatus]);
 
-  const handleImport = async () => {
+  const handleImport = async (
+    characterKeys: string[]
+  ) => {
     setError(null);
     setImportResult(null);
     setIsImporting(true);
 
     try {
       const result =
-        await importBattleNetCharacters();
+        await importBattleNetCharacters(
+          characterKeys
+        );
 
       setImportResult(result);
-      await loadStatus();
+
+      await Promise.all([
+        loadStatus(),
+        loadCharacters()
+      ]);
     }
     catch (importError) {
       setError(
@@ -115,7 +161,10 @@ export function BattleNetPage() {
 
     try {
       await disconnectBattleNet();
+
+      setCharacterPreview(null);
       setImportResult(null);
+
       await loadStatus();
     }
     catch (disconnectError) {
@@ -140,7 +189,7 @@ export function BattleNetPage() {
   return (
     <>
       <PageHeader
-        description="Verbinde dein Battle.net-Konto und synchronisiere deine World-of-Warcraft-Charaktere."
+        description="Lade deine Battle.net-Charaktere, filtere sie und synchronisiere nur die benötigten Crafter."
         eyebrow="INTEGRATION"
         title="Battle.net"
       />
@@ -151,9 +200,10 @@ export function BattleNetPage() {
         </StatusMessage>
       )}
 
-      {wasConnected && !callbackError && (
+      {wasConnected &&
+        !callbackError && (
         <StatusMessage type="info">
-          Battle.net wurde erfolgreich verbunden. Du kannst deine Charaktere jetzt synchronisieren.
+          Battle.net wurde erfolgreich verbunden. Lade jetzt deine Charakterliste und wähle die benötigten Crafter aus.
         </StatusMessage>
       )}
 
@@ -173,14 +223,34 @@ export function BattleNetPage() {
           isDisconnecting={
             isDisconnecting
           }
-          isImporting={isImporting}
+          isLoadingCharacters={
+            isLoadingCharacters
+          }
           onDisconnect={() => {
             void handleDisconnect();
           }}
-          onImport={() => {
-            void handleImport();
+          onLoadCharacters={() => {
+            void loadCharacters();
           }}
           status={status}
+        />
+      )}
+
+      {characterPreview && (
+        <BattleNetCharacterSelector
+          characters={
+            characterPreview.items
+          }
+          defaultMinimumLevel={
+            characterPreview
+              .defaultMinimumLevel
+          }
+          isImporting={
+            isImporting
+          }
+          onImport={
+            handleImport
+          }
         />
       )}
 

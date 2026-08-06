@@ -6,6 +6,13 @@ import "./styles/base.css";
 import "./styles/layout.css";
 import "./styles/components.css";
 import "./styles/integration.css";
+import "./styles/battlenet-characters.css";
+import "./styles/character-detail-summary.css";
+import "./styles/character-detail-coverage.css";
+import "./styles/profession-overview.css";
+import "./styles/profession-character-details.css";
+import "./styles/profession-detail-coverage.css";
+import "./styles/specializations.css";
 import "./styles/forms.css";
 import "./styles/tables.css";
 

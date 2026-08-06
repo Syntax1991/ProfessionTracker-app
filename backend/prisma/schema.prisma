@@ -8,18 +8,18 @@ datasource db {
 }
 
 model Character {
-  id           String   @id @default(cuid())
+  id           String    @id @default(cuid())
   battleNetId  String?
   name         String
   realm        String
   realmSlug    String?
-  region       String   @default("eu")
+  region       String    @default("eu")
   className    String
-  level        Int      @default(80)
-  source       String   @default("MANUAL")
+  level        Int       @default(80)
+  source       String    @default("MANUAL")
   lastSyncedAt DateTime?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
   professions CharacterProfession[]
 
@@ -35,7 +35,8 @@ model Profession {
   category String
   order    Int    @default(0)
 
-  assignments CharacterProfession[]
+  assignments         CharacterProfession[]
+  specializationTrees ProfessionSpecializationTree[]
 }
 
 model CharacterProfession {
@@ -49,7 +50,63 @@ model CharacterProfession {
   character  Character  @relation(fields: [characterId], references: [id], onDelete: Cascade)
   profession Profession @relation(fields: [professionId], references: [id], onDelete: Cascade)
 
+  nodeProgress CharacterProfessionNodeProgress[]
+
   @@unique([characterId, professionId])
+  @@index([professionId])
+}
+
+model ProfessionSpecializationTree {
+  id           String  @id @default(cuid())
+  professionId String
+  expansion    String  @default("MIDNIGHT")
+  key          String
+  name         String
+  description  String?
+  sortOrder    Int     @default(0)
+
+  profession Profession                     @relation(fields: [professionId], references: [id], onDelete: Cascade)
+  nodes      ProfessionSpecializationNode[]
+
+  @@unique([professionId, expansion, key])
+  @@index([professionId, expansion])
+}
+
+model ProfessionSpecializationNode {
+  id           String  @id @default(cuid())
+  treeId       String
+  parentNodeId String?
+  key          String
+  name         String
+  description  String?
+  maxRank      Int?
+  sortOrder    Int     @default(0)
+
+  tree     ProfessionSpecializationTree      @relation(fields: [treeId], references: [id], onDelete: Cascade)
+  parent   ProfessionSpecializationNode?     @relation("SpecializationNodeHierarchy", fields: [parentNodeId], references: [id], onDelete: SetNull)
+  children ProfessionSpecializationNode[]    @relation("SpecializationNodeHierarchy")
+  progress CharacterProfessionNodeProgress[]
+
+  @@unique([treeId, key])
+  @@index([treeId, parentNodeId])
+}
+
+model CharacterProfessionNodeProgress {
+  id                    String    @id @default(cuid())
+  characterProfessionId String
+  nodeId                String
+  rank                  Int       @default(1)
+  source                String    @default("MANUAL")
+  lastSyncedAt          DateTime?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  characterProfession CharacterProfession          @relation(fields: [characterProfessionId], references: [id], onDelete: Cascade)
+  node                ProfessionSpecializationNode @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+
+  @@unique([characterProfessionId, nodeId])
+  @@index([nodeId])
+  @@index([source])
 }
 
 model BattleNetConnection {

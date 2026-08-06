@@ -1,6 +1,9 @@
 import { BattleNetAuthService } from "./battlenet-auth.service.js";
 import { BattleNetImportService } from "./battlenet-import.service.js";
-import type { BattleNetImportResult } from "./battlenet.types.js";
+import type {
+  BattleNetCharacterPreviewResult,
+  BattleNetImportResult
+} from "./battlenet.types.js";
 
 export class BattleNetService {
   constructor(
@@ -29,16 +32,27 @@ export class BattleNetService {
   }
 
   getStatus() {
-    return this.authService.getStatus();
+    return this.authService
+      .getStatus();
   }
 
-  importCharacters():
-    Promise<BattleNetImportResult> {
+  listCharacters():
+    Promise<BattleNetCharacterPreviewResult> {
     return this.importService
-      .importCharacters();
+      .listCharacters();
+  }
+
+  importCharacters(
+    characterKeys: string[]
+  ): Promise<BattleNetImportResult> {
+    return this.importService
+      .importCharacters(
+        characterKeys
+      );
   }
 
   disconnect(): Promise<void> {
-    return this.authService.disconnect();
+    return this.authService
+      .disconnect();
   }
 }

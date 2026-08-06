@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "concurrently -n FRONTEND,BACKEND -c cyan,magenta \"npm --prefix frontend run dev\" \"npm --prefix backend run dev\"",
+    "dev": "node scripts/dev-manager.mjs start",
     "build": "npm --prefix backend run build && npm --prefix frontend run build",
     "lint": "npm --prefix frontend run lint",
     "check:architecture": "node scripts/check-source-files.mjs",
@@ -11,7 +11,9 @@
     "db:generate": "npm --prefix backend run db:generate",
     "db:migrate": "npm --prefix backend run db:migrate",
     "db:seed": "npm --prefix backend run db:seed",
-    "db:studio": "npm --prefix backend run db:studio"
+    "db:studio": "npm --prefix backend run db:studio",
+    "dev:restart": "node scripts/dev-manager.mjs restart",
+    "dev:stop": "node scripts/dev-manager.mjs stop"
   },
   "devDependencies": {
     "concurrently": "^10.0.4"

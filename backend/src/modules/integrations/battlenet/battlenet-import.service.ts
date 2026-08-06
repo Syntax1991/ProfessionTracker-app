@@ -5,12 +5,14 @@ import { CharacterRepository } from "../../characters/character.repository.js";
 import { ProfessionRepository } from "../../professions/profession.repository.js";
 import { BattleNetClient } from "./battlenet.client.js";
 import {
+  createBattleNetCharacterKey,
   createBattleNetProfessionAssignments,
   normalizeBattleNetCharacters,
   type ImportableBattleNetCharacter
 } from "./battlenet-import.mapper.js";
 import { BattleNetRepository } from "./battlenet.repository.js";
 import type {
+  BattleNetCharacterPreviewResult,
   BattleNetImportFailure,
   BattleNetImportResult
 } from "./battlenet.types.js";
@@ -40,8 +42,8 @@ export class BattleNetImportService {
       ProfessionRepository
   ) {}
 
-  async importCharacters():
-    Promise<BattleNetImportResult> {
+  async listCharacters():
+    Promise<BattleNetCharacterPreviewResult> {
     const connection =
       await this.getUsableConnection();
 
@@ -55,12 +57,115 @@ export class BattleNetImportService {
         accountProfile
       );
 
+    const importedIdentities =
+      await this.characterRepository
+        .findBattleNetIdentities(
+          env.BATTLENET_REGION
+        );
+
+    const importedKeys =
+      new Set<string>();
+
+    for (
+      const identity of
+      importedIdentities
+    ) {
+      if (
+        identity.battleNetId &&
+        identity.realmSlug
+      ) {
+        importedKeys.add(
+          createBattleNetCharacterKey({
+            battleNetId:
+              identity.battleNetId,
+            realmSlug:
+              identity.realmSlug
+          })
+        );
+      }
+    }
+
+    const items = characters
+      .map((character) => {
+        const key =
+          createBattleNetCharacterKey(
+            character
+          );
+
+        return {
+          key,
+          ...character,
+          imported:
+            importedKeys.has(key)
+        };
+      })
+      .sort(
+        (left, right) =>
+          right.level - left.level ||
+          left.realm.localeCompare(
+            right.realm,
+            "de"
+          ) ||
+          left.name.localeCompare(
+            right.name,
+            "de"
+          )
+      );
+
+    return {
+      items,
+      totalCharacters:
+        items.length,
+      defaultMinimumLevel:
+        env.CRAFTING_MIN_LEVEL
+    };
+  }
+
+  async importCharacters(
+    characterKeys: string[]
+  ): Promise<BattleNetImportResult> {
+    const connection =
+      await this.getUsableConnection();
+
+    const accountProfile =
+      await this.client.getAccountProfile(
+        connection.accessToken
+      );
+
+    const availableCharacters =
+      normalizeBattleNetCharacters(
+        accountProfile
+      );
+
+    const requestedKeys =
+      new Set(characterKeys);
+
+    const selectedCharacters =
+      availableCharacters.filter(
+        (character) =>
+          requestedKeys.has(
+            createBattleNetCharacterKey(
+              character
+            )
+          )
+      );
+
+    if (
+      selectedCharacters.length !==
+      requestedKeys.size
+    ) {
+      throw new AppError(
+        400,
+        "Mindestens ein ausgewählter Charakter ist im Battle.net-Konto nicht mehr verfügbar."
+      );
+    }
+
     const professionIdByKey =
       await this.createProfessionIdMap();
 
     const outcomes =
       await mapWithConcurrency(
-        characters,
+        selectedCharacters,
         importConcurrency,
         async (character) =>
           this.importCharacter(
@@ -72,10 +177,11 @@ export class BattleNetImportService {
 
     return {
       totalCharacters:
-        characters.length,
+        selectedCharacters.length,
       importedCharacters:
         outcomes.filter(
-          (outcome) => outcome.imported
+          (outcome) =>
+            outcome.imported
         ).length,
       failedCharacters:
         outcomes
@@ -93,9 +199,11 @@ export class BattleNetImportService {
   }
 
   private async importCharacter(
-    character: ImportableBattleNetCharacter,
+    character:
+      ImportableBattleNetCharacter,
     accessToken: string,
-    professionIdByKey: Map<string, string>
+    professionIdByKey:
+      Map<string, string>
   ): Promise<ImportOutcome> {
     try {
       const professionData =
@@ -153,19 +261,23 @@ export class BattleNetImportService {
   private async createProfessionIdMap():
     Promise<Map<string, string>> {
     const professions =
-      await this.professionRepository.findAll();
+      await this.professionRepository
+        .findAll();
 
     return new Map(
-      professions.map((profession) => [
-        profession.key,
-        profession.id
-      ])
+      professions.map(
+        (profession) => [
+          profession.key,
+          profession.id
+        ]
+      )
     );
   }
 
   private async getUsableConnection() {
     const connection =
-      await this.repository.findConnection();
+      await this.repository
+        .findConnection();
 
     if (
       !connection ||

@@ -1,20 +1,20 @@
 import { LoadingPanel } from "../../../shared/components/LoadingPanel";
 import { PageHeader } from "../../../shared/components/PageHeader";
 import { StatusMessage } from "../../../shared/components/StatusMessage";
-import { ProfessionGrid } from "../components/ProfessionGrid";
-import { useProfessions } from "../hooks/useProfessions";
+import { ProfessionOverviewCard } from "../../profession-details/components/ProfessionOverviewCard";
+import { useProfessionOverview } from "../../profession-details/hooks/useProfessionOverview";
 
 export function ProfessionsPage() {
   const {
-    professions,
+    items,
     isLoading,
     error
-  } = useProfessions();
+  } = useProfessionOverview();
 
   return (
     <>
       <PageHeader
-        description="Erkenne sofort fehlende oder mehrfach belegte Berufe."
+        description="Öffne einen Beruf und prüfe, welche Charaktere welche Spezialisierungen und Slots abdecken."
         eyebrow="CRAFTING COVERAGE"
         title="Berufe"
       />
@@ -25,25 +25,47 @@ export function ProfessionsPage() {
         </StatusMessage>
       )}
 
-      <section className="panel">
-        <div className="panel-header">
-          <div>
-            <p className="eyebrow">
-              MIDNIGHT
-            </p>
+      {isLoading ? (
+        <LoadingPanel />
+      ) : (
+        <section className="panel profession-overview-panel">
+          <div className="panel-header">
+            <div>
+              <p className="eyebrow">
+                MIDNIGHT
+              </p>
 
-            <h2>Berufsabdeckung</h2>
+              <h2>
+                Berufsabdeckung
+              </h2>
+            </div>
+
+            <span className="profession-overview-total">
+              {items.length}
+              {" Berufe"}
+            </span>
           </div>
-        </div>
 
-        {isLoading ? (
-          <LoadingPanel />
-        ) : (
-          <ProfessionGrid
-            professions={professions}
-          />
-        )}
-      </section>
+          {items.length === 0 ? (
+            <div className="empty-state">
+              Noch keine Berufe vorhanden.
+            </div>
+          ) : (
+            <div className="profession-overview-grid">
+              {items.map(
+                (profession) => (
+                  <ProfessionOverviewCard
+                    key={profession.id}
+                    profession={
+                      profession
+                    }
+                  />
+                )
+              )}
+            </div>
+          )}
+        </section>
+      )}
     </>
   );
 }

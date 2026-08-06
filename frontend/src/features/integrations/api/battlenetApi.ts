@@ -3,6 +3,7 @@ import {
   getApiUrl
 } from "../../../shared/api/httpClient";
 import type {
+  BattleNetCharacterPreviewResult,
   BattleNetImportResult,
   BattleNetStatus
 } from "../types/battlenet.types";
@@ -14,12 +15,23 @@ export function getBattleNetStatus():
   );
 }
 
-export function importBattleNetCharacters():
-  Promise<BattleNetImportResult> {
+export function getBattleNetCharacters():
+  Promise<BattleNetCharacterPreviewResult> {
+  return apiRequest<BattleNetCharacterPreviewResult>(
+    "/integrations/battlenet/characters"
+  );
+}
+
+export function importBattleNetCharacters(
+  characterKeys: string[]
+): Promise<BattleNetImportResult> {
   return apiRequest<BattleNetImportResult>(
     "/integrations/battlenet/import",
     {
-      method: "POST"
+      method: "POST",
+      body: JSON.stringify({
+        characterKeys
+      })
     }
   );
 }

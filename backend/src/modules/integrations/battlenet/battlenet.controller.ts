@@ -3,6 +3,7 @@ import type {
 } from "express";
 import { env } from "../../../config/env.js";
 import { BattleNetService } from "./battlenet.service.js";
+import { battleNetImportInputSchema } from "./battlenet.validation.js";
 
 function getQueryValue(
   value: unknown
@@ -50,16 +51,20 @@ export class BattleNetController {
         );
 
       if (providerError) {
-        throw new Error(providerError);
+        throw new Error(
+          providerError
+        );
       }
 
-      const code = getQueryValue(
-        request.query.code
-      );
+      const code =
+        getQueryValue(
+          request.query.code
+        );
 
-      const state = getQueryValue(
-        request.query.state
-      );
+      const state =
+        getQueryValue(
+          request.query.state
+        );
 
       await this.service.handleCallback(
         code,
@@ -94,14 +99,31 @@ export class BattleNetController {
     );
   };
 
-  importCharacters:
+  listCharacters:
     RequestHandler = async (
       _request,
       response
     ) => {
       response.json(
         await this.service
-          .importCharacters()
+          .listCharacters()
+      );
+    };
+
+  importCharacters:
+    RequestHandler = async (
+      request,
+      response
+    ) => {
+      const input =
+        battleNetImportInputSchema
+          .parse(request.body);
+
+      response.json(
+        await this.service
+          .importCharacters(
+            input.characterKeys
+          )
       );
     };
 

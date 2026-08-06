@@ -24,14 +24,16 @@ export function BattleNetImportResultCard({
       <div className="import-result-content">
         <div className="import-result-grid">
           <div>
-            <span>Gefunden</span>
+            <span>Ausgewählt</span>
+
             <strong>
               {result.totalCharacters}
             </strong>
           </div>
 
           <div>
-            <span>Importiert</span>
+            <span>Synchronisiert</span>
+
             <strong>
               {result.importedCharacters}
             </strong>
@@ -39,6 +41,7 @@ export function BattleNetImportResultCard({
 
           <div>
             <span>Fehler</span>
+
             <strong>
               {
                 result.failedCharacters
@@ -59,7 +62,9 @@ export function BattleNetImportResultCard({
               {result.failedCharacters.map(
                 (failure) => (
                   <li
-                    key={`${failure.realm}-${failure.name}`}
+                    key={
+                      `${failure.realm}-${failure.name}`
+                    }
                   >
                     <strong>
                       {failure.name}

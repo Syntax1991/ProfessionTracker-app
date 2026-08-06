@@ -67,6 +67,13 @@ battleNetIntegrationRouter.get(
   )
 );
 
+battleNetIntegrationRouter.get(
+  "/characters",
+  asyncHandler(
+    controller.listCharacters
+  )
+);
+
 battleNetIntegrationRouter.post(
   "/import",
   asyncHandler(
