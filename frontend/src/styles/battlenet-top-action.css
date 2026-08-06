@@ -1,0 +1,127 @@
+:where(
+  aside,
+  [data-app-sidebar],
+  .app-sidebar,
+  .sidebar,
+  .side-navigation,
+  .side-nav
+) {
+  position: relative;
+}
+
+:where(
+  aside,
+  [data-app-sidebar],
+  .app-sidebar,
+  .sidebar,
+  .side-navigation,
+  .side-nav
+)
+a[href="/battlenet"]:not(
+  .battle-net-top-link
+) {
+  display: none !important;
+}
+
+.battle-net-top-action {
+  position: absolute;
+  top: 16px;
+  right: 12px;
+  z-index: 20;
+}
+
+.battle-net-top-action-fallback {
+  position: fixed;
+  top: 16px;
+  left: 128px;
+}
+
+.battle-net-top-link {
+  position: relative;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border:
+    1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text-secondary);
+  background:
+    var(--surface-elevated);
+  text-decoration: none;
+  box-shadow:
+    0 5px 16px
+    rgb(0 0 0 / 16%);
+  transition:
+    color 150ms ease,
+    border-color 150ms ease,
+    background 150ms ease,
+    transform 150ms ease;
+}
+
+.battle-net-top-link:hover {
+  color: #c9afff;
+  border-color: #654c8e;
+  background:
+    var(--surface-hover);
+  transform:
+    translateY(-1px);
+}
+
+.battle-net-top-link:focus-visible {
+  outline:
+    2px solid #9d78e8;
+  outline-offset: 2px;
+}
+
+.battle-net-top-link.active {
+  color: #ddceff;
+  border-color: #7957b7;
+  background:
+    var(--primary-soft);
+}
+
+.battle-net-top-icon {
+  width: 19px;
+  height: 19px;
+  stroke: currentColor;
+  stroke-width: 1.55;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.battle-net-top-icon circle {
+  fill: currentColor;
+  stroke: none;
+}
+
+.battle-net-top-indicator {
+  position: absolute;
+  right: 4px;
+  bottom: 4px;
+  width: 6px;
+  height: 6px;
+  border:
+    1px solid
+    var(--surface-elevated);
+  border-radius: 999px;
+  background: #7d8492;
+}
+
+.battle-net-top-link.active
+  .battle-net-top-indicator {
+  background: #a97dff;
+}
+
+@media (max-width: 760px) {
+  .battle-net-top-action {
+    top: 11px;
+    right: 10px;
+  }
+
+  .battle-net-top-action-fallback {
+    position: fixed;
+    left: auto;
+    right: 12px;
+  }
+}

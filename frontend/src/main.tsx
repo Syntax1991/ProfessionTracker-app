@@ -1,12 +1,14 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { App } from "./app/App";
+import { BattleNetTopAction } from "./features/integrations/components/BattleNetTopAction";
 import "./styles/tokens.css";
 import "./styles/base.css";
 import "./styles/layout.css";
 import "./styles/components.css";
 import "./styles/integration.css";
 import "./styles/battlenet-characters.css";
+import "./styles/battlenet-top-action.css";
 import "./styles/character-detail-summary.css";
 import "./styles/character-detail-coverage.css";
 import "./styles/profession-overview.css";
@@ -29,5 +31,6 @@ if (!rootElement) {
 createRoot(rootElement).render(
   <StrictMode>
     <App />
+    <BattleNetTopAction />
   </StrictMode>
 );
