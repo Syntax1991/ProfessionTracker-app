@@ -1,7 +1,6 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { App } from "./app/App";
-import { BattleNetTopAction } from "./features/integrations/components/BattleNetTopAction";
 import "./styles/tokens.css";
 import "./styles/base.css";
 import "./styles/layout.css";
@@ -31,6 +30,5 @@ if (!rootElement) {
 createRoot(rootElement).render(
   <StrictMode>
     <App />
-    <BattleNetTopAction />
   </StrictMode>
 );

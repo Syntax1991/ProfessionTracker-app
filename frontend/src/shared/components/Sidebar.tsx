@@ -1,4 +1,5 @@
 import { NavLink } from "react-router-dom";
+import { BattleNetTopAction } from "../../features/integrations/components/BattleNetTopAction";
 
 const navigationItems = [
   {
@@ -12,43 +13,55 @@ const navigationItems = [
   {
     label: "Berufe",
     path: "/professions"
-  },
-  {
-    label: "Battle.net",
-    path: "/battlenet"
   }
 ];
 
 export function Sidebar() {
   return (
     <aside className="sidebar">
-      <div className="brand">
-        <div className="brand-mark">
-          PT
+      <div className="sidebar-header">
+        <div className="brand">
+          <div className="brand-mark">
+            PT
+          </div>
+
+          <div className="brand-copy">
+            <strong>
+              Profession Tracker
+            </strong>
+
+            <span>
+              Midnight Crafting
+            </span>
+          </div>
         </div>
 
-        <div>
-          <strong>Profession Tracker</strong>
-          <span>Midnight Crafting</span>
-        </div>
+        <BattleNetTopAction />
       </div>
 
       <nav className="main-navigation">
-        {navigationItems.map((item) => (
-          <NavLink
-            className={({ isActive }) =>
-              isActive
-                ? "navigation-item active"
-                : "navigation-item"
-            }
-            end={item.path === "/"}
-            key={item.path}
-            to={item.path}
-          >
-            <span className="navigation-dot" />
-            {item.label}
-          </NavLink>
-        ))}
+        {navigationItems.map(
+          (item) => (
+            <NavLink
+              className={({
+                isActive
+              }) =>
+                isActive
+                  ? "navigation-item active"
+                  : "navigation-item"
+              }
+              end={
+                item.path === "/"
+              }
+              key={item.path}
+              to={item.path}
+            >
+              <span className="navigation-dot" />
+
+              {item.label}
+            </NavLink>
+          )
+        )}
       </nav>
 
       <div className="sidebar-footer">

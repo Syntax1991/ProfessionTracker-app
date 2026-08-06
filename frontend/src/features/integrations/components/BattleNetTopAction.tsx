@@ -1,45 +1,40 @@
 import {
+  useCallback,
   useEffect,
   useState
 } from "react";
-import { createPortal } from "react-dom";
+import {
+  NavLink,
+  useLocation
+} from "react-router-dom";
+import {
+  getBattleNetStatus
+} from "../api/battlenetApi";
 
-const sidebarSelectors = [
-  "aside",
-  "[data-app-sidebar]",
-  ".app-sidebar",
-  ".sidebar",
-  ".side-navigation",
-  ".side-nav"
-];
+type ConnectionState =
+  | "loading"
+  | "connected"
+  | "disconnected"
+  | "unavailable";
 
-function findSidebar():
-  HTMLElement | null {
-  for (
-    const selector of
-    sidebarSelectors
-  ) {
-    const element =
-      document.querySelector<HTMLElement>(
-        selector
-      );
+type BattleNetActionState = {
+  connectionState:
+    ConnectionState;
+  battleTag:
+    string | null;
+  importedCharacterCount:
+    number;
+};
 
-    if (element) {
-      return element;
-    }
-  }
-
-  return null;
-}
-
-function isBattleNetPage():
-  boolean {
-  return window.location.pathname
-    .toLowerCase()
-    .startsWith(
-      "/battlenet"
-    );
-}
+const initialState:
+  BattleNetActionState = {
+    connectionState:
+      "loading",
+    battleTag:
+      null,
+    importedCharacterCount:
+      0
+  };
 
 function BattleNetIcon() {
   return (
@@ -66,81 +61,129 @@ function BattleNetIcon() {
   );
 }
 
+function getActionTitle(
+  state:
+    BattleNetActionState
+): string {
+  switch (
+    state.connectionState
+  ) {
+    case "connected":
+      return state.battleTag
+        ? `${state.battleTag} · ${state.importedCharacterCount} importierte Charaktere`
+        : `Battle.net verbunden · ${state.importedCharacterCount} importierte Charaktere`;
+
+    case "disconnected":
+      return "Battle.net verbinden";
+
+    case "unavailable":
+      return "Battle.net-Status nicht verfügbar";
+
+    default:
+      return "Battle.net-Status wird geladen";
+  }
+}
+
 export function BattleNetTopAction() {
+  const location =
+    useLocation();
+
   const [
-    sidebar,
-    setSidebar
+    state,
+    setState
   ] =
-    useState<HTMLElement | null>(
-      null
+    useState<BattleNetActionState>(
+      initialState
+    );
+
+  const loadStatus =
+    useCallback(
+      async () => {
+        try {
+          const status =
+            await getBattleNetStatus();
+
+          setState({
+            connectionState:
+              status.connected
+                ? "connected"
+                : "disconnected",
+
+            battleTag:
+              status.battleTag,
+
+            importedCharacterCount:
+              status
+                .importedCharacterCount
+          });
+        }
+        catch {
+          setState({
+            connectionState:
+              "unavailable",
+
+            battleTag:
+              null,
+
+            importedCharacterCount:
+              0
+          });
+        }
+      },
+      []
     );
 
   useEffect(() => {
-    let animationFrameId = 0;
-    let attempts = 0;
+    void loadStatus();
+  }, [
+    loadStatus,
+    location.pathname,
+    location.search
+  ]);
 
-    function resolveSidebar() {
-      const resolvedSidebar =
-        findSidebar();
+  useEffect(() => {
+    const handleWindowFocus =
+      () => {
+        void loadStatus();
+      };
 
-      if (resolvedSidebar) {
-        setSidebar(
-          resolvedSidebar
-        );
-
-        return;
-      }
-
-      attempts += 1;
-
-      if (attempts < 60) {
-        animationFrameId =
-          window.requestAnimationFrame(
-            resolveSidebar
-          );
-      }
-    }
-
-    resolveSidebar();
+    window.addEventListener(
+      "focus",
+      handleWindowFocus
+    );
 
     return () => {
-      window.cancelAnimationFrame(
-        animationFrameId
+      window.removeEventListener(
+        "focus",
+        handleWindowFocus
       );
     };
-  }, []);
+  }, [loadStatus]);
 
-  const active =
-    isBattleNetPage();
+  const title =
+    getActionTitle(
+      state
+    );
 
-  const action = (
-    <div
-      className={[
-        "battle-net-top-action",
-        sidebar
-          ? ""
-          : "battle-net-top-action-fallback"
-      ]
-        .filter(Boolean)
-        .join(" ")}
-    >
-      <a
-        aria-current={
-          active
-            ? "page"
-            : undefined
+  return (
+    <div className="battle-net-top-action">
+      <NavLink
+        aria-label={title}
+        className={({
+          isActive
+        }) =>
+          [
+            "battle-net-top-link",
+            `connection-${state.connectionState}`,
+            isActive
+              ? "active"
+              : ""
+          ]
+            .filter(Boolean)
+            .join(" ")
         }
-        aria-label="Battle.net verwalten"
-        className={[
-          "battle-net-top-link",
-          active
-            ? "active"
-            : ""
-        ]
-          .filter(Boolean)
-          .join(" ")}
-        href="/battlenet"
-        title="Battle.net verwalten"
+        title={title}
+        to="/battlenet"
       >
         <BattleNetIcon />
 
@@ -148,19 +191,20 @@ export function BattleNetTopAction() {
           aria-hidden="true"
           className="battle-net-top-indicator"
         />
-      </a>
+
+        {state.importedCharacterCount >
+          0 && (
+          <span
+            aria-hidden="true"
+            className="battle-net-character-count"
+          >
+            {
+              state
+                .importedCharacterCount
+            }
+          </span>
+        )}
+      </NavLink>
     </div>
-  );
-
-  if (sidebar) {
-    return createPortal(
-      action,
-      sidebar
-    );
-  }
-
-  return createPortal(
-    action,
-    document.body
   );
 }

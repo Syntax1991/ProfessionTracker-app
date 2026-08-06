@@ -1,50 +1,42 @@
-:where(
-  aside,
-  [data-app-sidebar],
-  .app-sidebar,
-  .sidebar,
-  .side-navigation,
-  .side-nav
-) {
-  position: relative;
+.sidebar-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content:
+    space-between;
+  gap: 12px;
+  padding:
+    4px 8px 30px;
 }
 
-:where(
-  aside,
-  [data-app-sidebar],
-  .app-sidebar,
-  .sidebar,
-  .side-navigation,
-  .side-nav
-)
-a[href="/battlenet"]:not(
-  .battle-net-top-link
-) {
-  display: none !important;
+.sidebar-header .brand {
+  min-width: 0;
+  padding: 0;
+}
+
+.brand-copy {
+  min-width: 0;
+}
+
+.brand-copy strong,
+.brand-copy span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .battle-net-top-action {
-  position: absolute;
-  top: 16px;
-  right: 12px;
-  z-index: 20;
-}
-
-.battle-net-top-action-fallback {
-  position: fixed;
-  top: 16px;
-  left: 128px;
+  flex: 0 0 auto;
 }
 
 .battle-net-top-link {
   position: relative;
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   display: grid;
   place-items: center;
   border:
     1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 11px;
   color: var(--text-secondary);
   background:
     var(--surface-elevated);
@@ -82,8 +74,8 @@ a[href="/battlenet"]:not(
 }
 
 .battle-net-top-icon {
-  width: 19px;
-  height: 19px;
+  width: 20px;
+  height: 20px;
   stroke: currentColor;
   stroke-width: 1.55;
   stroke-linecap: round;
@@ -99,29 +91,88 @@ a[href="/battlenet"]:not(
   position: absolute;
   right: 4px;
   bottom: 4px;
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
   border:
     1px solid
     var(--surface-elevated);
   border-radius: 999px;
   background: #7d8492;
+  transition:
+    background 150ms ease,
+    box-shadow 150ms ease;
 }
 
-.battle-net-top-link.active
+.connection-loading
   .battle-net-top-indicator {
-  background: #a97dff;
+  background: #7d8492;
+  animation:
+    battle-net-status-pulse
+    1.2s ease-in-out
+    infinite;
 }
 
-@media (max-width: 760px) {
-  .battle-net-top-action {
-    top: 11px;
-    right: 10px;
+.connection-connected
+  .battle-net-top-indicator {
+  background: #54d89b;
+  box-shadow:
+    0 0 0 3px
+    rgb(84 216 155 / 12%);
+}
+
+.connection-disconnected
+  .battle-net-top-indicator {
+  background: #d39b57;
+}
+
+.connection-unavailable
+  .battle-net-top-indicator {
+  background: #d96470;
+}
+
+.battle-net-character-count {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  min-width: 18px;
+  height: 18px;
+  display: grid;
+  place-items: center;
+  padding: 0 4px;
+  border:
+    2px solid
+    rgb(12 14 20);
+  border-radius: 999px;
+  color: #f4efff;
+  background: #7957b7;
+  font-size: 0.56rem;
+  font-weight: 850;
+  line-height: 1;
+}
+
+@keyframes battle-net-status-pulse {
+  0%,
+  100% {
+    opacity: 0.45;
   }
 
-  .battle-net-top-action-fallback {
-    position: fixed;
-    left: auto;
-    right: 12px;
+  50% {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 900px) {
+  .sidebar-header {
+    padding-right: 4px;
+  }
+}
+
+@media (max-width: 420px) {
+  .sidebar-header {
+    align-items: center;
+  }
+
+  .brand-copy {
+    max-width: 170px;
   }
 }
