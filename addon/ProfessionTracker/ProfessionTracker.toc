@@ -1,0 +1,12 @@
+## Interface: 120007
+## Title: Profession Tracker
+## Notes: Captures profession data for the Profession Tracker web application.
+## Author: Syntax1991
+## Version: 0.1.0
+## SavedVariables: ProfessionTrackerDB
+## X-Website: https://github.com/Syntax1991/ProfessionTracker-app
+
+Core.lua
+Professions.lua
+Character.lua
+Events.lua
