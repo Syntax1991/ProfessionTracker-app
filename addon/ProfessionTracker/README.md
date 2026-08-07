@@ -2,11 +2,27 @@
 
 This directory contains the in-game data collector for Profession Tracker.
 
-## Version 0.2.1
+## Version 0.3.0
 
-The addon captures profession specialization data from the currently opened Retail profession.
+Version 0.3.0 stores profession specialization data separately for every expansion skill line.
 
-Version 0.2.1 replaces the legacy TRADE_SKILL_UPDATE event with the Retail-compatible TRADE_SKILL_LIST_UPDATE event.
+This allows one profession to retain both current Midnight specialization data and older expansion data such as The War Within.
+
+## Expansion-aware structure
+
+A profession can contain multiple expansion snapshots.
+
+Example:
+
+    Alchemy
+      Midnight Alchemy
+        skillLineId: 2906
+        specializations: ...
+      Khaz Algar Alchemy
+        skillLineId: 2871
+        specializations: ...
+
+Opening and synchronizing one expansion no longer overwrites previously captured specialization data from another expansion.
 
 ## Architecture
 
@@ -16,69 +32,52 @@ Shared constants, helper functions and SavedVariables database access.
 
 SpecializationEntries.lua
 
-Reads trait entries and their definitions, spell IDs, names and metadata.
+Reads trait entries and their definitions.
 
 SpecializationTraits.lua
 
-Reads specialization trait nodes, invested ranks and tree currencies.
+Reads trait nodes, ranks and currencies.
 
 SpecializationTabs.lua
 
-Reads profession specialization tabs, root paths and their trait nodes.
+Reads specialization tabs and root paths.
 
 Specializations.lua
 
-Resolves the currently opened profession, specialization config and specialization tabs.
+Resolves the currently selected expansion profession skill line and captures its specialization configuration.
 
 Professions.lua
 
-Collects the two primary professions and preserves previously captured specialization data.
+Stores specialization snapshots per expansion skill line.
 
 Character.lua
 
-Builds and persists the current character snapshot.
+Builds and persists character snapshots.
 
 Events.lua
 
-Handles WoW profession events and slash commands.
+Handles profession events and slash commands.
 
-## Captured specialization data
+## Capturing multiple expansions
 
-The addon stores:
+For Midnight:
 
-- Expansion profession skill-line ID
-- Profession specialization config ID
-- Available profession knowledge
-- Specialization tab IDs
-- Specialization tab names
-- Trait tree IDs
-- Root path information
-- Trait node IDs
-- Node positions
-- Node availability
-- Purchased ranks
-- Active ranks
-- Current ranks
-- Maximum ranks
-- Total maximum ranks
-- Trait entries
-- Entry definitions
-- Spell IDs and names where available
-- Trait currency totals
-- Capture timestamps
-
-## Capturing specialization data
-
-For every profession on a character:
-
-    1. Open the profession window.
-    2. Wait until the profession UI has loaded.
+    1. Open the profession.
+    2. Select the Midnight profession section.
     3. Run /pt sync.
-    4. Open the second profession.
-    5. Run /pt sync.
-    6. Run /reload.
 
-Previously captured data for the other profession is preserved.
+For The War Within:
+
+    1. Switch the profession window to the Khaz Algar / The War Within section.
+    2. Run /pt sync.
+
+Repeat this for the second primary profession.
+
+Afterward run:
+
+    /reload
+
+The SavedVariables file will retain every captured expansion separately.
 
 ## SavedVariables
 

@@ -1,8 +1,8 @@
 local addonName, PT = ...
 
 PT.ADDON_NAME = addonName
-PT.ADDON_VERSION = "0.2.1"
-PT.SCHEMA_VERSION = 2
+PT.ADDON_VERSION = "0.3.0"
+PT.SCHEMA_VERSION = 3
 
 local regionNames = {
     [1] = "US",

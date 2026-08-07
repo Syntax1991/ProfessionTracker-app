@@ -1,5 +1,64 @@
 local _, PT = ...
 
+local function getProfessionInfo(
+    skillLineID
+)
+    if not C_TradeSkillUI then
+        return nil
+    end
+
+    if C_TradeSkillUI.GetProfessionInfoBySkillLineID then
+        local info =
+            C_TradeSkillUI.GetProfessionInfoBySkillLineID(
+                skillLineID
+            )
+
+        if info then
+            return info
+        end
+    end
+
+    if C_TradeSkillUI.GetChildProfessionInfo then
+        local currentSkillLineID =
+            nil
+
+        if C_TradeSkillUI.GetProfessionChildSkillLineID then
+            currentSkillLineID =
+                C_TradeSkillUI.GetProfessionChildSkillLineID()
+        end
+
+        if currentSkillLineID
+            == skillLineID
+        then
+            return C_TradeSkillUI.GetChildProfessionInfo()
+        end
+    end
+
+    return nil
+end
+
+local function getParentSkillLineID(
+    professionInfo
+)
+    if not professionInfo then
+        return nil
+    end
+
+    return professionInfo.parentProfessionID
+        or professionInfo.professionID
+end
+
+local function getParentProfessionName(
+    professionInfo
+)
+    if not professionInfo then
+        return nil
+    end
+
+    return professionInfo.parentProfessionName
+        or professionInfo.professionName
+end
+
 function PT.CollectProfessionSpecializations(
     skillLineID
 )
@@ -7,6 +66,7 @@ function PT.CollectProfessionSpecializations(
         or skillLineID == 0
         or not C_ProfSpecs
         or not C_Traits
+        or not C_ProfSpecs.SkillLineHasSpecialization
     then
         return nil
     end
@@ -29,6 +89,11 @@ function PT.CollectProfessionSpecializations(
         return result
     end
 
+    if not C_ProfSpecs.GetConfigIDForSkillLine then
+        result.available = false
+        return result
+    end
+
     local configID =
         C_ProfSpecs.GetConfigIDForSkillLine(
             skillLineID
@@ -45,19 +110,25 @@ function PT.CollectProfessionSpecializations(
     result.configId =
         configID
 
-    local currencyInfo =
-        C_ProfSpecs.GetCurrencyInfoForSkillLine(
-            skillLineID
-        )
+    if C_ProfSpecs.GetCurrencyInfoForSkillLine then
+        local currencyInfo =
+            C_ProfSpecs.GetCurrencyInfoForSkillLine(
+                skillLineID
+            )
 
-    if currencyInfo then
-        result.knowledge = {
-            available =
-                currencyInfo.numAvailable
-                or 0,
-            name =
-                currencyInfo.currencyName
-        }
+        if currencyInfo then
+            result.knowledge = {
+                available =
+                    currencyInfo.numAvailable
+                    or 0,
+                name =
+                    currencyInfo.currencyName
+            }
+        end
+    end
+
+    if not C_ProfSpecs.GetSpecTabIDsForSkillLine then
+        return result
     end
 
     local tabIDs =
@@ -66,7 +137,9 @@ function PT.CollectProfessionSpecializations(
         )
         or {}
 
-    for _, treeID in ipairs(tabIDs) do
+    for _, treeID in ipairs(
+        tabIDs
+    ) do
         local tab =
             PT.CollectProfessionTraitTab(
                 configID,
@@ -100,26 +173,32 @@ function PT.GetOpenProfessionContext()
         return nil
     end
 
-    local skillLineID,
-        skillLineDisplayName,
-        _,
-        _,
-        _,
-        parentSkillLineID,
-        parentSkillLineDisplayName =
-        C_TradeSkillUI.GetTradeSkillLine()
+    local professionInfo =
+        getProfessionInfo(
+            childSkillLineID
+        )
 
     return {
         skillLineId =
             childSkillLineID,
         displayedSkillLineId =
-            skillLineID,
+            childSkillLineID,
         displayName =
-            skillLineDisplayName,
+            professionInfo
+            and professionInfo.professionName
+            or nil,
+        expansionName =
+            professionInfo
+            and professionInfo.expansionName
+            or nil,
         parentSkillLineId =
-            parentSkillLineID,
+            getParentSkillLineID(
+                professionInfo
+            ),
         parentProfessionName =
-            parentSkillLineDisplayName
+            getParentProfessionName(
+                professionInfo
+            )
     }
 end
 
@@ -149,6 +228,9 @@ function PT.CollectOpenProfessionSpecializations()
     specializationData.displayName =
         context.displayName
 
+    specializationData.expansionName =
+        context.expansionName
+
     specializationData.capturedAt =
         time()
 
@@ -158,7 +240,10 @@ end
 function PT.IsOpenProfessionConfig(
     configID
 )
-    if not configID then
+    if not configID
+        or not C_ProfSpecs
+        or not C_ProfSpecs.GetConfigIDForSkillLine
+    then
         return false
     end
 

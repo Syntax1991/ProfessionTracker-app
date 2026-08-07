@@ -40,7 +40,7 @@ local function createProfessionSnapshot(
         skillModifier =
             skillModifier
             or 0,
-        specializations = {},
+        expansions = {},
         recipes = {}
     }
 end
@@ -65,6 +65,32 @@ local function indexExistingProfessions(
     return bySkillLineId
 end
 
+local function createLegacyExpansion(
+    existingProfession
+)
+    if not existingProfession
+        or not existingProfession.childSkillLineId
+    then
+        return nil
+    end
+
+    return {
+        skillLineId =
+            existingProfession.childSkillLineId,
+        configId =
+            existingProfession.specializationConfigId,
+        hasSpecialization =
+            existingProfession.hasSpecialization,
+        knowledge =
+            existingProfession.knowledge,
+        specializations =
+            existingProfession.specializations
+            or {},
+        capturedAt =
+            existingProfession.specializationCapturedAt
+    }
+end
+
 local function preserveCapturedData(
     profession,
     existingProfession
@@ -77,24 +103,34 @@ local function preserveCapturedData(
         existingProfession.recipes
         or {}
 
-    profession.specializations =
-        existingProfession.specializations
+    profession.expansions =
+        existingProfession.expansions
         or {}
 
-    profession.childSkillLineId =
-        existingProfession.childSkillLineId
+    local legacyExpansion =
+        createLegacyExpansion(
+            existingProfession
+        )
 
-    profession.specializationConfigId =
-        existingProfession.specializationConfigId
+    if legacyExpansion then
+        local legacyKey =
+            tostring(
+                legacyExpansion.skillLineId
+            )
 
-    profession.hasSpecialization =
-        existingProfession.hasSpecialization
+        if not profession.expansions[
+            legacyKey
+        ] then
+            profession.expansions[
+                legacyKey
+            ] =
+                legacyExpansion
+        end
+    end
 
-    profession.knowledge =
-        existingProfession.knowledge
-
-    profession.specializationCapturedAt =
-        existingProfession.specializationCapturedAt
+    profession.activeExpansionSkillLineId =
+        existingProfession.activeExpansionSkillLineId
+        or existingProfession.childSkillLineId
 end
 
 local function namesMatch(
@@ -107,8 +143,13 @@ local function namesMatch(
         return false
     end
 
-    return PT.NormalizeKeyPart(left)
-        == PT.NormalizeKeyPart(right)
+    return PT.NormalizeKeyPart(
+        left
+    )
+        ==
+        PT.NormalizeKeyPart(
+            right
+        )
 end
 
 local function matchesOpenProfession(
@@ -132,6 +173,32 @@ local function matchesOpenProfession(
     return false
 end
 
+local function createExpansionSnapshot(
+    specializationData
+)
+    return {
+        skillLineId =
+            specializationData.skillLineId,
+        displayName =
+            specializationData.displayName,
+        expansionName =
+            specializationData.expansionName,
+        configId =
+            specializationData.configId,
+        available =
+            specializationData.available,
+        hasSpecialization =
+            specializationData.hasSpecialization,
+        knowledge =
+            specializationData.knowledge,
+        specializations =
+            specializationData.tabs
+            or {},
+        capturedAt =
+            specializationData.capturedAt
+    }
+end
+
 local function applyOpenSpecializationData(
     professions
 )
@@ -153,24 +220,24 @@ local function applyOpenSpecializationData(
             profession,
             specializationData
         ) then
-            profession.childSkillLineId =
-                specializationData.skillLineId
-
-            profession.specializationConfigId =
-                specializationData.configId
-
-            profession.hasSpecialization =
-                specializationData.hasSpecialization
-
-            profession.knowledge =
-                specializationData.knowledge
-
-            profession.specializations =
-                specializationData.tabs
+            profession.expansions =
+                profession.expansions
                 or {}
 
-            profession.specializationCapturedAt =
-                specializationData.capturedAt
+            local expansionKey =
+                tostring(
+                    specializationData.skillLineId
+                )
+
+            profession.expansions[
+                expansionKey
+            ] =
+                createExpansionSnapshot(
+                    specializationData
+                )
+
+            profession.activeExpansionSkillLineId =
+                specializationData.skillLineId
 
             return
         end
@@ -225,7 +292,10 @@ function PT.CollectProfessions(
 
     table.sort(
         professions,
-        function(left, right)
+        function(
+            left,
+            right
+        )
             return left.name
                 < right.name
         end
