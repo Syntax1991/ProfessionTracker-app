@@ -91,6 +91,18 @@ local function createLegacyExpansion(
     }
 end
 
+local function compactExpansion(
+    expansion
+)
+    if PT.CompactStoredExpansion then
+        return PT.CompactStoredExpansion(
+            expansion
+        )
+    end
+
+    return expansion
+end
+
 local function preserveCapturedData(
     profession,
     existingProfession
@@ -103,9 +115,16 @@ local function preserveCapturedData(
         existingProfession.recipes
         or {}
 
-    profession.expansions =
-        existingProfession.expansions
-        or {}
+    if PT.CompactStoredExpansions then
+        profession.expansions =
+            PT.CompactStoredExpansions(
+                existingProfession.expansions
+            )
+    else
+        profession.expansions =
+            existingProfession.expansions
+            or {}
+    end
 
     local legacyExpansion =
         createLegacyExpansion(
@@ -124,7 +143,9 @@ local function preserveCapturedData(
             profession.expansions[
                 legacyKey
             ] =
-                legacyExpansion
+                compactExpansion(
+                    legacyExpansion
+                )
         end
     end
 
@@ -176,6 +197,12 @@ end
 local function createExpansionSnapshot(
     specializationData
 )
+    if PT.CreateCompactExpansionSnapshot then
+        return PT.CreateCompactExpansionSnapshot(
+            specializationData
+        )
+    end
+
     return {
         skillLineId =
             specializationData.skillLineId,
@@ -191,9 +218,6 @@ local function createExpansionSnapshot(
             specializationData.hasSpecialization,
         knowledge =
             specializationData.knowledge,
-        specializations =
-            specializationData.tabs
-            or {},
         capturedAt =
             specializationData.capturedAt
     }
@@ -292,10 +316,7 @@ function PT.CollectProfessions(
 
     table.sort(
         professions,
-        function(
-            left,
-            right
-        )
+        function(left, right)
             return left.name
                 < right.name
         end

@@ -2,41 +2,84 @@
 
 This directory contains the in-game data collector for Profession Tracker.
 
-## Version 0.3.0
+## Version 0.4.0
 
-Version 0.3.0 stores profession specialization data separately for every expansion skill line.
+Version 0.4.0 separates static profession specialization definitions from character-specific progress.
 
-This allows one profession to retain both current Midnight specialization data and older expansion data such as The War Within.
+Previous versions stored the complete specialization tree below every character and expansion.
 
-## Expansion-aware structure
+The same static tree would therefore be duplicated for every profession character.
 
-A profession can contain multiple expansion snapshots.
+## SavedVariables architecture
+
+Static profession data is stored once per expansion skill line.
+
+    ProfessionTrackerDB
+      professionCatalog
+        2906
+          Midnight Alchemy
+          tabs
+          nodes
+          entries
+          descriptions
+          icons
+
+Character-specific data contains only the actual progress.
+
+    ProfessionTrackerDB
+      characters
+        eu:antonidas:synmist
+          professions
+            Alchemy
+              expansions
+                2906
+                  knowledge
+                  tabStates
+                  nodeRanks
+
+A node that has no invested ranks does not need an entry in nodeRanks.
+
+## Multi-expansion support
+
+Expansion snapshots remain keyed by their expansion skill-line IDs.
 
 Example:
 
     Alchemy
-      Midnight Alchemy
-        skillLineId: 2906
-        specializations: ...
-      Khaz Algar Alchemy
-        skillLineId: 2871
-        specializations: ...
+      expansions
+        2906
+          Midnight Alchemy
+        2871
+          Khaz Algar Alchemy
 
-Opening and synchronizing one expansion no longer overwrites previously captured specialization data from another expansion.
+Midnight and The War Within profession progress can therefore coexist.
+
+## Automatic migration
+
+Version 0.3 expansion snapshots stored their complete tree in the character object.
+
+When version 0.4 refreshes that character:
+
+    1. The static specialization tree is copied to professionCatalog.
+    2. The character snapshot is converted to compact tabStates.
+    3. Only non-zero node progress is retained in nodeRanks.
+    4. Knowledge and expansion metadata remain on the character.
+
+No SavedVariables reset is required.
 
 ## Architecture
 
 Core.lua
 
-Shared constants, helper functions and SavedVariables database access.
+Shared constants, helper functions and database initialization.
 
 SpecializationEntries.lua
 
-Reads trait entries and their definitions.
+Reads specialization trait entry definitions.
 
 SpecializationTraits.lua
 
-Reads trait nodes, ranks and currencies.
+Reads specialization trait nodes, ranks and currencies.
 
 SpecializationTabs.lua
 
@@ -44,11 +87,19 @@ Reads specialization tabs and root paths.
 
 Specializations.lua
 
-Resolves the currently selected expansion profession skill line and captures its specialization configuration.
+Collects the currently selected profession expansion.
+
+SpecializationCatalog.lua
+
+Builds and stores the shared static profession tree catalog.
+
+SpecializationProgress.lua
+
+Builds compact character progress and migrates version 0.3 snapshots.
 
 Professions.lua
 
-Stores specialization snapshots per expansion skill line.
+Collects primary professions and keeps expansion-specific progress.
 
 Character.lua
 
@@ -58,42 +109,29 @@ Events.lua
 
 Handles profession events and slash commands.
 
-## Capturing multiple expansions
+## Capturing profession data
 
-For Midnight:
+Open the desired profession and expansion and run:
 
-    1. Open the profession.
-    2. Select the Midnight profession section.
-    3. Run /pt sync.
+    /pt sync
 
-For The War Within:
-
-    1. Switch the profession window to the Khaz Algar / The War Within section.
-    2. Run /pt sync.
-
-Repeat this for the second primary profession.
+Repeat that for every relevant profession and expansion.
 
 Afterward run:
 
     /reload
-
-The SavedVariables file will retain every captured expansion separately.
-
-## SavedVariables
-
-The account-wide table is:
-
-    ProfessionTrackerDB
-
-Typical path:
-
-    WTF\Account\<Account>\SavedVariables\ProfessionTracker.lua
 
 ## Commands
 
     /pt
     /pt status
     /pt sync
+
+## SavedVariables
+
+Typical path:
+
+    WTF\Account\<Account>\SavedVariables\ProfessionTracker.lua
 
 ## Development installation
 
