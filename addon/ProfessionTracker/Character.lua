@@ -98,7 +98,9 @@ function PT.RefreshCharacter(
 
     existingCharacter.professions =
         PT.CollectProfessions
-        and PT.CollectProfessions()
+        and PT.CollectProfessions(
+            existingCharacter.professions
+        )
         or {}
 
     existingCharacter.specializations =

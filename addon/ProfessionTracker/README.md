@@ -2,63 +2,97 @@
 
 This directory contains the in-game data collector for Profession Tracker.
 
+## Version 0.2.0
+
+The addon captures profession specialization data from the currently opened Retail profession.
+
 ## Architecture
 
-The addon is intentionally split into small modules.
-
 Core.lua
-Shared addon constants, helpers and SavedVariables database access.
+
+Shared constants, helper functions and SavedVariables database access.
+
+SpecializationEntries.lua
+
+Reads trait entries and their definitions, spell IDs, names and metadata.
+
+SpecializationTraits.lua
+
+Reads specialization trait nodes, invested ranks and tree currencies.
+
+SpecializationTabs.lua
+
+Reads profession specialization tabs, root paths and their trait nodes.
+
+Specializations.lua
+
+Resolves the currently opened profession, specialization config and specialization tabs.
 
 Professions.lua
-Collects the two primary professions and their basic skill data.
+
+Collects the two primary professions and preserves previously captured specialization data.
 
 Character.lua
-Builds the current character snapshot and stores it in ProfessionTrackerDB.
+
+Builds and persists the current character snapshot.
 
 Events.lua
-Handles WoW events and slash commands.
 
-## Current scope
+Handles WoW profession events and slash commands.
 
-Version 0.1.0 stores:
+## Captured specialization data
 
-- Character name
-- Realm
-- Region
-- Class
-- Character level
-- Two primary professions
-- Profession skill
-- Profession maximum skill
-- Profession skill-line ID
-- Profession skill modifier
-- Snapshot timestamp
-- Addon version
-- WoW client version
-- WoW build
-- WoW interface version
+The addon stores:
 
-Specialization nodes and known recipes are reserved in the data model and will be implemented separately.
+- Expansion profession skill-line ID
+- Profession specialization config ID
+- Available profession knowledge
+- Specialization tab IDs
+- Specialization tab names
+- Trait tree IDs
+- Root path information
+- Trait node IDs
+- Node positions
+- Node availability
+- Purchased ranks
+- Active ranks
+- Current ranks
+- Maximum ranks
+- Total maximum ranks
+- Trait entries
+- Entry definitions
+- Spell IDs and names where available
+- Trait currency totals
+- Capture timestamps
+
+## Capturing specialization data
+
+For every profession on a character:
+
+    1. Open the profession window.
+    2. Wait until the profession UI has loaded.
+    3. Run /pt sync.
+    4. Open the second profession.
+    5. Run /pt sync.
+    6. Run /reload.
+
+Previously captured data for the other profession is preserved.
 
 ## SavedVariables
 
-The account-wide SavedVariables table is named ProfessionTrackerDB.
+The account-wide table is:
 
-World of Warcraft writes it into the account SavedVariables directory.
+    ProfessionTrackerDB
 
-Typical relative location:
+Typical path:
 
     WTF\Account\<Account>\SavedVariables\ProfessionTracker.lua
 
-## In-game commands
+## Commands
 
     /pt
     /pt status
     /pt sync
-
-The sync command refreshes the current in-memory snapshot.
-
-Use /reload or log out afterward when the SavedVariables file needs to be written immediately.
 
 ## Development installation
 
@@ -66,6 +100,6 @@ Copy the ProfessionTracker directory into:
 
     World of Warcraft\_retail_\Interface\AddOns\
 
-The resulting manifest location must be:
+The manifest must be located at:
 
     World of Warcraft\_retail_\Interface\AddOns\ProfessionTracker\ProfessionTracker.toc

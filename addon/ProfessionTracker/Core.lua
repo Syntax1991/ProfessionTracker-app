@@ -1,8 +1,8 @@
 local addonName, PT = ...
 
 PT.ADDON_NAME = addonName
-PT.ADDON_VERSION = "0.1.0"
-PT.SCHEMA_VERSION = 1
+PT.ADDON_VERSION = "0.2.0"
+PT.SCHEMA_VERSION = 2
 
 local regionNames = {
     [1] = "US",
@@ -12,18 +12,14 @@ local regionNames = {
     [5] = "CN"
 }
 
-function PT.Print(
-    message
-)
+function PT.Print(message)
     print(
         "|cff9d78e8Profession Tracker:|r "
             .. tostring(message)
     )
 end
 
-function PT.NormalizeKeyPart(
-    value
-)
+function PT.NormalizeKeyPart(value)
     if value == nil then
         return "unknown"
     end
@@ -59,12 +55,8 @@ function PT.GetRegion()
             or 0
     end
 
-    return regionNames[
-        regionId
-    ]
-        or tostring(
-            regionId
-        )
+    return regionNames[regionId]
+        or tostring(regionId)
 end
 
 function PT.GetRealm()
