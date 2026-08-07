@@ -2,9 +2,11 @@
 
 This directory contains the in-game data collector for Profession Tracker.
 
-## Version 0.2.0
+## Version 0.2.1
 
 The addon captures profession specialization data from the currently opened Retail profession.
+
+Version 0.2.1 replaces the legacy TRADE_SKILL_UPDATE event with the Retail-compatible TRADE_SKILL_LIST_UPDATE event.
 
 ## Architecture
 

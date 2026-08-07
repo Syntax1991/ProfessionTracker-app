@@ -60,6 +60,7 @@ local function handleSlashCommand(
             PT.Print(
                 "Charakterdaten konnten nicht aktualisiert werden."
             )
+
             return
         end
 
@@ -141,6 +142,7 @@ local function handleEvent(
 
         PT.EnsureDatabase()
         initializeSlashCommands()
+
         return
     end
 
@@ -148,6 +150,7 @@ local function handleEvent(
         refreshCharacter(
             "login"
         )
+
         return
     end
 
@@ -155,6 +158,7 @@ local function handleEvent(
         refreshCharacter(
             "level-up"
         )
+
         return
     end
 
@@ -162,6 +166,7 @@ local function handleEvent(
         refreshCharacter(
             "skill-lines-changed"
         )
+
         return
     end
 
@@ -169,13 +174,15 @@ local function handleEvent(
         refreshCharacter(
             "trade-skill-show"
         )
+
         return
     end
 
-    if event == "TRADE_SKILL_UPDATE" then
+    if event == "TRADE_SKILL_LIST_UPDATE" then
         refreshCharacter(
-            "trade-skill-update"
+            "trade-skill-list-update"
         )
+
         return
     end
 
@@ -183,6 +190,7 @@ local function handleEvent(
         refreshCharacter(
             "trade-skill-data-source-changed"
         )
+
         return
     end
 
@@ -190,6 +198,7 @@ local function handleEvent(
         handleTraitConfigUpdated(
             argument
         )
+
         return
     end
 
@@ -197,6 +206,7 @@ local function handleEvent(
         refreshCharacter(
             "trade-skill-close"
         )
+
         return
     end
 
@@ -213,14 +223,16 @@ local events = {
     "PLAYER_LEVEL_UP",
     "SKILL_LINES_CHANGED",
     "TRADE_SKILL_SHOW",
-    "TRADE_SKILL_UPDATE",
+    "TRADE_SKILL_LIST_UPDATE",
     "TRADE_SKILL_DATA_SOURCE_CHANGED",
     "TRAIT_CONFIG_UPDATED",
     "TRADE_SKILL_CLOSE",
     "PLAYER_LOGOUT"
 }
 
-for _, event in ipairs(events) do
+for _, event in ipairs(
+    events
+) do
     eventFrame:RegisterEvent(
         event
     )
