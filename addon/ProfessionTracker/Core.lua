@@ -1,7 +1,7 @@
 local addonName, PT = ...
 
 PT.ADDON_NAME = addonName
-PT.ADDON_VERSION = "0.5.0"
+PT.ADDON_VERSION = "0.6.0"
 PT.SCHEMA_VERSION = 4
 
 local regionNames = {
@@ -146,7 +146,7 @@ function PT.PrintStatus()
 
     PT.Print(
         string.format(
-            "Version %s · %d gespeicherte Charaktere",
+            "Version %s · %d gespeicherte Charaktere · Auto-Sync aktiv",
             PT.ADDON_VERSION,
             characterCount
         )

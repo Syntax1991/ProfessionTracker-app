@@ -2,7 +2,7 @@
 ## Title: Profession Tracker
 ## Notes: Captures profession data for the Profession Tracker web application.
 ## Author: Syntax1991
-## Version: 0.5.0
+## Version: 0.6.0
 ## SavedVariables: ProfessionTrackerDB
 ## X-Website: https://github.com/Syntax1991/ProfessionTracker-app
 
@@ -13,6 +13,9 @@ SpecializationTabs.lua
 Specializations.lua
 SpecializationCatalog.lua
 SpecializationProgress.lua
+ProfessionAutoSyncCandidates.lua
+ProfessionAutoSync.lua
+ProfessionSnapshots.lua
 Recipes.lua
 Professions.lua
 Character.lua

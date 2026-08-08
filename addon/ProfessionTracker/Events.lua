@@ -3,6 +3,9 @@ local addonName, PT = ...
 local eventFrame =
     CreateFrame("Frame")
 
+local pendingRefreshTimer = nil
+local pendingRefreshReason = nil
+
 local function trimCommand(value)
     local command =
         string.lower(
@@ -16,20 +19,61 @@ local function trimCommand(value)
     )
 end
 
-local function getOpenProfessionName()
-    if not PT.GetOpenProfessionContext then
-        return nil
+local function cancelPendingRefresh()
+    if pendingRefreshTimer
+        and pendingRefreshTimer.Cancel
+    then
+        pendingRefreshTimer:Cancel()
     end
 
-    local context =
-        PT.GetOpenProfessionContext()
+    pendingRefreshTimer = nil
+end
 
-    if not context then
-        return nil
+local function refreshCharacter(
+    reason
+)
+    return PT.RefreshCharacter(
+        reason
+    )
+end
+
+local function runScheduledRefresh()
+    local reason =
+        pendingRefreshReason
+        or "automatic"
+
+    pendingRefreshTimer = nil
+    pendingRefreshReason = nil
+
+    refreshCharacter(
+        reason
+    )
+end
+
+local function scheduleRefresh(
+    reason,
+    delay
+)
+    pendingRefreshReason =
+        reason
+        or "automatic"
+
+    cancelPendingRefresh()
+
+    if C_Timer
+        and C_Timer.NewTimer
+    then
+        pendingRefreshTimer =
+            C_Timer.NewTimer(
+                delay
+                or 0.25,
+                runScheduledRefresh
+            )
+
+        return
     end
 
-    return context.displayName
-        or context.parentProfessionName
+    runScheduledRefresh()
 end
 
 local function handleSlashCommand(
@@ -48,11 +92,10 @@ local function handleSlashCommand(
     end
 
     if command == "sync" then
-        local openProfessionName =
-            getOpenProfessionName()
+        cancelPendingRefresh()
 
         local character =
-            PT.RefreshCharacter(
+            refreshCharacter(
                 "manual"
             )
 
@@ -64,22 +107,9 @@ local function handleSlashCommand(
             return
         end
 
-        if openProfessionName then
-            PT.Print(
-                string.format(
-                    "%s-%s aktualisiert · Spezialisierungs- und Rezeptdaten für %s erfasst. /reload schreibt die SavedVariables-Datei.",
-                    character.name,
-                    character.realm,
-                    openProfessionName
-                )
-            )
-
-            return
-        end
-
         PT.Print(
             string.format(
-                "%s-%s aktualisiert. Für Spezialisierungs- und Rezeptdaten zuerst den gewünschten Beruf öffnen.",
+                "%s-%s manuell aktualisiert. Auto-Sync ist weiterhin aktiv.",
                 character.name,
                 character.realm
             )
@@ -104,32 +134,6 @@ local function initializeSlashCommands()
         handleSlashCommand
 end
 
-local function refreshCharacter(
-    reason
-)
-    PT.RefreshCharacter(
-        reason
-    )
-end
-
-local function handleTraitConfigUpdated(
-    configID
-)
-    if not PT.IsOpenProfessionConfig then
-        return
-    end
-
-    if not PT.IsOpenProfessionConfig(
-        configID
-    ) then
-        return
-    end
-
-    refreshCharacter(
-        "profession-trait-config-updated"
-    )
-end
-
 local function handleEvent(
     _,
     event,
@@ -147,70 +151,89 @@ local function handleEvent(
     end
 
     if event == "PLAYER_LOGIN" then
-        refreshCharacter(
-            "login"
+        scheduleRefresh(
+            "login",
+            1.5
+        )
+
+        return
+    end
+
+    if event == "PLAYER_ENTERING_WORLD" then
+        scheduleRefresh(
+            "entering-world",
+            1.5
         )
 
         return
     end
 
     if event == "PLAYER_LEVEL_UP" then
-        refreshCharacter(
-            "level-up"
+        scheduleRefresh(
+            "level-up",
+            0.5
         )
 
         return
     end
 
     if event == "SKILL_LINES_CHANGED" then
-        refreshCharacter(
-            "skill-lines-changed"
+        scheduleRefresh(
+            "skill-lines-changed",
+            0.5
         )
 
         return
     end
 
     if event == "TRADE_SKILL_SHOW" then
-        refreshCharacter(
-            "trade-skill-show"
+        scheduleRefresh(
+            "trade-skill-show",
+            0.15
         )
 
         return
     end
 
     if event == "TRADE_SKILL_LIST_UPDATE" then
-        refreshCharacter(
-            "trade-skill-list-update"
+        scheduleRefresh(
+            "trade-skill-list-update",
+            0.25
         )
 
         return
     end
 
     if event == "TRADE_SKILL_DATA_SOURCE_CHANGED" then
-        refreshCharacter(
-            "trade-skill-data-source-changed"
+        scheduleRefresh(
+            "trade-skill-data-source-changed",
+            0.25
         )
 
         return
     end
 
     if event == "TRAIT_CONFIG_UPDATED" then
-        handleTraitConfigUpdated(
-            argument
+        scheduleRefresh(
+            "profession-trait-config-updated",
+            0.15
         )
 
         return
     end
 
     if event == "TRADE_SKILL_CLOSE" then
-        refreshCharacter(
-            "trade-skill-close"
+        scheduleRefresh(
+            "trade-skill-close",
+            0.25
         )
 
         return
     end
 
     if event == "PLAYER_LOGOUT" then
+        cancelPendingRefresh()
+
         refreshCharacter(
             "logout"
         )
@@ -220,6 +243,7 @@ end
 local events = {
     "ADDON_LOADED",
     "PLAYER_LOGIN",
+    "PLAYER_ENTERING_WORLD",
     "PLAYER_LEVEL_UP",
     "SKILL_LINES_CHANGED",
     "TRADE_SKILL_SHOW",

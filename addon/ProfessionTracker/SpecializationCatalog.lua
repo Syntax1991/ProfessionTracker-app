@@ -26,25 +26,35 @@ local function createCatalogEntry(entry)
     return {
         entryId =
             entry.entryId,
+
         type =
             entry.type,
+
         maxRanks =
             entry.maxRanks
             or 0,
+
         definitionId =
             entry.definitionId,
+
         spellId =
             entry.spellId,
+
         name =
             entry.name,
+
         subtext =
             entry.subtext,
+
         description =
             entry.description,
+
         icon =
             entry.icon,
+
         subType =
             entry.subType,
+
         conditionIds =
             copyArray(
                 entry.conditionIds
@@ -70,25 +80,32 @@ local function createCatalogNode(node)
     return {
         nodeId =
             node.nodeId,
+
         type =
             node.type,
+
         posX =
             node.posX
             or 0,
+
         posY =
             node.posY
             or 0,
+
         maxRanks =
             node.maxRanks
             or 0,
+
         totalMaxRanks =
             node.totalMaxRanks
             or node.maxRanks
             or 0,
+
         conditionIds =
             copyArray(
                 node.conditionIds
             ),
+
         entries =
             entries
     }
@@ -102,8 +119,10 @@ local function createRootPath(rootPath)
     return {
         id =
             rootPath.id,
+
         description =
             rootPath.description,
+
         source =
             rootPath.source
     }
@@ -127,18 +146,24 @@ local function createCatalogTab(tab)
     return {
         treeId =
             tab.treeId,
+
         name =
             tab.name,
+
         description =
             tab.description,
+
         rootNodeId =
             tab.rootNodeId,
+
         icon =
             tab.icon,
+
         rootPath =
             createRootPath(
                 tab.rootPath
             ),
+
         nodes =
             nodes
     }
@@ -164,16 +189,28 @@ local function createCatalog(
     return {
         skillLineId =
             specializationData.skillLineId,
+
         displayName =
             specializationData.displayName,
+
         expansionName =
             specializationData.expansionName,
+
+        parentSkillLineId =
+            specializationData.parentSkillLineId,
+
+        parentProfessionName =
+            specializationData.parentProfessionName,
+
         configId =
             specializationData.configId,
+
         hasSpecialization =
             specializationData.hasSpecialization,
+
         tabs =
             tabs,
+
         updatedAt =
             specializationData.capturedAt
             or time()
