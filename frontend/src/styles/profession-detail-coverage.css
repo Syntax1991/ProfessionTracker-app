@@ -3,12 +3,6 @@
   padding: 17px;
 }
 
-.profession-detail-coverage-section
-  + .profession-detail-coverage-section {
-  border-left:
-    1px solid var(--border);
-}
-
 .profession-detail-coverage-section header {
   display: flex;
   align-items: center;
@@ -39,7 +33,12 @@
 
 .profession-detail-coverage-section ul {
   display: grid;
-  gap: 7px;
+  grid-template-columns:
+    repeat(
+      auto-fit,
+      minmax(150px, 1fr)
+    );
+  gap: 8px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -51,8 +50,8 @@
   align-items: center;
   justify-content:
     space-between;
-  gap: 12px;
-  padding: 10px;
+  gap: 10px;
+  padding: 12px;
   border:
     1px solid var(--border);
   border-radius:
@@ -62,52 +61,24 @@
 }
 
 .profession-detail-coverage-section
-  li > div:first-child {
-  min-width: 0;
-}
-
-.profession-detail-coverage-section
-  li strong {
-  display: block;
-  font-size: 0.73rem;
-}
-
-.profession-detail-coverage-section
-  li small {
-  display: block;
-  overflow: hidden;
-  margin-top: 3px;
-  color: var(--text-muted);
-  font-size: 0.62rem;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  li > strong {
+  font-size: 0.76rem;
 }
 
 .profession-detail-entry-meta {
   flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.profession-detail-entry-meta span,
-.profession-detail-entry-meta > strong {
-  padding: 4px 6px;
-  border-radius: 999px;
-  font-size: 0.6rem;
-  white-space: nowrap;
 }
 
 .profession-detail-entry-meta span {
+  display: inline-flex;
+  padding: 4px 6px;
+  border-radius: 999px;
   color: #cdbcf4;
   background:
     var(--primary-soft);
-}
-
-.profession-detail-entry-meta > strong {
-  color: #a9edcd;
-  background:
-    var(--success-soft);
+  font-size: 0.58rem;
+  font-weight: 750;
+  white-space: nowrap;
 }
 
 .profession-detail-empty-list {
@@ -123,13 +94,4 @@
   font-size: 0.68rem;
   line-height: 1.45;
   text-align: center;
-}
-
-@media (max-width: 760px) {
-  .profession-detail-coverage-section
-    + .profession-detail-coverage-section {
-    border-top:
-      1px solid var(--border);
-    border-left: 0;
-  }
 }

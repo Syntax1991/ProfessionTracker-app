@@ -42,31 +42,16 @@ export function mapProfessionDetail(
       )
     );
 
-  const parentNodeIds =
-    new Set(
-      allNodes
-        .map(
-          (node) =>
-            node.parentNodeId
-        )
-        .filter(
-          (
-            parentNodeId
-          ): parentNodeId is string =>
-            parentNodeId !== null
-        )
-    );
-
   const characters =
     profession.assignments
-      .map((assignment) =>
-        mapProfessionCharacterCoverage(
-          assignment,
-          nodeById,
-          treeNameById,
-          parentNodeIds,
-          allNodes.length > 0
-        )
+      .map(
+        (assignment) =>
+          mapProfessionCharacterCoverage(
+            assignment,
+            nodeById,
+            treeNameById,
+            allNodes.length > 0
+          )
       )
       .sort(
         compareCharacterCoverage
@@ -76,9 +61,7 @@ export function mapProfessionDetail(
     characters.filter(
       (character) =>
         character.dataStatus ===
-          "TRACKED" ||
-        character.dataStatus ===
-          "PARTIAL"
+        "TRACKED"
     ).length;
 
   return {
@@ -141,11 +124,14 @@ function sumCoverageEntries(
   characters:
     ProfessionCharacterCoverage[],
   property:
-    "specializations" |
-    "slots"
+    | "specializations"
+    | "slots"
 ): number {
   return characters.reduce(
-    (total, character) =>
+    (
+      total,
+      character
+    ) =>
       total +
       character[property].length,
     0

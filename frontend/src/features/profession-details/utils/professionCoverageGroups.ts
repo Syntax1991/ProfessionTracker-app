@@ -1,6 +1,5 @@
 import type {
   ProfessionCharacterCoverage,
-  ProfessionCoverageEntry,
   ProfessionDetail
 } from "../types/professionDetail.types";
 
@@ -9,52 +8,46 @@ export type ProfessionCoverageCharacter = {
   name: string;
   realm: string;
   className: string;
-  rank: number;
-  maxRank: number | null;
   source: string;
 };
 
 export type ProfessionCoverageGroup = {
   id: string;
   name: string;
-  path: string;
   characters:
     ProfessionCoverageCharacter[];
 };
 
-export type ProfessionCoverageGroups = {
-  specializations:
-    ProfessionCoverageGroup[];
-  slots:
-    ProfessionCoverageGroup[];
-};
-
-type CoverageProperty =
-  | "specializations"
-  | "slots";
+const slotOrder = new Map(
+  [
+    "Head",
+    "Neck",
+    "Shoulder",
+    "Back",
+    "Chest",
+    "Wrist",
+    "Hands",
+    "Waist",
+    "Legs",
+    "Feet",
+    "Finger",
+    "Trinket",
+    "Main Hand",
+    "Off Hand",
+    "Two-Hand"
+  ].map(
+    (
+      name,
+      index
+    ) => [
+      name,
+      index
+    ] as const
+  )
+);
 
 export function createProfessionCoverageGroups(
   detail: ProfessionDetail
-): ProfessionCoverageGroups {
-  return {
-    specializations:
-      createCoverageGroups(
-        detail.characters,
-        "specializations"
-      ),
-
-    slots:
-      createCoverageGroups(
-        detail.characters,
-        "slots"
-      )
-  };
-}
-
-function createCoverageGroups(
-  characters:
-    ProfessionCharacterCoverage[],
-  property: CoverageProperty
 ): ProfessionCoverageGroup[] {
   const groups =
     new Map<
@@ -64,18 +57,12 @@ function createCoverageGroups(
 
   for (
     const coverage of
-    characters
+    detail.characters
   ) {
-    for (
-      const entry of
-      coverage[property]
-    ) {
-      addCoverageEntry(
-        groups,
-        coverage,
-        entry
-      );
-    }
+    addCharacterSlots(
+      groups,
+      coverage
+    );
   }
 
   return [
@@ -89,83 +76,66 @@ function createCoverageGroups(
     );
 }
 
-function addCoverageEntry(
+function addCharacterSlots(
   groups:
     Map<
       string,
       ProfessionCoverageGroup
     >,
   coverage:
-    ProfessionCharacterCoverage,
-  entry:
-    ProfessionCoverageEntry
+    ProfessionCharacterCoverage
 ): void {
-  const existingGroup =
-    groups.get(
-      entry.id
-    );
-
-  const character =
-    createCoverageCharacter(
-      coverage,
-      entry
-    );
-
-  if (existingGroup) {
-    existingGroup.characters.push(
-      character
-    );
-
-    return;
-  }
-
-  groups.set(
-    entry.id,
-    {
+  for (
+    const slot of
+    coverage.slots
+  ) {
+    const character = {
       id:
-        entry.id,
-
+        coverage.character.id,
       name:
-        entry.name,
+        coverage.character.name,
+      realm:
+        coverage.character.realm,
+      className:
+        coverage.character.className,
+      source:
+        slot.source
+    };
 
-      path:
-        entry.path,
+    const existingGroup =
+      groups.get(
+        slot.id
+      );
 
-      characters: [
-        character
-      ]
+    if (existingGroup) {
+      if (
+        !existingGroup.characters.some(
+          (existingCharacter) =>
+            existingCharacter.id ===
+            character.id
+        )
+      ) {
+        existingGroup.characters.push(
+          character
+        );
+      }
+
+      continue;
     }
-  );
-}
 
-function createCoverageCharacter(
-  coverage:
-    ProfessionCharacterCoverage,
-  entry:
-    ProfessionCoverageEntry
-): ProfessionCoverageCharacter {
-  return {
-    id:
-      coverage.character.id,
-
-    name:
-      coverage.character.name,
-
-    realm:
-      coverage.character.realm,
-
-    className:
-      coverage.character.className,
-
-    rank:
-      entry.rank,
-
-    maxRank:
-      entry.maxRank,
-
-    source:
-      entry.source
-  };
+    groups.set(
+      slot.id,
+      {
+        id:
+          slot.id,
+        name:
+          slot.name,
+        characters: [
+          character
+        ]
+      }
+    );
+  }
 }
 
 function sortGroupCharacters(
@@ -177,7 +147,10 @@ function sortGroupCharacters(
 
     characters:
       [...group.characters].sort(
-        (left, right) =>
+        (
+          left,
+          right
+        ) =>
           left.name.localeCompare(
             right.name,
             "de"
@@ -191,11 +164,29 @@ function sortGroupCharacters(
 }
 
 function compareGroups(
-  left: ProfessionCoverageGroup,
-  right: ProfessionCoverageGroup
+  left:
+    ProfessionCoverageGroup,
+  right:
+    ProfessionCoverageGroup
 ): number {
-  return left.path.localeCompare(
-    right.path,
-    "de"
+  const leftOrder =
+    slotOrder.get(
+      left.name
+    ) ??
+    Number.MAX_SAFE_INTEGER;
+
+  const rightOrder =
+    slotOrder.get(
+      right.name
+    ) ??
+    Number.MAX_SAFE_INTEGER;
+
+  return (
+    leftOrder -
+      rightOrder ||
+    left.name.localeCompare(
+      right.name,
+      "en"
+    )
   );
 }

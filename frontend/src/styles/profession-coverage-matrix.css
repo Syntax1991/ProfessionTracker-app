@@ -4,8 +4,7 @@
 
 .profession-coverage-matrix-grid {
   display: grid;
-  grid-template-columns:
-    repeat(2, minmax(0, 1fr));
+  grid-template-columns: 1fr;
   gap: 16px;
 }
 
@@ -29,7 +28,7 @@
 }
 
 .profession-coverage-group-panel-header p {
-  max-width: 440px;
+  max-width: 520px;
   margin-top: 5px;
   color: var(--text-secondary);
   font-size: 0.68rem;
@@ -52,6 +51,11 @@
 
 .profession-coverage-group-list {
   display: grid;
+  grid-template-columns:
+    repeat(
+      auto-fit,
+      minmax(250px, 1fr)
+    );
   gap: 10px;
   padding: 14px;
 }
@@ -68,7 +72,7 @@
 
 .profession-coverage-group > header {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content:
     space-between;
   gap: 12px;
@@ -78,16 +82,7 @@
 }
 
 .profession-coverage-group h4 {
-  font-size: 0.78rem;
-}
-
-.profession-coverage-group
-  > header
-  p {
-  margin-top: 3px;
-  color: var(--text-muted);
-  font-size: 0.62rem;
-  line-height: 1.4;
+  font-size: 0.8rem;
 }
 
 .profession-coverage-group
@@ -169,29 +164,17 @@
 
 .profession-coverage-character-meta {
   flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.profession-coverage-character-meta span,
-.profession-coverage-character-meta strong {
-  padding: 4px 6px;
-  border-radius: 999px;
-  font-size: 0.58rem;
-  white-space: nowrap;
 }
 
 .profession-coverage-character-meta span {
+  display: inline-flex;
+  padding: 4px 6px;
+  border-radius: 999px;
   color: #cdbcf4;
   background:
     var(--primary-soft);
-}
-
-.profession-coverage-character-meta strong {
-  color: #a9edcd;
-  background:
-    var(--success-soft);
+  font-size: 0.58rem;
+  white-space: nowrap;
 }
 
 .profession-coverage-group-empty {
@@ -210,16 +193,9 @@
   text-align: center;
 }
 
-@media (max-width: 1000px) {
-  .profession-coverage-matrix-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
 @media (max-width: 560px) {
-  .profession-coverage-group
-    > header {
-    flex-direction: column;
+  .profession-coverage-group-list {
+    grid-template-columns: 1fr;
   }
 
   .profession-coverage-group
@@ -227,9 +203,5 @@
     > a {
     align-items: flex-start;
     flex-direction: column;
-  }
-
-  .profession-coverage-character-meta {
-    width: 100%;
   }
 }

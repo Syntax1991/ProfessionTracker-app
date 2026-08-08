@@ -3,6 +3,10 @@ import type {
   ProfessionCharacterCoverage,
   ProfessionCoverageEntry
 } from "./profession-detail.types.js";
+import {
+  compareProfessionSlotNames,
+  resolveProfessionSlot
+} from "./profession-slot.mapper.js";
 
 type DetailRecord =
   NonNullable<
@@ -25,14 +29,16 @@ export function mapProfessionCharacterCoverage(
   assignment: DetailAssignment,
   nodeById: Map<string, DetailNode>,
   treeNameById: Map<string, string>,
-  parentNodeIds: Set<string>,
   hasCatalog: boolean
 ): ProfessionCharacterCoverage {
   const specializations:
     ProfessionCoverageEntry[] = [];
 
-  const slots:
-    ProfessionCoverageEntry[] = [];
+  const slotsByKey =
+    new Map<
+      string,
+      ProfessionCoverageEntry
+    >();
 
   for (
     const progress of
@@ -51,38 +57,76 @@ export function mapProfessionCharacterCoverage(
       continue;
     }
 
-    const entry =
+    const slot =
+      resolveProfessionSlot(
+        node.name
+      );
+
+    if (slot) {
+      const slotEntry =
+        createCoverageEntry(
+          node,
+          progress.rank,
+          progress.source,
+          nodeById,
+          treeNameById,
+          {
+            id:
+              `slot:${slot.key}`,
+            name:
+              slot.name
+          }
+        );
+
+      const existingSlot =
+        slotsByKey.get(
+          slot.key
+        );
+
+      if (
+        !existingSlot ||
+        isPreferredCoverageEntry(
+          slotEntry,
+          existingSlot
+        )
+      ) {
+        slotsByKey.set(
+          slot.key,
+          slotEntry
+        );
+      }
+
+      continue;
+    }
+
+    specializations.push(
       createCoverageEntry(
         node,
         progress.rank,
         progress.source,
         nodeById,
         treeNameById
-      );
-
-    if (
-      parentNodeIds.has(
-        node.id
       )
-    ) {
-      specializations.push(
-        entry
-      );
-    }
-    else {
-      slots.push(
-        entry
-      );
-    }
+    );
   }
 
   specializations.sort(
     compareCoverageEntries
   );
 
-  slots.sort(
-    compareCoverageEntries
-  );
+  const slots =
+    [
+      ...slotsByKey.values()
+    ].sort(
+      (
+        left,
+        right
+      ) =>
+        compareProfessionSlotNames(
+          left.name,
+          right.name
+        )
+    );
 
   return {
     characterProfessionId:
@@ -134,13 +178,19 @@ function createCoverageEntry(
   rank: number,
   source: string,
   nodeById: Map<string, DetailNode>,
-  treeNameById: Map<string, string>
+  treeNameById: Map<string, string>,
+  identity?: {
+    id: string;
+    name: string;
+  }
 ): ProfessionCoverageEntry {
   return {
     id:
+      identity?.id ??
       node.id,
 
     name:
+      identity?.name ??
       node.name,
 
     path:
@@ -171,7 +221,8 @@ function createNodePath(
     new Set<string>();
 
   let currentNode:
-    DetailNode | undefined = node;
+    DetailNode | undefined =
+      node;
 
   while (
     currentNode &&
@@ -202,7 +253,8 @@ function createNodePath(
 
   if (
     treeName &&
-    pathParts[0] !== treeName
+    pathParts[0] !==
+      treeName
   ) {
     pathParts.unshift(
       treeName
@@ -212,6 +264,34 @@ function createNodePath(
   return pathParts.join(
     " → "
   );
+}
+
+function isPreferredCoverageEntry(
+  candidate:
+    ProfessionCoverageEntry,
+  existing:
+    ProfessionCoverageEntry
+): boolean {
+  if (
+    candidate.rank !==
+    existing.rank
+  ) {
+    return (
+      candidate.rank >
+      existing.rank
+    );
+  }
+
+  if (
+    candidate.source ===
+      "ADDON" &&
+    existing.source !==
+      "ADDON"
+  ) {
+    return true;
+  }
+
+  return false;
 }
 
 function resolveDataStatus(

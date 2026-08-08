@@ -27,38 +27,27 @@ export function ProfessionCoverageMatrix({
       <div className="profession-detail-section-heading">
         <div>
           <p className="eyebrow">
-            WER KANN WAS?
+            SLOTABDECKUNG
           </p>
 
           <h2>
-            Berufsabdeckung
+            Herstellbare Slots
           </h2>
         </div>
 
         <p>
-          Spezialisierungen und Slots werden
-          nach den Charakteren gruppiert, die
-          sie aktuell abdecken.
+          Angezeigt werden nur tatsächliche
+          Equipment-Slots wie Head, Chest,
+          Wrist, Legs oder Feet.
         </p>
       </div>
 
       <div className="profession-coverage-matrix-grid">
         <ProfessionCoverageGroupList
-          description="Aktive Spezialisierungspfade und die zugehörigen Charaktere."
-          emptyText="Für diesen Beruf wurden noch keine Spezialisierungen erfasst."
-          groups={
-            groups.specializations
-          }
-          title="Spezialisierungen"
-        />
-
-        <ProfessionCoverageGroupList
-          description="Herstellbare Slots und alle Charaktere, die den Slot abdecken."
-          emptyText="Für diesen Beruf wurden noch keine herstellbaren Slots erfasst."
-          groups={
-            groups.slots
-          }
-          title="Herstellbare Slots"
+          description="Pro Slot siehst du alle Charaktere, die ihn aktuell abdecken."
+          emptyText="Für diesen Beruf wurden noch keine tatsächlichen Equipment-Slots erfasst."
+          groups={groups}
+          title="Slots"
         />
       </div>
     </section>

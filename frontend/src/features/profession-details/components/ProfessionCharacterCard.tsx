@@ -11,7 +11,7 @@ const statusLabels = {
   TRACKED:
     "Slots erfasst",
   PARTIAL:
-    "Teilweise erfasst",
+    "Keine Slotdaten",
   UNTRACKED:
     "Nicht erfasst",
   NO_CATALOG:
@@ -72,7 +72,9 @@ export function ProfessionCharacterCard({
 
       <div className="profession-character-stats">
         <div>
-          <span>Berufsskill</span>
+          <span>
+            Berufsskill
+          </span>
 
           <strong>
             {coverage.skill}
@@ -80,7 +82,9 @@ export function ProfessionCharacterCard({
         </div>
 
         <div>
-          <span>Wissenspunkte</span>
+          <span>
+            Wissenspunkte
+          </span>
 
           <strong>
             {coverage.knowledgePoints}
@@ -88,19 +92,9 @@ export function ProfessionCharacterCard({
         </div>
 
         <div>
-          <span>Spezialisierungen</span>
-
-          <strong>
-            {
-              coverage
-                .specializations
-                .length
-            }
-          </strong>
-        </div>
-
-        <div>
-          <span>Slots</span>
+          <span>
+            Slots
+          </span>
 
           <strong>
             {coverage.slots.length}
@@ -108,32 +102,9 @@ export function ProfessionCharacterCard({
         </div>
       </div>
 
-      {coverage.specializationSummary && (
-        <div className="profession-character-api-summary">
-          <span>
-            Battle.net
-          </span>
-
-          <p>
-            {
-              coverage
-                .specializationSummary
-            }
-          </p>
-        </div>
-      )}
-
       <div className="profession-character-coverage-grid">
         <ProfessionCoverageList
-          emptyText="Für diesen Charakter ist noch keine Spezialisierung ausgewählt."
-          entries={
-            coverage.specializations
-          }
-          title="Spezialisierungen"
-        />
-
-        <ProfessionCoverageList
-          emptyText="Für diesen Charakter sind noch keine herstellbaren Slots erfasst."
+          emptyText="Für diesen Charakter wurden noch keine tatsächlichen Equipment-Slots erkannt."
           entries={
             coverage.slots
           }

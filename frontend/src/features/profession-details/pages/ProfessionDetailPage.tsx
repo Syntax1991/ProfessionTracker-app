@@ -82,7 +82,7 @@ export function ProfessionDetailPage() {
           </Link>
         }
         description={
-          `${getCategoryLabel(detail.profession.category)} · Charaktere, Spezialisierungen und herstellbare Slots`
+          `${getCategoryLabel(detail.profession.category)} · Equipment-Slot-Abdeckung deiner Crafter`
         }
         eyebrow="BERUFSDETAIL"
         title={
@@ -116,7 +116,7 @@ export function ProfessionDetailPage() {
 
         <article className="panel profession-detail-summary-card">
           <span>
-            Erfasst
+            Mit Slotdaten
           </span>
 
           <strong>
@@ -127,30 +127,13 @@ export function ProfessionDetailPage() {
           </strong>
 
           <small>
-            mit Spezialisierungsdaten
+            mit erkanntem Equipment-Slot
           </small>
         </article>
 
         <article className="panel profession-detail-summary-card">
           <span>
-            Spezialisierungen
-          </span>
-
-          <strong>
-            {
-              detail.summary
-                .specializationCount
-            }
-          </strong>
-
-          <small>
-            aktive Pfade
-          </small>
-        </article>
-
-        <article className="panel profession-detail-summary-card">
-          <span>
-            Slots
+            Slotabdeckungen
           </span>
 
           <strong>
@@ -161,7 +144,7 @@ export function ProfessionDetailPage() {
           </strong>
 
           <small>
-            erfasste Slotabdeckungen
+            über alle Crafter
           </small>
         </article>
       </section>
@@ -187,7 +170,9 @@ export function ProfessionDetailPage() {
               detail.summary
                 .missingCharacterCount
             }
-            {" Charaktere besitzen noch keine vollständigen Slotdaten."}
+            {
+              " Charaktere besitzen noch keine erkannten Slotdaten."
+            }
           </p>
         </div>
 

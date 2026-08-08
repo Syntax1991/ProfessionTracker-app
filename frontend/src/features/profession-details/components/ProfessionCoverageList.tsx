@@ -1,20 +1,13 @@
-import type { ProfessionCoverageEntry } from "../types/professionDetail.types";
+import type {
+  ProfessionCoverageEntry
+} from "../types/professionDetail.types";
 
 type ProfessionCoverageListProps = {
   title: string;
   emptyText: string;
-  entries: ProfessionCoverageEntry[];
+  entries:
+    ProfessionCoverageEntry[];
 };
-
-function formatRank(
-  entry: ProfessionCoverageEntry
-): string {
-  if (entry.maxRank === null) {
-    return `Rang ${entry.rank}`;
-  }
-
-  return `${entry.rank}/${entry.maxRank}`;
-}
 
 export function ProfessionCoverageList({
   title,
@@ -42,26 +35,14 @@ export function ProfessionCoverageList({
           {entries.map(
             (entry) => (
               <li key={entry.id}>
-                <div>
-                  <strong>
-                    {entry.name}
-                  </strong>
-
-                  <small>
-                    {entry.path}
-                  </small>
-                </div>
+                <strong>
+                  {entry.name}
+                </strong>
 
                 <div className="profession-detail-entry-meta">
                   <span>
                     {entry.source}
                   </span>
-
-                  <strong>
-                    {formatRank(
-                      entry
-                    )}
-                  </strong>
                 </div>
               </li>
             )

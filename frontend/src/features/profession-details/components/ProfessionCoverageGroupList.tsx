@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import type {
-  ProfessionCoverageCharacter,
   ProfessionCoverageGroup
 } from "../utils/professionCoverageGroups";
 
@@ -11,21 +10,6 @@ type ProfessionCoverageGroupListProps = {
   groups:
     ProfessionCoverageGroup[];
 };
-
-function formatRank(
-  character:
-    ProfessionCoverageCharacter
-): string {
-  if (
-    character.maxRank === null
-  ) {
-    return `Rang ${character.rank}`;
-  }
-
-  return (
-    `${character.rank}/${character.maxRank}`
-  );
-}
 
 export function ProfessionCoverageGroupList({
   title,
@@ -64,22 +48,12 @@ export function ProfessionCoverageGroupList({
                 key={group.id}
               >
                 <header>
-                  <div>
-                    <h4>
-                      {group.name}
-                    </h4>
-
-                    <p>
-                      {group.path}
-                    </p>
-                  </div>
+                  <h4>
+                    {group.name}
+                  </h4>
 
                   <span>
-                    {
-                      group
-                        .characters
-                        .length
-                    }
+                    {group.characters.length}
                     {" Crafter"}
                   </span>
                 </header>
@@ -99,38 +73,20 @@ export function ProfessionCoverageGroupList({
                         >
                           <div>
                             <strong>
-                              {
-                                character
-                                  .name
-                              }
+                              {character.name}
                             </strong>
 
                             <span>
-                              {
-                                character
-                                  .className
-                              }
+                              {character.className}
                               {" · "}
-                              {
-                                character
-                                  .realm
-                              }
+                              {character.realm}
                             </span>
                           </div>
 
                           <div className="profession-coverage-character-meta">
                             <span>
-                              {
-                                character
-                                  .source
-                              }
+                              {character.source}
                             </span>
-
-                            <strong>
-                              {formatRank(
-                                character
-                              )}
-                            </strong>
                           </div>
                         </Link>
                       </li>

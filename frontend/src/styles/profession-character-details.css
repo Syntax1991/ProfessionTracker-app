@@ -1,7 +1,7 @@
 .profession-detail-summary-grid {
   display: grid;
   grid-template-columns:
-    repeat(4, minmax(0, 1fr));
+    repeat(3, minmax(0, 1fr));
   gap: 12px;
 }
 
@@ -45,8 +45,11 @@
 }
 
 .profession-detail-section-heading > p {
+  max-width: 540px;
   color: var(--text-secondary);
   font-size: 0.74rem;
+  line-height: 1.5;
+  text-align: right;
 }
 
 .profession-character-list {
@@ -123,7 +126,7 @@
 .profession-character-stats {
   display: grid;
   grid-template-columns:
-    repeat(4, minmax(0, 1fr));
+    repeat(3, minmax(0, 1fr));
   border-bottom:
     1px solid var(--border);
 }
@@ -149,55 +152,26 @@
   margin-top: 4px;
 }
 
-.profession-character-api-summary {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 11px 18px;
-  border-bottom:
-    1px solid var(--border);
-  background:
-    rgb(128 88 221 / 6%);
-}
-
-.profession-character-api-summary span {
-  padding: 4px 7px;
-  border-radius: 999px;
-  color: #cdbcf4;
-  background:
-    var(--primary-soft);
-  font-size: 0.61rem;
-  font-weight: 800;
-}
-
-.profession-character-api-summary p {
-  color: var(--text-secondary);
-  font-size: 0.7rem;
-}
-
 .profession-character-coverage-grid {
   display: grid;
-  grid-template-columns:
-    repeat(2, minmax(0, 1fr));
+  grid-template-columns: 1fr;
 }
 
-@media (max-width: 1150px) {
+@media (max-width: 900px) {
   .profession-detail-summary-grid {
-    grid-template-columns:
-      repeat(2, minmax(0, 1fr));
+    grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 760px) {
-  .profession-detail-summary-grid,
-  .profession-character-coverage-grid {
-    grid-template-columns: 1fr;
-  }
-
   .profession-detail-section-heading,
   .profession-character-card-header {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .profession-detail-section-heading > p {
+    text-align: left;
   }
 
   .profession-character-header-actions {
@@ -205,24 +179,6 @@
     justify-content: space-between;
   }
 
-  .profession-character-stats {
-    grid-template-columns:
-      repeat(2, minmax(0, 1fr));
-  }
-
-  .profession-character-stats
-    > div:nth-child(2) {
-    border-right: 0;
-  }
-
-  .profession-character-stats
-    > div:nth-child(-n + 2) {
-    border-bottom:
-      1px solid var(--border);
-  }
-}
-
-@media (max-width: 520px) {
   .profession-character-stats {
     grid-template-columns: 1fr;
   }
@@ -233,8 +189,7 @@
       1px solid var(--border);
   }
 
-  .profession-character-stats
-    > div:last-child {
+  .profession-character-stats > div:last-child {
     border-bottom: 0;
   }
 }
