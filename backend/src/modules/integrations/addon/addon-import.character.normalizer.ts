@@ -1,9 +1,8 @@
+import { normalizeExpansion } from "./addon-import.expansion.normalizer.js";
 import type {
   AddonCharacter,
   AddonExpansion,
-  AddonNodeProgress,
   AddonProfession,
-  LuaTable,
   LuaValue
 } from "./addon-import.types.js";
 import {
@@ -15,149 +14,13 @@ import {
   unixTimestampToIso
 } from "./addon-import.lua-utils.js";
 
-function normalizeProgress(
-  tabStates:
-    LuaTable | null
-): AddonNodeProgress[] {
-  const progress:
-    AddonNodeProgress[] = [];
-
-  for (
-    const stateValue of
-    numericValues(tabStates)
-  ) {
-    const state =
-      asTable(stateValue);
-
-    if (!state) {
-      continue;
-    }
-
-    const externalTreeId =
-      asNumber(state.treeId);
-
-    const nodeRanks =
-      asTable(state.nodeRanks);
-
-    if (
-      externalTreeId === null ||
-      !nodeRanks
-    ) {
-      continue;
-    }
-
-    for (
-      const [
-        nodeKey,
-        rankValue
-      ] of Object.entries(nodeRanks)
-    ) {
-      const rankState =
-        asTable(rankValue);
-
-      const externalNodeId =
-        Number(nodeKey);
-
-      const rank =
-        asNumber(
-          rankState?.ranksPurchased
-        ) ??
-        0;
-
-      if (
-        !Number.isFinite(
-          externalNodeId
-        ) ||
-        rank <= 0
-      ) {
-        continue;
-      }
-
-      progress.push({
-        externalTreeId,
-        externalNodeId,
-        rank
-      });
-    }
-  }
-
-  return progress;
-}
-
-function normalizeExpansion(
-  key: string,
-  value: LuaValue
-): AddonExpansion | null {
-  const expansion =
-    asTable(value);
-
-  if (!expansion) {
-    return null;
-  }
-
-  const skillLineId =
-    asNumber(
-      expansion.skillLineId
-    ) ??
-    Number(key);
-
-  if (
-    !Number.isFinite(
-      skillLineId
-    )
-  ) {
-    return null;
-  }
-
-  const progress =
-    normalizeProgress(
-      asTable(
-        expansion.tabStates
-      )
-    );
-
-  const knowledge =
-    asTable(
-      expansion.knowledge
-    );
-
-  const investedKnowledge =
-    progress.reduce(
-      (total, entry) =>
-        total + entry.rank,
-      0
-    );
-
-  return {
-    skillLineId,
-    displayName:
-      asString(
-        expansion.displayName
-      ) ??
-      `Skill line ${skillLineId}`,
-    expansionName:
-      asString(
-        expansion.expansionName
-      ),
-    knowledgeAvailable:
-      asNumber(
-        knowledge?.available
-      ) ??
-      0,
-    investedKnowledge,
-    progress,
-    capturedAt:
-      unixTimestampToIso(
-        expansion.capturedAt
-      )
-  };
-}
-
 function normalizeProfession(
   value: LuaValue
 ): AddonProfession | null {
   const profession =
-    asTable(value);
+    asTable(
+      value
+    );
 
   if (!profession) {
     return null;
@@ -174,7 +37,8 @@ function normalizeProfession(
       profession.expansions
     );
 
-  const expansions =
+  const expansions:
+    AddonExpansion[] =
     expansionTable
       ? Object.entries(
           expansionTable
@@ -196,7 +60,10 @@ function normalizeProfession(
               expansion !== null
           )
           .sort(
-            (left, right) =>
+            (
+              left,
+              right
+            ) =>
               left.skillLineId -
               right.skillLineId
           )
@@ -241,7 +108,9 @@ export function normalizeCharacter(
   value: LuaValue
 ): AddonCharacter | null {
   const character =
-    asTable(value);
+    asTable(
+      value
+    );
 
   if (!character) {
     return null;
@@ -266,14 +135,20 @@ export function normalizeCharacter(
   return {
     key,
     name:
-      asString(character.name) ??
+      asString(
+        character.name
+      ) ??
       key,
     realm:
-      asString(character.realm) ??
+      asString(
+        character.realm
+      ) ??
       "Unknown",
     region:
       (
-        asString(character.region) ??
+        asString(
+          character.region
+        ) ??
         "EU"
       ).toLowerCase(),
     className:
@@ -282,7 +157,9 @@ export function normalizeCharacter(
       ) ??
       "Unknown",
     level:
-      asNumber(character.level) ??
+      asNumber(
+        character.level
+      ) ??
       0,
     snapshotReason:
       asString(

@@ -65,7 +65,9 @@ function normalizeNode(
   const externalNodeId =
     asNumber(node.nodeId);
 
-  if (externalNodeId === null) {
+  if (
+    externalNodeId === null
+  ) {
     return null;
   }
 
@@ -75,18 +77,39 @@ function normalizeNode(
       7
     );
 
+  /*
+   * ranksPurchased is a node-level WoW value.
+   * Therefore its maximum must also come from
+   * the node and not only from the rank entry.
+   *
+   * Example:
+   * node.maxRanks = 31
+   * rank-entry.maxRanks = 30
+   * ranksPurchased = 31
+   */
+  const maxRank =
+    asNumber(
+      node.maxRanks
+    ) ??
+    asNumber(
+      node.totalMaxRanks
+    ) ??
+    asNumber(
+      entry?.maxRanks
+    );
+
   return {
     externalNodeId,
     name:
-      asString(entry?.name) ??
+      asString(
+        entry?.name
+      ) ??
       `Node ${externalNodeId}`,
     description:
       asString(
         entry?.description
       ),
-    maxRank:
-      asNumber(entry?.maxRanks) ??
-      asNumber(node.maxRanks),
+    maxRank,
     sortOrder,
     isRoot:
       externalNodeId ===
@@ -106,9 +129,13 @@ function normalizeTree(
   }
 
   const externalTreeId =
-    asNumber(tree.treeId);
+    asNumber(
+      tree.treeId
+    );
 
-  if (externalTreeId === null) {
+  if (
+    externalTreeId === null
+  ) {
     return null;
   }
 
@@ -119,10 +146,15 @@ function normalizeTree(
 
   const nodes =
     numericValues(
-      asTable(tree.nodes)
+      asTable(
+        tree.nodes
+      )
     )
       .map(
-        (node, index) =>
+        (
+          node,
+          index
+        ) =>
           normalizeNode(
             node,
             rootNodeExternalId,
@@ -139,7 +171,9 @@ function normalizeTree(
   return {
     externalTreeId,
     name:
-      asString(tree.name) ??
+      asString(
+        tree.name
+      ) ??
       `Tree ${externalTreeId}`,
     description:
       asString(
@@ -178,10 +212,15 @@ export function normalizeCatalog(
 
   const trees =
     numericValues(
-      asTable(catalog.tabs)
+      asTable(
+        catalog.tabs
+      )
     )
       .map(
-        (tree, index) =>
+        (
+          tree,
+          index
+        ) =>
           normalizeTree(
             tree,
             (index + 1) * 10
