@@ -25,4 +25,25 @@ export class AddonImportController {
       )
     );
   };
+
+  importSavedVariables:
+    RequestHandler = async (
+      request,
+      response
+    ) => {
+      const source =
+        addonSavedVariablesSchema.parse(
+          request.body
+        );
+
+      const result =
+        await this.service
+          .importSavedVariables(
+            source
+          );
+
+      response.json(
+        result
+      );
+    };
 }

@@ -130,3 +130,17 @@ export type AddonImportPreview = {
     investedKnowledge: number;
   };
 };
+
+export type AddonImportResult = {
+  addonVersion: string;
+  schemaVersion: number;
+  importedAt: string;
+  processed: {
+    catalogs: number;
+    trees: number;
+    specializationNodes: number;
+    characters: number;
+    professionAssignments: number;
+    progressEntries: number;
+  };
+};
