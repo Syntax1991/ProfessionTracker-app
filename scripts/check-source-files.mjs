@@ -9,7 +9,8 @@ const maximumLines = 350;
 const sourceRoots = [
   "backend/src",
   "frontend/src",
-  "addon/ProfessionTracker"
+  "addon/ProfessionTracker",
+  "scripts"
 ];
 
 const checkedExtensions =
@@ -18,7 +19,10 @@ const checkedExtensions =
     ".tsx",
     ".css",
     ".lua",
-    ".toc"
+    ".toc",
+    ".mjs",
+    ".js",
+    ".cjs"
   ]);
 
 async function findSourceFiles(
@@ -84,9 +88,7 @@ async function findSourceFiles(
 const sourceGroups =
   await Promise.all(
     sourceRoots.map(
-      (
-        sourceRoot
-      ) =>
+      (sourceRoot) =>
         findSourceFiles(
           sourceRoot
         )
@@ -127,8 +129,7 @@ for (
 }
 
 if (
-  violations.length >
-  0
+  violations.length > 0
 ) {
   console.error(
     `Source files may not exceed ${maximumLines} lines.`
