@@ -6,7 +6,56 @@ local eventFrame =
 local pendingRefreshTimer = nil
 local pendingRefreshReason = nil
 
-local function trimCommand(value)
+local automaticRefreshEvents = {
+    PLAYER_LOGIN = {
+        reason = "login",
+        delay = 1.5
+    },
+
+    PLAYER_ENTERING_WORLD = {
+        reason = "entering-world",
+        delay = 1.5
+    },
+
+    PLAYER_LEVEL_UP = {
+        reason = "level-up",
+        delay = 0.5
+    },
+
+    SKILL_LINES_CHANGED = {
+        reason = "skill-lines-changed",
+        delay = 0.5
+    },
+
+    TRADE_SKILL_SHOW = {
+        reason = "trade-skill-show",
+        delay = 0.15
+    },
+
+    TRADE_SKILL_LIST_UPDATE = {
+        reason = "trade-skill-list-update",
+        delay = 0.25
+    },
+
+    TRADE_SKILL_DATA_SOURCE_CHANGED = {
+        reason = "trade-skill-data-source-changed",
+        delay = 0.25
+    },
+
+    TRAIT_CONFIG_UPDATED = {
+        reason = "profession-trait-config-updated",
+        delay = 0.15
+    },
+
+    TRADE_SKILL_CLOSE = {
+        reason = "trade-skill-close",
+        delay = 0.25
+    }
+}
+
+local function trimCommand(
+    value
+)
     local command =
         string.lower(
             value
@@ -37,6 +86,105 @@ local function refreshCharacter(
     )
 end
 
+local function getProfessionCount(
+    character
+)
+    if not character
+        or type(
+            character.professions
+        ) ~= "table"
+    then
+        return 0
+    end
+
+    return #character.professions
+end
+
+local function getProfessionLabel(
+    professionCount
+)
+    if professionCount == 1 then
+        return "Beruf"
+    end
+
+    return "Berufe"
+end
+
+local function printSyncCompleted(
+    label,
+    character
+)
+    local professionCount =
+        getProfessionCount(
+            character
+        )
+
+    PT.Print(
+        string.format(
+            "%s abgeschlossen · %s-%s · %d %s aktualisiert.",
+            label,
+            character.name
+                or "Unknown",
+            character.realm
+                or "Unknown",
+            professionCount,
+            getProfessionLabel(
+                professionCount
+            )
+        )
+    )
+end
+
+local function runRefresh(
+    reason,
+    label,
+    announce
+)
+    if announce then
+        PT.Print(
+            label
+                .. " gestartet …"
+        )
+    end
+
+    local success,
+        character =
+        pcall(
+            refreshCharacter,
+            reason
+        )
+
+    if not success then
+        PT.Print(
+            label
+                .. " fehlgeschlagen: "
+                .. tostring(
+                    character
+                )
+        )
+
+        return nil
+    end
+
+    if not character then
+        PT.Print(
+            label
+                .. " fehlgeschlagen."
+        )
+
+        return nil
+    end
+
+    if announce then
+        printSyncCompleted(
+            label,
+            character
+        )
+    end
+
+    return character
+end
+
 local function runScheduledRefresh()
     local reason =
         pendingRefreshReason
@@ -45,8 +193,10 @@ local function runScheduledRefresh()
     pendingRefreshTimer = nil
     pendingRefreshReason = nil
 
-    refreshCharacter(
-        reason
+    runRefresh(
+        reason,
+        "Auto-Sync",
+        true
     )
 end
 
@@ -94,25 +244,10 @@ local function handleSlashCommand(
     if command == "sync" then
         cancelPendingRefresh()
 
-        local character =
-            refreshCharacter(
-                "manual"
-            )
-
-        if not character then
-            PT.Print(
-                "Charakterdaten konnten nicht aktualisiert werden."
-            )
-
-            return
-        end
-
-        PT.Print(
-            string.format(
-                "%s-%s manuell aktualisiert. Auto-Sync ist weiterhin aktiv.",
-                character.name,
-                character.realm
-            )
+        runRefresh(
+            "manual",
+            "Manueller Sync",
+            true
         )
 
         return
@@ -134,128 +269,70 @@ local function initializeSlashCommands()
         handleSlashCommand
 end
 
+local function handleAddonLoaded(
+    loadedAddonName
+)
+    if loadedAddonName ~= addonName then
+        return
+    end
+
+    PT.EnsureDatabase()
+    initializeSlashCommands()
+end
+
+local function handleLogout()
+    cancelPendingRefresh()
+
+    runRefresh(
+        "logout",
+        "Auto-Sync",
+        false
+    )
+end
+
 local function handleEvent(
     _,
     event,
     argument
 )
     if event == "ADDON_LOADED" then
-        if argument ~= addonName then
-            return
-        end
-
-        PT.EnsureDatabase()
-        initializeSlashCommands()
-
-        return
-    end
-
-    if event == "PLAYER_LOGIN" then
-        scheduleRefresh(
-            "login",
-            1.5
-        )
-
-        return
-    end
-
-    if event == "PLAYER_ENTERING_WORLD" then
-        scheduleRefresh(
-            "entering-world",
-            1.5
-        )
-
-        return
-    end
-
-    if event == "PLAYER_LEVEL_UP" then
-        scheduleRefresh(
-            "level-up",
-            0.5
-        )
-
-        return
-    end
-
-    if event == "SKILL_LINES_CHANGED" then
-        scheduleRefresh(
-            "skill-lines-changed",
-            0.5
-        )
-
-        return
-    end
-
-    if event == "TRADE_SKILL_SHOW" then
-        scheduleRefresh(
-            "trade-skill-show",
-            0.15
-        )
-
-        return
-    end
-
-    if event == "TRADE_SKILL_LIST_UPDATE" then
-        scheduleRefresh(
-            "trade-skill-list-update",
-            0.25
-        )
-
-        return
-    end
-
-    if event == "TRADE_SKILL_DATA_SOURCE_CHANGED" then
-        scheduleRefresh(
-            "trade-skill-data-source-changed",
-            0.25
-        )
-
-        return
-    end
-
-    if event == "TRAIT_CONFIG_UPDATED" then
-        scheduleRefresh(
-            "profession-trait-config-updated",
-            0.15
-        )
-
-        return
-    end
-
-    if event == "TRADE_SKILL_CLOSE" then
-        scheduleRefresh(
-            "trade-skill-close",
-            0.25
+        handleAddonLoaded(
+            argument
         )
 
         return
     end
 
     if event == "PLAYER_LOGOUT" then
-        cancelPendingRefresh()
-
-        refreshCharacter(
-            "logout"
-        )
+        handleLogout()
+        return
     end
+
+    local configuration =
+        automaticRefreshEvents[
+            event
+        ]
+
+    if not configuration then
+        return
+    end
+
+    scheduleRefresh(
+        configuration.reason,
+        configuration.delay
+    )
 end
 
-local events = {
-    "ADDON_LOADED",
-    "PLAYER_LOGIN",
-    "PLAYER_ENTERING_WORLD",
-    "PLAYER_LEVEL_UP",
-    "SKILL_LINES_CHANGED",
-    "TRADE_SKILL_SHOW",
-    "TRADE_SKILL_LIST_UPDATE",
-    "TRADE_SKILL_DATA_SOURCE_CHANGED",
-    "TRAIT_CONFIG_UPDATED",
-    "TRADE_SKILL_CLOSE",
-    "PLAYER_LOGOUT"
-}
+eventFrame:RegisterEvent(
+    "ADDON_LOADED"
+)
 
-for _, event in ipairs(
-    events
+eventFrame:RegisterEvent(
+    "PLAYER_LOGOUT"
+)
+
+for event in pairs(
+    automaticRefreshEvents
 ) do
     eventFrame:RegisterEvent(
         event
