@@ -314,6 +314,12 @@ function PT.CollectProfessions(
         professions
     )
 
+    if PT.ApplyOpenProfessionRecipes then
+        PT.ApplyOpenProfessionRecipes(
+            professions
+        )
+    end
+
     table.sort(
         professions,
         function(left, right)

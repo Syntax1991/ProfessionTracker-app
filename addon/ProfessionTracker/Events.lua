@@ -67,7 +67,7 @@ local function handleSlashCommand(
         if openProfessionName then
             PT.Print(
                 string.format(
-                    "%s-%s aktualisiert · Spezialisierungsdaten für %s erfasst. /reload schreibt die SavedVariables-Datei.",
+                    "%s-%s aktualisiert · Spezialisierungs- und Rezeptdaten für %s erfasst. /reload schreibt die SavedVariables-Datei.",
                     character.name,
                     character.realm,
                     openProfessionName
@@ -79,7 +79,7 @@ local function handleSlashCommand(
 
         PT.Print(
             string.format(
-                "%s-%s aktualisiert. Für Spezialisierungsdaten zuerst den gewünschten Beruf öffnen.",
+                "%s-%s aktualisiert. Für Spezialisierungs- und Rezeptdaten zuerst den gewünschten Beruf öffnen.",
                 character.name,
                 character.realm
             )

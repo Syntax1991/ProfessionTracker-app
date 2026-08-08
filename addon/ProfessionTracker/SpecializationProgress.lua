@@ -196,6 +196,10 @@ function PT.CreateCompactExpansionSnapshot(
             createTabStates(
                 specializationData.tabs
             ),
+        recipeIds =
+            specializationData.recipeIds,
+        recipeCapturedAt =
+            specializationData.recipeCapturedAt,
         capturedAt =
             specializationData.capturedAt
     }
@@ -227,6 +231,10 @@ function PT.CompactStoredExpansion(
             expansion.hasSpecialization,
         knowledge =
             expansion.knowledge,
+        recipeIds =
+            expansion.recipeIds,
+        recipeCapturedAt =
+            expansion.recipeCapturedAt,
         capturedAt =
             expansion.capturedAt,
         tabs =

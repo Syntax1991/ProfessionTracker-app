@@ -1,7 +1,7 @@
 local addonName, PT = ...
 
 PT.ADDON_NAME = addonName
-PT.ADDON_VERSION = "0.4.0"
+PT.ADDON_VERSION = "0.5.0"
 PT.SCHEMA_VERSION = 4
 
 local regionNames = {
@@ -112,6 +112,10 @@ function PT.EnsureDatabase()
 
     ProfessionTrackerDB.professionCatalog =
         ProfessionTrackerDB.professionCatalog
+        or {}
+
+    ProfessionTrackerDB.recipeCatalog =
+        ProfessionTrackerDB.recipeCatalog
         or {}
 
     ProfessionTrackerDB.client =
