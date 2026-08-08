@@ -7,19 +7,10 @@ local pendingTimer = nil
 local pendingReason = nil
 local pendingAnnounce = false
 
+local hasAnnouncedInitialSync =
+    false
+
 local automaticRefreshEvents = {
-    PLAYER_LOGIN = {
-        reason = "login",
-        delay = 1.5,
-        announce = true
-    },
-
-    PLAYER_ENTERING_WORLD = {
-        reason = "entering-world",
-        delay = 1.5,
-        announce = false
-    },
-
     PLAYER_LEVEL_UP = {
         reason = "level-up",
         delay = 0.5,
@@ -116,15 +107,17 @@ local function runScheduledRefresh()
 end
 
 local function scheduleRefresh(
-    configuration
+    reason,
+    delay,
+    announce
 )
     pendingAnnounce =
         pendingAnnounce
-        or configuration.announce
+        or announce
         == true
 
     pendingReason =
-        configuration.reason
+        reason
         or "automatic"
 
     cancelPendingTimer()
@@ -134,7 +127,7 @@ local function scheduleRefresh(
     then
         pendingTimer =
             C_Timer.NewTimer(
-                configuration.delay
+                delay
                 or 0.25,
                 runScheduledRefresh
             )
@@ -143,6 +136,20 @@ local function scheduleRefresh(
     end
 
     runScheduledRefresh()
+end
+
+local function scheduleInitialSync()
+    local announce =
+        not hasAnnouncedInitialSync
+
+    hasAnnouncedInitialSync =
+        true
+
+    scheduleRefresh(
+        "entering-world",
+        1.5,
+        announce
+    )
 end
 
 local function handleSlashCommand(
@@ -199,6 +206,25 @@ local function handleAddonLoaded(
     initializeSlashCommands()
 end
 
+local function handleAutomaticRefresh(
+    event
+)
+    local configuration =
+        automaticRefreshEvents[
+            event
+        ]
+
+    if not configuration then
+        return
+    end
+
+    scheduleRefresh(
+        configuration.reason,
+        configuration.delay,
+        configuration.announce
+    )
+end
+
 local function handleLogout()
     clearPendingRefresh()
 
@@ -222,25 +248,27 @@ local function handleEvent(
         return
     end
 
+    if event == "PLAYER_ENTERING_WORLD" then
+        scheduleInitialSync()
+        return
+    end
+
     if event == "PLAYER_LOGOUT" then
         handleLogout()
         return
     end
 
-    local configuration =
-        automaticRefreshEvents[
-            event
-        ]
-
-    if configuration then
-        scheduleRefresh(
-            configuration
-        )
-    end
+    handleAutomaticRefresh(
+        event
+    )
 end
 
 eventFrame:RegisterEvent(
     "ADDON_LOADED"
+)
+
+eventFrame:RegisterEvent(
+    "PLAYER_ENTERING_WORLD"
 )
 
 eventFrame:RegisterEvent(
