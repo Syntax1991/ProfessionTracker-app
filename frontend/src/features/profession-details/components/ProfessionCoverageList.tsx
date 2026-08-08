@@ -9,6 +9,22 @@ type ProfessionCoverageListProps = {
     ProfessionCoverageEntry[];
 };
 
+function formatPoints(
+  entry:
+    ProfessionCoverageEntry
+): string {
+  if (
+    entry.maxRank ===
+    null
+  ) {
+    return `${entry.rank}`;
+  }
+
+  return (
+    `${entry.rank}/${entry.maxRank}`
+  );
+}
+
 export function ProfessionCoverageList({
   title,
   emptyText,
@@ -35,14 +51,26 @@ export function ProfessionCoverageList({
           {entries.map(
             (entry) => (
               <li key={entry.id}>
-                <strong>
-                  {entry.name}
-                </strong>
+                <div className="profession-slot-name">
+                  <strong>
+                    {entry.name}
+                  </strong>
+
+                  <small>
+                    Skillpunkte
+                  </small>
+                </div>
 
                 <div className="profession-detail-entry-meta">
                   <span>
                     {entry.source}
                   </span>
+
+                  <strong className="profession-slot-points">
+                    {formatPoints(
+                      entry
+                    )}
+                  </strong>
                 </div>
               </li>
             )

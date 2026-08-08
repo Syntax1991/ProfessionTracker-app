@@ -8,6 +8,8 @@ export type ProfessionCoverageCharacter = {
   name: string;
   realm: string;
   className: string;
+  rank: number;
+  maxRank: number | null;
   source: string;
 };
 
@@ -18,33 +20,35 @@ export type ProfessionCoverageGroup = {
     ProfessionCoverageCharacter[];
 };
 
-const slotOrder = new Map(
-  [
-    "Head",
-    "Neck",
-    "Shoulder",
-    "Back",
-    "Chest",
-    "Wrist",
-    "Hands",
-    "Waist",
-    "Legs",
-    "Feet",
-    "Finger",
-    "Trinket",
-    "Main Hand",
-    "Off Hand",
-    "Two-Hand"
-  ].map(
-    (
-      name,
-      index
-    ) => [
-      name,
-      index
-    ] as const
-  )
-);
+const slotOrder =
+  new Map(
+    [
+      "Head",
+      "Neck",
+      "Shoulder",
+      "Back",
+      "Chest",
+      "Wrist",
+      "Hands",
+      "Waist",
+      "Legs",
+      "Feet",
+      "Finger",
+      "Trinket",
+      "Main Hand",
+      "Off Hand",
+      "Two-Hand"
+    ].map(
+      (
+        name,
+        index
+      ) =>
+        [
+          name,
+          index
+        ] as const
+    )
+  );
 
 export function createProfessionCoverageGroups(
   detail: ProfessionDetail
@@ -89,18 +93,29 @@ function addCharacterSlots(
     const slot of
     coverage.slots
   ) {
-    const character = {
-      id:
-        coverage.character.id,
-      name:
-        coverage.character.name,
-      realm:
-        coverage.character.realm,
-      className:
-        coverage.character.className,
-      source:
-        slot.source
-    };
+    const character:
+      ProfessionCoverageCharacter = {
+        id:
+          coverage.character.id,
+
+        name:
+          coverage.character.name,
+
+        realm:
+          coverage.character.realm,
+
+        className:
+          coverage.character.className,
+
+        rank:
+          slot.rank,
+
+        maxRank:
+          slot.maxRank,
+
+        source:
+          slot.source
+      };
 
     const existingGroup =
       groups.get(
@@ -128,8 +143,10 @@ function addCharacterSlots(
       {
         id:
           slot.id,
+
         name:
           slot.name,
+
         characters: [
           character
         ]

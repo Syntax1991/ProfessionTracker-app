@@ -64,11 +64,13 @@ export class ProfessionDetailRepository {
               },
 
               select: {
+                rank: true,
                 source: true,
 
                 node: {
                   select: {
-                    name: true
+                    name: true,
+                    maxRank: true
                   }
                 }
               }

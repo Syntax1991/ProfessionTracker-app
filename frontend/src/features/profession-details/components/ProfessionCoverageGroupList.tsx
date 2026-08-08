@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import type {
+  ProfessionCoverageCharacter,
   ProfessionCoverageGroup
 } from "../utils/professionCoverageGroups";
 
@@ -10,6 +11,22 @@ type ProfessionCoverageGroupListProps = {
   groups:
     ProfessionCoverageGroup[];
 };
+
+function formatPoints(
+  character:
+    ProfessionCoverageCharacter
+): string {
+  if (
+    character.maxRank ===
+    null
+  ) {
+    return `${character.rank}`;
+  }
+
+  return (
+    `${character.rank}/${character.maxRank}`
+  );
+}
 
 export function ProfessionCoverageGroupList({
   title,
@@ -87,6 +104,12 @@ export function ProfessionCoverageGroupList({
                             <span>
                               {character.source}
                             </span>
+
+                            <strong>
+                              {formatPoints(
+                                character
+                              )}
+                            </strong>
                           </div>
                         </Link>
                       </li>

@@ -164,17 +164,30 @@
 
 .profession-coverage-character-meta {
   flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
-.profession-coverage-character-meta span {
+.profession-coverage-character-meta span,
+.profession-coverage-character-meta strong {
   display: inline-flex;
   padding: 4px 6px;
   border-radius: 999px;
+  font-size: 0.58rem;
+  white-space: nowrap;
+}
+
+.profession-coverage-character-meta span {
   color: #cdbcf4;
   background:
     var(--primary-soft);
-  font-size: 0.58rem;
-  white-space: nowrap;
+}
+
+.profession-coverage-character-meta strong {
+  color: #a9edcd;
+  background:
+    var(--success-soft);
 }
 
 .profession-coverage-group-empty {
@@ -203,5 +216,9 @@
     > a {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .profession-coverage-character-meta {
+    width: 100%;
   }
 }

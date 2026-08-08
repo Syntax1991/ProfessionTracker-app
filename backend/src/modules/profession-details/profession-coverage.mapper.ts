@@ -57,6 +57,12 @@ export function mapProfessionCharacterCoverage(
         name:
           slot.name,
 
+        rank:
+          progress.rank,
+
+        maxRank:
+          progress.node.maxRank,
+
         source:
           progress.source
       };
@@ -138,6 +144,40 @@ function shouldReplaceSlot(
   existing:
     ProfessionCoverageEntry
 ): boolean {
+  if (
+    candidate.rank !==
+    existing.rank
+  ) {
+    return (
+      candidate.rank >
+      existing.rank
+    );
+  }
+
+  if (
+    candidate.maxRank !==
+    existing.maxRank
+  ) {
+    if (
+      candidate.maxRank ===
+      null
+    ) {
+      return false;
+    }
+
+    if (
+      existing.maxRank ===
+      null
+    ) {
+      return true;
+    }
+
+    return (
+      candidate.maxRank >
+      existing.maxRank
+    );
+  }
+
   return (
     candidate.source ===
       "ADDON" &&
