@@ -5,6 +5,7 @@ import {
 } from "react-router-dom";
 import { CharactersPage } from "../features/characters/pages/CharactersPage";
 import { DashboardPage } from "../features/dashboard/pages/DashboardPage";
+import { AddonImportPage } from "../features/integrations/pages/AddonImportPage";
 import { BattleNetPage } from "../features/integrations/pages/BattleNetPage";
 import { ProfessionDetailPage } from "../features/profession-details/pages/ProfessionDetailPage";
 import { ProfessionsPage } from "../features/professions/pages/ProfessionsPage";
@@ -54,6 +55,13 @@ export function AppRouter() {
           path="professions/:professionId"
           element={
             <ProfessionDetailPage />
+          }
+        />
+
+        <Route
+          path="addon"
+          element={
+            <AddonImportPage />
           }
         />
 

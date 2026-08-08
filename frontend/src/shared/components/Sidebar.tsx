@@ -13,6 +13,10 @@ const navigationItems = [
   {
     label: "Berufe",
     path: "/professions"
+  },
+  {
+    label: "Addon-Sync",
+    path: "/addon"
   }
 ];
 
