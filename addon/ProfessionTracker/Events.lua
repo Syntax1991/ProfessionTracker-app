@@ -3,53 +3,63 @@ local addonName, PT = ...
 local eventFrame =
     CreateFrame("Frame")
 
-local pendingRefreshTimer = nil
-local pendingRefreshReason = nil
+local pendingTimer = nil
+local pendingReason = nil
+local pendingAnnounce = false
 
 local automaticRefreshEvents = {
     PLAYER_LOGIN = {
         reason = "login",
-        delay = 1.5
+        delay = 1.5,
+        announce = true
     },
 
     PLAYER_ENTERING_WORLD = {
         reason = "entering-world",
-        delay = 1.5
+        delay = 1.5,
+        announce = false
     },
 
     PLAYER_LEVEL_UP = {
         reason = "level-up",
-        delay = 0.5
+        delay = 0.5,
+        announce = false
     },
 
     SKILL_LINES_CHANGED = {
         reason = "skill-lines-changed",
-        delay = 0.5
+        delay = 0.5,
+        announce = true
     },
 
     TRADE_SKILL_SHOW = {
         reason = "trade-skill-show",
-        delay = 0.15
+        delay = 0.15,
+        announce = false
     },
 
     TRADE_SKILL_LIST_UPDATE = {
         reason = "trade-skill-list-update",
-        delay = 0.25
+        delay = 0.25,
+        announce = false
     },
 
     TRADE_SKILL_DATA_SOURCE_CHANGED = {
         reason = "trade-skill-data-source-changed",
-        delay = 0.25
+        delay = 0.25,
+        announce = false
     },
 
     TRAIT_CONFIG_UPDATED = {
         reason = "profession-trait-config-updated",
-        delay = 0.15
+        delay = 0.15,
+        announce = false
     },
 
     TRADE_SKILL_CLOSE = {
         reason = "trade-skill-close",
-        delay = 0.25
+        delay = 0.25,
+        announce = false
     }
 }
 
@@ -68,154 +78,63 @@ local function trimCommand(
     )
 end
 
-local function cancelPendingRefresh()
-    if pendingRefreshTimer
-        and pendingRefreshTimer.Cancel
+local function cancelPendingTimer()
+    if pendingTimer
+        and pendingTimer.Cancel
     then
-        pendingRefreshTimer:Cancel()
+        pendingTimer:Cancel()
     end
 
-    pendingRefreshTimer = nil
+    pendingTimer = nil
 end
 
-local function refreshCharacter(
-    reason
-)
-    return PT.RefreshCharacter(
-        reason
-    )
-end
+local function clearPendingRefresh()
+    cancelPendingTimer()
 
-local function getProfessionCount(
-    character
-)
-    if not character
-        or type(
-            character.professions
-        ) ~= "table"
-    then
-        return 0
-    end
-
-    return #character.professions
-end
-
-local function getProfessionLabel(
-    professionCount
-)
-    if professionCount == 1 then
-        return "Beruf"
-    end
-
-    return "Berufe"
-end
-
-local function printSyncCompleted(
-    label,
-    character
-)
-    local professionCount =
-        getProfessionCount(
-            character
-        )
-
-    PT.Print(
-        string.format(
-            "%s abgeschlossen · %s-%s · %d %s aktualisiert.",
-            label,
-            character.name
-                or "Unknown",
-            character.realm
-                or "Unknown",
-            professionCount,
-            getProfessionLabel(
-                professionCount
-            )
-        )
-    )
-end
-
-local function runRefresh(
-    reason,
-    label,
-    announce
-)
-    if announce then
-        PT.Print(
-            label
-                .. " gestartet …"
-        )
-    end
-
-    local success,
-        character =
-        pcall(
-            refreshCharacter,
-            reason
-        )
-
-    if not success then
-        PT.Print(
-            label
-                .. " fehlgeschlagen: "
-                .. tostring(
-                    character
-                )
-        )
-
-        return nil
-    end
-
-    if not character then
-        PT.Print(
-            label
-                .. " fehlgeschlagen."
-        )
-
-        return nil
-    end
-
-    if announce then
-        printSyncCompleted(
-            label,
-            character
-        )
-    end
-
-    return character
+    pendingReason = nil
+    pendingAnnounce = false
 end
 
 local function runScheduledRefresh()
     local reason =
-        pendingRefreshReason
+        pendingReason
         or "automatic"
 
-    pendingRefreshTimer = nil
-    pendingRefreshReason = nil
+    local announce =
+        pendingAnnounce
+        == true
 
-    runRefresh(
+    pendingTimer = nil
+    pendingReason = nil
+    pendingAnnounce = false
+
+    PT.RunProfessionRefresh(
         reason,
         "Auto-Sync",
-        true
+        announce
     )
 end
 
 local function scheduleRefresh(
-    reason,
-    delay
+    configuration
 )
-    pendingRefreshReason =
-        reason
+    pendingAnnounce =
+        pendingAnnounce
+        or configuration.announce
+        == true
+
+    pendingReason =
+        configuration.reason
         or "automatic"
 
-    cancelPendingRefresh()
+    cancelPendingTimer()
 
     if C_Timer
         and C_Timer.NewTimer
     then
-        pendingRefreshTimer =
+        pendingTimer =
             C_Timer.NewTimer(
-                delay
+                configuration.delay
                 or 0.25,
                 runScheduledRefresh
             )
@@ -242,9 +161,9 @@ local function handleSlashCommand(
     end
 
     if command == "sync" then
-        cancelPendingRefresh()
+        clearPendingRefresh()
 
-        runRefresh(
+        PT.RunProfessionRefresh(
             "manual",
             "Manueller Sync",
             true
@@ -281,9 +200,9 @@ local function handleAddonLoaded(
 end
 
 local function handleLogout()
-    cancelPendingRefresh()
+    clearPendingRefresh()
 
-    runRefresh(
+    PT.RunProfessionRefresh(
         "logout",
         "Auto-Sync",
         false
@@ -313,14 +232,11 @@ local function handleEvent(
             event
         ]
 
-    if not configuration then
-        return
+    if configuration then
+        scheduleRefresh(
+            configuration
+        )
     end
-
-    scheduleRefresh(
-        configuration.reason,
-        configuration.delay
-    )
 end
 
 eventFrame:RegisterEvent(
