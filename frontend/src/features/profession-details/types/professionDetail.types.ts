@@ -15,9 +15,6 @@ export type ProfessionOverview = {
 export type ProfessionCoverageEntry = {
   id: string;
   name: string;
-  path: string;
-  rank: number;
-  maxRank: number | null;
   source: string;
 };
 
@@ -29,17 +26,14 @@ export type ProfessionCharacterCoverage = {
     realm: string;
     className: string;
     level: number;
-    source: string;
   };
   skill: number;
   knowledgePoints: number;
-  specializationSummary: string | null;
   dataStatus:
     | "TRACKED"
     | "PARTIAL"
     | "UNTRACKED"
     | "NO_CATALOG";
-  specializations: ProfessionCoverageEntry[];
   slots: ProfessionCoverageEntry[];
 };
 
@@ -54,7 +48,6 @@ export type ProfessionDetail = {
     characterCount: number;
     trackedCharacterCount: number;
     missingCharacterCount: number;
-    specializationCount: number;
     slotCount: number;
   };
   characters: ProfessionCharacterCoverage[];

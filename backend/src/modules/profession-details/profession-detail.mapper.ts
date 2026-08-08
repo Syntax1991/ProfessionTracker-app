@@ -1,6 +1,5 @@
 import {
-  mapProfessionCharacterCoverage,
-  type DetailNode
+  mapProfessionCharacterCoverage
 } from "./profession-coverage.mapper.js";
 import type { ProfessionDetailRepository } from "./profession-detail.repository.js";
 import type {
@@ -20,27 +19,10 @@ type DetailRecord =
 export function mapProfessionDetail(
   profession: DetailRecord
 ): ProfessionDetailView {
-  const allNodes =
-    profession.specializationTrees.flatMap(
-      (tree) =>
-        tree.nodes
-    );
-
-  const nodeById =
-    createNodeMap(
-      allNodes
-    );
-
-  const treeNameById =
-    new Map<string, string>(
-      profession.specializationTrees.map(
-        (tree) =>
-          [
-            tree.id,
-            tree.name
-          ] as const
-      )
-    );
+  const hasCatalog =
+    profession
+      .specializationTrees
+      .length > 0;
 
   const characters =
     profession.assignments
@@ -48,9 +30,7 @@ export function mapProfessionDetail(
         (assignment) =>
           mapProfessionCharacterCoverage(
             assignment,
-            nodeById,
-            treeNameById,
-            allNodes.length > 0
+            hasCatalog
           )
       )
       .sort(
@@ -89,16 +69,9 @@ export function mapProfessionDetail(
         characters.length -
         trackedCharacterCount,
 
-      specializationCount:
-        sumCoverageEntries(
-          characters,
-          "specializations"
-        ),
-
       slotCount:
-        sumCoverageEntries(
-          characters,
-          "slots"
+        sumSlotCoverage(
+          characters
         )
     },
 
@@ -106,26 +79,9 @@ export function mapProfessionDetail(
   };
 }
 
-function createNodeMap(
-  nodes: DetailNode[]
-): Map<string, DetailNode> {
-  return new Map(
-    nodes.map(
-      (node) =>
-        [
-          node.id,
-          node
-        ] as const
-    )
-  );
-}
-
-function sumCoverageEntries(
+function sumSlotCoverage(
   characters:
-    ProfessionCharacterCoverage[],
-  property:
-    | "specializations"
-    | "slots"
+    ProfessionCharacterCoverage[]
 ): number {
   return characters.reduce(
     (
@@ -133,14 +89,16 @@ function sumCoverageEntries(
       character
     ) =>
       total +
-      character[property].length,
+      character.slots.length,
     0
   );
 }
 
 function compareCharacterCoverage(
-  left: ProfessionCharacterCoverage,
-  right: ProfessionCharacterCoverage
+  left:
+    ProfessionCharacterCoverage,
+  right:
+    ProfessionCharacterCoverage
 ): number {
   return (
     left.character.name.localeCompare(

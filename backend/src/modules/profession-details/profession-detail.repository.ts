@@ -21,40 +21,56 @@ export class ProfessionDetailRepository {
     });
   }
 
-  findById(professionId: string) {
+  findById(
+    professionId: string
+  ) {
     return prisma.profession.findUnique({
       where: {
         id: professionId
       },
-      include: {
+      select: {
+        id: true,
+        key: true,
+        name: true,
+        category: true,
+
         specializationTrees: {
-          include: {
-            nodes: {
-              orderBy: [
-                {
-                  sortOrder: "asc"
-                },
-                {
-                  name: "asc"
-                }
-              ]
-            }
-          },
-          orderBy: [
-            {
-              sortOrder: "asc"
-            },
-            {
-              name: "asc"
-            }
-          ]
+          select: {
+            id: true
+          }
         },
+
         assignments: {
-          include: {
-            character: true,
+          select: {
+            id: true,
+            skill: true,
+            knowledgePoints: true,
+
+            character: {
+              select: {
+                id: true,
+                name: true,
+                realm: true,
+                className: true,
+                level: true
+              }
+            },
+
             nodeProgress: {
-              include: {
-                node: true
+              where: {
+                rank: {
+                  gt: 0
+                }
+              },
+
+              select: {
+                source: true,
+
+                node: {
+                  select: {
+                    name: true
+                  }
+                }
               }
             }
           }
