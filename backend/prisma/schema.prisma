@@ -73,14 +73,15 @@ model ProfessionSpecializationTree {
 }
 
 model ProfessionSpecializationNode {
-  id           String  @id @default(cuid())
-  treeId       String
-  parentNodeId String?
-  key          String
-  name         String
-  description  String?
-  maxRank      Int?
-  sortOrder    Int     @default(0)
+  id               String  @id @default(cuid())
+  treeId           String
+  parentNodeId     String?
+  key              String
+  name             String
+  description      String?
+  maxRank          Int?
+  knowledgeMaxRank Int?
+  sortOrder        Int     @default(0)
 
   tree     ProfessionSpecializationTree      @relation(fields: [treeId], references: [id], onDelete: Cascade)
   parent   ProfessionSpecializationNode?     @relation("SpecializationNodeHierarchy", fields: [parentNodeId], references: [id], onDelete: SetNull)
@@ -96,6 +97,8 @@ model CharacterProfessionNodeProgress {
   characterProfessionId String
   nodeId                String
   rank                  Int       @default(1)
+  knowledgeRank         Int?
+  unlockRank            Int?
   source                String    @default("MANUAL")
   lastSyncedAt          DateTime?
   createdAt             DateTime  @default(now())

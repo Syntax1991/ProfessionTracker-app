@@ -14,14 +14,14 @@ function formatPoints(
     ProfessionCoverageEntry
 ): string {
   if (
-    entry.maxRank ===
+    entry.maxSkillPoints ===
     null
   ) {
-    return `${entry.rank}`;
+    return `${entry.skillPoints}`;
   }
 
   return (
-    `${entry.rank}/${entry.maxRank}`
+    `${entry.skillPoints}/${entry.maxSkillPoints}`
   );
 }
 
@@ -57,7 +57,9 @@ export function ProfessionCoverageList({
                   </strong>
 
                   <small>
-                    Skillpunkte
+                    {entry.unlocked
+                      ? "Freigeschaltet"
+                      : "Nicht freigeschaltet"}
                   </small>
                 </div>
 

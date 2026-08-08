@@ -139,6 +139,7 @@ export class AddonCatalogPersistence {
                 treeKey
             }
           },
+
           create: {
             professionId,
             expansion,
@@ -151,6 +152,7 @@ export class AddonCatalogPersistence {
             sortOrder:
               tree.sortOrder
           },
+
           update: {
             name:
               tree.name,
@@ -183,39 +185,58 @@ export class AddonCatalogPersistence {
               treeId_key: {
                 treeId:
                   storedTree.id,
+
                 key:
                   createNodeKey(
                     node.externalNodeId
                   )
               }
             },
+
             create: {
               treeId:
                 storedTree.id,
+
               parentNodeId:
                 null,
+
               key:
                 createNodeKey(
                   node.externalNodeId
                 ),
+
               name:
                 node.name,
+
               description:
                 node.description,
+
               maxRank:
                 node.maxRank,
+
+              knowledgeMaxRank:
+                node.knowledgeMaxRank,
+
               sortOrder:
                 node.sortOrder
             },
+
             update: {
               parentNodeId:
                 null,
+
               name:
                 node.name,
+
               description:
                 node.description,
+
               maxRank:
                 node.maxRank,
+
+              knowledgeMaxRank:
+                node.knowledgeMaxRank,
+
               sortOrder:
                 node.sortOrder
             }
@@ -224,8 +245,10 @@ export class AddonCatalogPersistence {
       storedNodes.push({
         id:
           storedNode.id,
+
         externalNodeId:
           node.externalNodeId,
+
         isRoot:
           node.isRoot
       });
@@ -269,6 +292,7 @@ export class AddonCatalogPersistence {
             id:
               storedNode.id
           },
+
           data: {
             parentNodeId:
               rootNodeId

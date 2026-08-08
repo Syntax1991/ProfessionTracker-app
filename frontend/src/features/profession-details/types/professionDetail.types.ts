@@ -15,8 +15,9 @@ export type ProfessionOverview = {
 export type ProfessionCoverageEntry = {
   id: string;
   name: string;
-  rank: number;
-  maxRank: number | null;
+  skillPoints: number;
+  maxSkillPoints: number | null;
+  unlocked: boolean;
   source: string;
 };
 

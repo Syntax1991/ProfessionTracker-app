@@ -12,38 +12,39 @@ import {
   numericValues
 } from "./addon-import.lua-utils.js";
 
-function getEntry(
-  node: LuaTable,
-  preferredType: number
-): LuaTable | null {
-  const entries =
-    numericValues(
-      asTable(node.entries)
+function getEntries(
+  node: LuaTable
+): LuaTable[] {
+  return numericValues(
+    asTable(
+      node.entries
+    )
+  )
+    .map(
+      asTable
+    )
+    .filter(
+      (
+        entry
+      ): entry is LuaTable =>
+        entry !== null
     );
+}
 
-  for (const value of entries) {
-    const entry =
-      asTable(value);
-
-    if (
-      entry &&
-      asNumber(entry.type) ===
-        preferredType
-    ) {
-      return entry;
-    }
-  }
-
-  for (const value of entries) {
-    const entry =
-      asTable(value);
-
-    if (entry) {
-      return entry;
-    }
-  }
-
-  return null;
+function findEntryByType(
+  entries: LuaTable[],
+  type: number
+): LuaTable | null {
+  return (
+    entries.find(
+      (entry) =>
+        asNumber(
+          entry.type
+        ) ===
+        type
+    ) ??
+    null
+  );
 }
 
 function normalizeNode(
@@ -53,39 +54,52 @@ function normalizeNode(
   sortOrder: number
 ): AddonSpecializationNode | null {
   const node =
-    asTable(value);
+    asTable(
+      value
+    );
 
   if (
     !node ||
-    asNumber(node.type) !== 1
+    asNumber(
+      node.type
+    ) !==
+      1
   ) {
     return null;
   }
 
   const externalNodeId =
-    asNumber(node.nodeId);
+    asNumber(
+      node.nodeId
+    );
 
   if (
-    externalNodeId === null
+    externalNodeId ===
+    null
   ) {
     return null;
   }
 
-  const entry =
-    getEntry(
-      node,
+  const entries =
+    getEntries(
+      node
+    );
+
+  const knowledgeEntry =
+    findEntryByType(
+      entries,
       7
     );
 
+  const displayEntry =
+    knowledgeEntry ??
+    entries[0] ??
+    null;
+
   /*
-   * ranksPurchased is a node-level WoW value.
-   * Therefore its maximum must also come from
-   * the node and not only from the rank entry.
-   *
-   * Example:
-   * node.maxRanks = 31
-   * rank-entry.maxRanks = 30
-   * ranksPurchased = 31
+   * maxRank remains the full WoW node
+   * maximum. knowledgeMaxRank is the
+   * actual type-7 Knowledge-entry maximum.
    */
   const maxRank =
     asNumber(
@@ -95,22 +109,37 @@ function normalizeNode(
       node.totalMaxRanks
     ) ??
     asNumber(
-      entry?.maxRanks
+      displayEntry?.maxRanks
     );
 
   return {
     externalNodeId,
+
     name:
       asString(
-        entry?.name
+        displayEntry?.name
       ) ??
       `Node ${externalNodeId}`,
+
     description:
       asString(
-        entry?.description
+        displayEntry?.description
       ),
+
     maxRank,
+
+    knowledgeEntryId:
+      asNumber(
+        knowledgeEntry?.entryId
+      ),
+
+    knowledgeMaxRank:
+      asNumber(
+        knowledgeEntry?.maxRanks
+      ),
+
     sortOrder,
+
     isRoot:
       externalNodeId ===
       rootNodeExternalId
@@ -122,7 +151,9 @@ function normalizeTree(
   sortOrder: number
 ): AddonSpecializationTree | null {
   const tree =
-    asTable(value);
+    asTable(
+      value
+    );
 
   if (!tree) {
     return null;
@@ -134,7 +165,8 @@ function normalizeTree(
     );
 
   if (
-    externalTreeId === null
+    externalTreeId ===
+    null
   ) {
     return null;
   }
@@ -170,15 +202,18 @@ function normalizeTree(
 
   return {
     externalTreeId,
+
     name:
       asString(
         tree.name
       ) ??
       `Tree ${externalTreeId}`,
+
     description:
       asString(
         tree.description
       ),
+
     rootNodeExternalId,
     sortOrder,
     nodes
@@ -190,7 +225,9 @@ export function normalizeCatalog(
   value: LuaValue
 ): AddonProfessionCatalog | null {
   const catalog =
-    asTable(value);
+    asTable(
+      value
+    );
 
   if (!catalog) {
     return null;
@@ -200,7 +237,9 @@ export function normalizeCatalog(
     asNumber(
       catalog.skillLineId
     ) ??
-    Number(key);
+    Number(
+      key
+    );
 
   if (
     !Number.isFinite(
@@ -235,15 +274,18 @@ export function normalizeCatalog(
 
   return {
     skillLineId,
+
     displayName:
       asString(
         catalog.displayName
       ) ??
       `Skill line ${skillLineId}`,
+
     expansionName:
       asString(
         catalog.expansionName
       ),
+
     trees
   };
 }

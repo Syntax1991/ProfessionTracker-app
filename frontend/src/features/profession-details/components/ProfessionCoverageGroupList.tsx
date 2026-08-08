@@ -17,14 +17,14 @@ function formatPoints(
     ProfessionCoverageCharacter
 ): string {
   if (
-    character.maxRank ===
+    character.maxSkillPoints ===
     null
   ) {
-    return `${character.rank}`;
+    return `${character.skillPoints}`;
   }
 
   return (
-    `${character.rank}/${character.maxRank}`
+    `${character.skillPoints}/${character.maxSkillPoints}`
   );
 }
 

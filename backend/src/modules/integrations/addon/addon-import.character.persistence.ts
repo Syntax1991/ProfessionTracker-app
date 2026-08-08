@@ -77,33 +77,45 @@ export class AddonCharacterPersistence {
             name_realm_region: {
               name:
                 character.name,
+
               realm:
                 character.realm,
+
               region:
                 character.region
             }
           },
+
           create: {
             name:
               character.name,
+
             realm:
               character.realm,
+
             region:
               character.region,
+
             className:
               character.className,
+
             level:
               character.level,
+
             source:
               "ADDON",
+
             lastSyncedAt:
               syncDate
           },
+
           update: {
             className:
               character.className,
+
             level:
               character.level,
+
             lastSyncedAt:
               syncDate
           }
@@ -179,27 +191,34 @@ export class AddonCharacterPersistence {
               professionId
             }
           },
+
           create: {
             characterId,
             professionId,
+
             skill:
               profession.skillLevel,
+
             knowledgePoints:
               activeExpansion
                 ?.investedKnowledge ??
               0,
+
             specializationSummary:
               activeExpansion
                 ?.displayName ??
               null
           },
+
           update: {
             skill:
               profession.skillLevel,
+
             knowledgePoints:
               activeExpansion
                 ?.investedKnowledge ??
               0,
+
             specializationSummary:
               activeExpansion
                 ?.displayName ??
@@ -213,6 +232,7 @@ export class AddonCharacterPersistence {
         where: {
           characterProfessionId:
             assignment.id,
+
           source:
             "ADDON"
         }
@@ -249,25 +269,46 @@ export class AddonCharacterPersistence {
               characterProfessionId_nodeId: {
                 characterProfessionId:
                   assignment.id,
+
                 nodeId
               }
             },
+
             create: {
               characterProfessionId:
                 assignment.id,
+
               nodeId,
+
               rank:
                 progress.rank,
+
+              knowledgeRank:
+                progress.knowledgeRank,
+
+              unlockRank:
+                progress.unlockRank,
+
               source:
                 "ADDON",
+
               lastSyncedAt:
                 syncDate
             },
+
             update: {
               rank:
                 progress.rank,
+
+              knowledgeRank:
+                progress.knowledgeRank,
+
+              unlockRank:
+                progress.unlockRank,
+
               source:
                 "ADDON",
+
               lastSyncedAt:
                 syncDate
             }

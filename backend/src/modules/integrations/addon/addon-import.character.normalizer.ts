@@ -3,6 +3,7 @@ import type {
   AddonCharacter,
   AddonExpansion,
   AddonProfession,
+  AddonProfessionCatalog,
   LuaValue
 } from "./addon-import.types.js";
 import {
@@ -14,8 +15,16 @@ import {
   unixTimestampToIso
 } from "./addon-import.lua-utils.js";
 
+type CatalogMap =
+  Map<
+    number,
+    AddonProfessionCatalog
+  >;
+
 function normalizeProfession(
-  value: LuaValue
+  value: LuaValue,
+  catalogs:
+    CatalogMap
 ): AddonProfession | null {
   const profession =
     asTable(
@@ -47,11 +56,30 @@ function normalizeProfession(
             ([
               key,
               expansion
-            ]) =>
-              normalizeExpansion(
+            ]) => {
+              const numericKey =
+                Number(
+                  key
+                );
+
+              const catalog =
+                Number.isFinite(
+                  numericKey
+                )
+                  ? (
+                      catalogs.get(
+                        numericKey
+                      ) ??
+                      null
+                    )
+                  : null;
+
+              return normalizeExpansion(
                 key,
-                expansion
-              )
+                expansion,
+                catalog
+              );
+            }
           )
           .filter(
             (
@@ -71,41 +99,50 @@ function normalizeProfession(
 
   return {
     name,
+
     professionKey:
       normalizeProfessionKey(
         name
       ),
+
     skillLineId:
       asNumber(
         profession.skillLineId
       ),
+
     skillLevel:
       asNumber(
         profession.skillLevel
       ) ??
       0,
+
     maxSkillLevel:
       asNumber(
         profession.maxSkillLevel
       ) ??
       0,
+
     skillModifier:
       asNumber(
         profession.skillModifier
       ) ??
       0,
+
     activeExpansionSkillLineId:
       asNumber(
         profession
           .activeExpansionSkillLineId
       ),
+
     expansions
   };
 }
 
 export function normalizeCharacter(
   key: string,
-  value: LuaValue
+  value: LuaValue,
+  catalogs:
+    CatalogMap
 ): AddonCharacter | null {
   const character =
     asTable(
@@ -123,7 +160,11 @@ export function normalizeCharacter(
       )
     )
       .map(
-        normalizeProfession
+        (profession) =>
+          normalizeProfession(
+            profession,
+            catalogs
+          )
       )
       .filter(
         (
@@ -134,16 +175,19 @@ export function normalizeCharacter(
 
   return {
     key,
+
     name:
       asString(
         character.name
       ) ??
       key,
+
     realm:
       asString(
         character.realm
       ) ??
       "Unknown",
+
     region:
       (
         asString(
@@ -151,24 +195,29 @@ export function normalizeCharacter(
         ) ??
         "EU"
       ).toLowerCase(),
+
     className:
       asString(
         character.className
       ) ??
       "Unknown",
+
     level:
       asNumber(
         character.level
       ) ??
       0,
+
     snapshotReason:
       asString(
         character.snapshotReason
       ),
+
     lastUpdatedAt:
       unixTimestampToIso(
         character.lastUpdatedAt
       ),
+
     professions
   };
 }

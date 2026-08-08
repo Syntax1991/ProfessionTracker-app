@@ -57,11 +57,21 @@ export function mapProfessionCharacterCoverage(
         name:
           slot.name,
 
-        rank:
+        skillPoints:
+          progress.knowledgeRank ??
           progress.rank,
 
-        maxRank:
+        maxSkillPoints:
+          progress.node
+            .knowledgeMaxRank ??
           progress.node.maxRank,
+
+        unlocked:
+          progress.rank > 0 ||
+          (
+            progress.unlockRank ??
+            0
+          ) > 0,
 
         source:
           progress.source
@@ -145,36 +155,36 @@ function shouldReplaceSlot(
     ProfessionCoverageEntry
 ): boolean {
   if (
-    candidate.rank !==
-    existing.rank
+    candidate.skillPoints !==
+    existing.skillPoints
   ) {
     return (
-      candidate.rank >
-      existing.rank
+      candidate.skillPoints >
+      existing.skillPoints
     );
   }
 
   if (
-    candidate.maxRank !==
-    existing.maxRank
+    candidate.maxSkillPoints !==
+    existing.maxSkillPoints
   ) {
     if (
-      candidate.maxRank ===
+      candidate.maxSkillPoints ===
       null
     ) {
       return false;
     }
 
     if (
-      existing.maxRank ===
+      existing.maxSkillPoints ===
       null
     ) {
       return true;
     }
 
     return (
-      candidate.maxRank >
-      existing.maxRank
+      candidate.maxSkillPoints >
+      existing.maxSkillPoints
     );
   }
 

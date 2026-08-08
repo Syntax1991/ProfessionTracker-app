@@ -7,6 +7,7 @@ export class ProfessionDetailRepository {
         assignments: {
           select: {
             id: true,
+
             nodeProgress: {
               select: {
                 rank: true
@@ -15,6 +16,7 @@ export class ProfessionDetailRepository {
           }
         }
       },
+
       orderBy: {
         order: "asc"
       }
@@ -28,6 +30,7 @@ export class ProfessionDetailRepository {
       where: {
         id: professionId
       },
+
       select: {
         id: true,
         key: true,
@@ -65,12 +68,15 @@ export class ProfessionDetailRepository {
 
               select: {
                 rank: true,
+                knowledgeRank: true,
+                unlockRank: true,
                 source: true,
 
                 node: {
                   select: {
                     name: true,
-                    maxRank: true
+                    maxRank: true,
+                    knowledgeMaxRank: true
                   }
                 }
               }

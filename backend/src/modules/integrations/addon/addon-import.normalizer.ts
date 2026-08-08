@@ -32,7 +32,10 @@ export function normalizeAddonSnapshot(
           catalogTable
         )
           .map(
-            ([key, value]) =>
+            ([
+              key,
+              value
+            ]) =>
               normalizeCatalog(
                 key,
                 value
@@ -45,11 +48,25 @@ export function normalizeAddonSnapshot(
               catalog !== null
           )
           .sort(
-            (left, right) =>
+            (
+              left,
+              right
+            ) =>
               left.skillLineId -
               right.skillLineId
           )
       : [];
+
+  const catalogBySkillLineId =
+    new Map(
+      catalogs.map(
+        (catalog) =>
+          [
+            catalog.skillLineId,
+            catalog
+          ] as const
+      )
+    );
 
   const characters =
     characterTable
@@ -57,10 +74,14 @@ export function normalizeAddonSnapshot(
           characterTable
         )
           .map(
-            ([key, value]) =>
+            ([
+              key,
+              value
+            ]) =>
               normalizeCharacter(
                 key,
-                value
+                value,
+                catalogBySkillLineId
               )
           )
           .filter(
@@ -70,7 +91,10 @@ export function normalizeAddonSnapshot(
               character !== null
           )
           .sort(
-            (left, right) =>
+            (
+              left,
+              right
+            ) =>
               left.name.localeCompare(
                 right.name,
                 "de"
@@ -79,7 +103,9 @@ export function normalizeAddonSnapshot(
       : [];
 
   const client =
-    asTable(root.client);
+    asTable(
+      root.client
+    );
 
   return {
     addonVersion:
@@ -87,25 +113,30 @@ export function normalizeAddonSnapshot(
         root.addonVersion
       ) ??
       "unknown",
+
     schemaVersion:
       asNumber(
         root.schemaVersion
       ) ??
       0,
+
     client: {
       version:
         asString(
           client?.version
         ),
+
       build:
         asString(
           client?.build
         ),
+
       interfaceVersion:
         asNumber(
           client?.interfaceVersion
         )
     },
+
     catalogs,
     characters
   };

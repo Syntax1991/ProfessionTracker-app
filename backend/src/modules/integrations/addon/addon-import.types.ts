@@ -20,6 +20,8 @@ export type AddonSpecializationNode = {
   name: string;
   description: string | null;
   maxRank: number | null;
+  knowledgeEntryId: number | null;
+  knowledgeMaxRank: number | null;
   sortOrder: number;
   isRoot: boolean;
 };
@@ -44,6 +46,8 @@ export type AddonNodeProgress = {
   externalTreeId: number;
   externalNodeId: number;
   rank: number;
+  knowledgeRank: number;
+  unlockRank: number;
 };
 
 export type AddonExpansion = {

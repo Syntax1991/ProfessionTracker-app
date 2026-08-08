@@ -8,8 +8,9 @@ export type ProfessionCoverageCharacter = {
   name: string;
   realm: string;
   className: string;
-  rank: number;
-  maxRank: number | null;
+  skillPoints: number;
+  maxSkillPoints: number | null;
+  unlocked: boolean;
   source: string;
 };
 
@@ -107,11 +108,14 @@ function addCharacterSlots(
         className:
           coverage.character.className,
 
-        rank:
-          slot.rank,
+        skillPoints:
+          slot.skillPoints,
 
-        maxRank:
-          slot.maxRank,
+        maxSkillPoints:
+          slot.maxSkillPoints,
+
+        unlocked:
+          slot.unlocked,
 
         source:
           slot.source
