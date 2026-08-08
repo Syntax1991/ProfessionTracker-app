@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { characterRouter } from "../modules/characters/character.routes.js";
 import { dashboardRouter } from "../modules/dashboard/dashboard.routes.js";
+import { addonImportRouter } from "../modules/integrations/addon/addon-import.routes.js";
 import {
   battleNetAuthRouter,
   battleNetIntegrationRouter
@@ -14,13 +15,17 @@ export const apiRouter =
 
 apiRouter.get(
   "/health",
-  (_request, response) => {
+  (
+    _request,
+    response
+  ) => {
     response.json({
       ok: true,
       service:
         "Profession Tracker API",
       timestamp:
-        new Date().toISOString()
+        new Date()
+          .toISOString()
     });
   }
 );
@@ -48,6 +53,11 @@ apiRouter.use(
 apiRouter.use(
   "/profession-details",
   professionDetailRouter
+);
+
+apiRouter.use(
+  "/integrations/addon",
+  addonImportRouter
 );
 
 apiRouter.use(

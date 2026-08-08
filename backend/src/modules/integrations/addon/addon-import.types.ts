@@ -1,0 +1,132 @@
+export type LuaValue =
+  | string
+  | number
+  | boolean
+  | null
+  | LuaTable;
+
+export type LuaTable = {
+  [key: string]: LuaValue;
+};
+
+export type AddonClientInfo = {
+  version: string | null;
+  build: string | null;
+  interfaceVersion: number | null;
+};
+
+export type AddonSpecializationNode = {
+  externalNodeId: number;
+  name: string;
+  description: string | null;
+  maxRank: number | null;
+  sortOrder: number;
+  isRoot: boolean;
+};
+
+export type AddonSpecializationTree = {
+  externalTreeId: number;
+  name: string;
+  description: string | null;
+  rootNodeExternalId: number | null;
+  sortOrder: number;
+  nodes: AddonSpecializationNode[];
+};
+
+export type AddonProfessionCatalog = {
+  skillLineId: number;
+  displayName: string;
+  expansionName: string | null;
+  trees: AddonSpecializationTree[];
+};
+
+export type AddonNodeProgress = {
+  externalTreeId: number;
+  externalNodeId: number;
+  rank: number;
+};
+
+export type AddonExpansion = {
+  skillLineId: number;
+  displayName: string;
+  expansionName: string | null;
+  knowledgeAvailable: number;
+  investedKnowledge: number;
+  progress: AddonNodeProgress[];
+  capturedAt: string | null;
+};
+
+export type AddonProfession = {
+  name: string;
+  professionKey: string | null;
+  skillLineId: number | null;
+  skillLevel: number;
+  maxSkillLevel: number;
+  skillModifier: number;
+  activeExpansionSkillLineId: number | null;
+  expansions: AddonExpansion[];
+};
+
+export type AddonCharacter = {
+  key: string;
+  name: string;
+  realm: string;
+  region: string;
+  className: string;
+  level: number;
+  snapshotReason: string | null;
+  lastUpdatedAt: string | null;
+  professions: AddonProfession[];
+};
+
+export type AddonSnapshot = {
+  addonVersion: string;
+  schemaVersion: number;
+  client: AddonClientInfo;
+  catalogs: AddonProfessionCatalog[];
+  characters: AddonCharacter[];
+};
+
+export type AddonCatalogPreview = {
+  skillLineId: number;
+  displayName: string;
+  expansionName: string | null;
+  trees: number;
+  specializationNodes: number;
+};
+
+export type AddonProfessionPreview = {
+  name: string;
+  professionKey: string | null;
+  skillLevel: number;
+  maxSkillLevel: number;
+  expansions: number;
+  investedKnowledge: number;
+};
+
+export type AddonCharacterPreview = {
+  key: string;
+  name: string;
+  realm: string;
+  region: string;
+  className: string;
+  level: number;
+  professions: AddonProfessionPreview[];
+};
+
+export type AddonImportPreview = {
+  addonVersion: string;
+  schemaVersion: number;
+  client: AddonClientInfo;
+  catalogs: AddonCatalogPreview[];
+  characters: AddonCharacterPreview[];
+  totals: {
+    characters: number;
+    professionAssignments: number;
+    expansions: number;
+    trees: number;
+    specializationNodes: number;
+    investedNodes: number;
+    investedKnowledge: number;
+  };
+};
