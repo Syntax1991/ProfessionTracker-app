@@ -41,7 +41,7 @@ local function findMidnightExpansion(profession)
         profession.activeExpansionSkillLineId
 
     if activeSkillLineID then
-        local activeExpansion =
+        local expansion =
             profession.expansions[
                 tostring(activeSkillLineID)
             ]
@@ -49,19 +49,21 @@ local function findMidnightExpansion(profession)
                 activeSkillLineID
             ]
 
-        if activeExpansion
+        if expansion
             and isMidnightExpansion(
-                activeExpansion
+                expansion
             )
         then
-            return activeExpansion
+            return expansion
         end
     end
 
     for _, expansion in pairs(
         profession.expansions
     ) do
-        if isMidnightExpansion(expansion) then
+        if isMidnightExpansion(
+            expansion
+        ) then
             return expansion
         end
     end
@@ -102,7 +104,9 @@ local function findOperationCapture(
         end
     end
 
-    for _, capture in pairs(captures) do
+    for _, capture in pairs(
+        captures
+    ) do
         if type(capture) == "table"
             and capture.parentSkillLineId
                 == profession.skillLineId
@@ -117,6 +121,68 @@ end
 local function hasRecipes(expansion)
     return type(expansion) == "table"
         and type(expansion.recipeIds) == "table"
+end
+
+local function applyOperationCapture(
+    status,
+    capture
+)
+    local learnedRecipeCount =
+        capture.learnedRecipeCount
+        or 0
+
+    local operationRecipeCount =
+        capture.operationRecipeCount
+        or 0
+
+    local unavailableCount =
+        capture.operationUnavailableCount
+
+    if unavailableCount == nil then
+        unavailableCount =
+            math.max(
+                learnedRecipeCount
+                    - operationRecipeCount,
+                0
+            )
+    end
+
+    status.captureVersion =
+        capture.captureVersion
+        or 1
+
+    status.expansionSkillLineId =
+        capture.skillLineId
+        or status.expansionSkillLineId
+
+    status.learnedRecipeCount =
+        learnedRecipeCount
+
+    status.operationAttemptedCount =
+        capture.operationAttemptedCount
+        or learnedRecipeCount
+
+    status.operationRecipeCount =
+        operationRecipeCount
+
+    status.operationUnavailableCount =
+        unavailableCount
+
+    status.captureLevel =
+        "OPERATIONS"
+
+    if status.captureVersion == 1
+        or status.captureVersion
+            == PT.CHARACTER_RECIPE_OPERATION_CAPTURE_VERSION
+    then
+        status.state =
+            "CAPTURED"
+
+        return
+    end
+
+    status.state =
+        "STALE"
 end
 
 local function createProfessionStatus(
@@ -147,6 +213,9 @@ local function createProfessionStatus(
             and expansion.skillLineId
             or nil,
 
+        captureVersion =
+            nil,
+
         captureLevel =
             "BASIC",
 
@@ -156,7 +225,13 @@ local function createProfessionStatus(
         learnedRecipeCount =
             nil,
 
+        operationAttemptedCount =
+            nil,
+
         operationRecipeCount =
+            nil,
+
+        operationUnavailableCount =
             nil
     }
 
@@ -174,38 +249,12 @@ local function createProfessionStatus(
             "RECIPES"
     end
 
-    if not operationCapture then
-        return status
+    if operationCapture then
+        applyOperationCapture(
+            status,
+            operationCapture
+        )
     end
-
-    status.expansionSkillLineId =
-        operationCapture.skillLineId
-        or status.expansionSkillLineId
-
-    status.learnedRecipeCount =
-        operationCapture.learnedRecipeCount
-        or 0
-
-    status.operationRecipeCount =
-        operationCapture.operationRecipeCount
-        or 0
-
-    status.captureLevel =
-        operationCapture.captureLevel
-        or "RECIPES"
-
-    if operationCapture.captureVersion
-        ~= PT.CHARACTER_RECIPE_OPERATION_CAPTURE_VERSION
-    then
-        status.state =
-            "STALE"
-
-        return status
-    end
-
-    status.state =
-        operationCapture.status
-        or "PARTIAL"
 
     return status
 end

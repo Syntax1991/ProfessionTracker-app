@@ -1,7 +1,7 @@
 local addonName, PT = ...
 
 PT.ADDON_NAME = addonName
-PT.ADDON_VERSION = "0.6.4"
+PT.ADDON_VERSION = "0.6.5"
 PT.SCHEMA_VERSION = 4
 
 local regionNames = {
@@ -117,7 +117,6 @@ function PT.EnsureDatabase()
         ProfessionTrackerDB.recipeCatalog
         or {}
 
-    -- Operation data must survive normal character snapshot refreshes.
     ProfessionTrackerDB.characterRecipeOperations =
         ProfessionTrackerDB.characterRecipeOperations
         or {}

@@ -4,10 +4,12 @@ local warnedProfessions = {}
 local announcedCaptureSignatures = {}
 local loginWarningScheduled = false
 
-local function formatRecipeCoverage(status)
+local function formatCapturedStatus(status)
     return string.format(
-        "%d/%d",
+        "%d mit Operation-Daten · %d ohne · %d gelernt",
         status.operationRecipeCount
+            or 0,
+        status.operationUnavailableCount
             or 0,
         status.learnedRecipeCount
             or 0
@@ -15,23 +17,14 @@ local function formatRecipeCoverage(status)
 end
 
 local function printProfessionStatus(status)
-    if status.state == "COMPLETE" then
+    if status.state == "CAPTURED" then
         PT.Print(
             status.professionName
                 .. ": OPERATIONS · "
-                .. formatRecipeCoverage(status)
-                .. " Rezeptdetails vollständig"
-        )
-
-        return
-    end
-
-    if status.state == "PARTIAL" then
-        PT.Print(
-            status.professionName
-                .. ": RECIPES · "
-                .. formatRecipeCoverage(status)
-                .. " Crafting-Details erfasst"
+                .. formatCapturedStatus(
+                    status
+                )
+                .. " · erfasst"
         )
 
         return
@@ -49,7 +42,7 @@ local function printProfessionStatus(status)
     if status.captureLevel == "RECIPES" then
         PT.Print(
             status.professionName
-                .. ": RECIPES · Crafting-Operationen fehlen"
+                .. ": RECIPES · Operation-Erfassung fehlt"
         )
 
         return
@@ -66,7 +59,7 @@ local function printProfessionStatus(status)
 
     PT.Print(
         status.professionName
-            .. ": BASIC · Beruf erkannt, Detaildaten fehlen"
+            .. ": BASIC · Beruf erkannt, Midnight-Details fehlen"
     )
 end
 
@@ -86,7 +79,9 @@ function PT.PrintCurrentProfessionCaptureStatus()
         "Crafting-Datenstatus:"
     )
 
-    for _, status in ipairs(statuses) do
+    for _, status in ipairs(
+        statuses
+    ) do
         printProfessionStatus(
             status
         )
@@ -97,7 +92,7 @@ function PT.WarnMissingProfessionCaptureData()
     for _, status in ipairs(
         PT.GetCurrentProfessionCaptureStatuses()
     ) do
-        if status.state ~= "COMPLETE" then
+        if status.state ~= "CAPTURED" then
             local warningKey =
                 tostring(
                     status.professionSkillLineId
@@ -113,7 +108,7 @@ function PT.WarnMissingProfessionCaptureData()
 
                 PT.Print(
                     status.professionName
-                        .. " erkannt, aber Safe-Craft-Details sind nicht vollständig. "
+                        .. " erkannt, aber Safe-Craft-Daten fehlen. "
                         .. "Öffne den Midnight-Beruf einmal."
                 )
             end
@@ -128,10 +123,17 @@ local function createCaptureSignature(capture)
                 capture.status
                 or "UNKNOWN"
             ),
+
             tostring(
                 capture.operationRecipeCount
                 or 0
             ),
+
+            tostring(
+                capture.operationUnavailableCount
+                or 0
+            ),
+
             tostring(
                 capture.learnedRecipeCount
                 or 0
@@ -141,7 +143,9 @@ local function createCaptureSignature(capture)
     )
 end
 
-function PT.OnCharacterRecipeOperationsCaptured(capture)
+function PT.OnCharacterRecipeOperationsCaptured(
+    capture
+)
     local captureKey =
         tostring(
             capture.skillLineId
@@ -170,26 +174,13 @@ function PT.OnCharacterRecipeOperationsCaptured(capture)
         or capture.parentProfessionName
         or "Profession"
 
-    if capture.status == "COMPLETE" then
-        PT.Print(
-            string.format(
-                "%s Crafting-Daten vollständig · %d/%d Rezeptdetails",
-                professionName,
-                capture.operationRecipeCount
-                    or 0,
-                capture.learnedRecipeCount
-                    or 0
-            )
-        )
-
-        return
-    end
-
     PT.Print(
         string.format(
-            "%s Crafting-Daten teilweise erfasst · %d/%d Rezeptdetails",
+            "%s erfasst · %d mit Operation-Daten · %d ohne · %d gelernt",
             professionName,
             capture.operationRecipeCount
+                or 0,
+            capture.operationUnavailableCount
                 or 0,
             capture.learnedRecipeCount
                 or 0

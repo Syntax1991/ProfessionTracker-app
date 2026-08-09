@@ -1,6 +1,6 @@
 local _, PT = ...
 
-local CAPTURE_VERSION = 1
+local CAPTURE_VERSION = 2
 
 PT.CHARACTER_RECIPE_OPERATION_CAPTURE_VERSION =
     CAPTURE_VERSION
@@ -38,23 +38,7 @@ local function copyScalarMetrics(metrics)
     return result
 end
 
-local function createLearnedRecipeSet(recipeIDs)
-    local result = {}
-
-    for _, recipeID in ipairs(
-        recipeIDs
-        or {}
-    ) do
-        if recipeID then
-            result[recipeID] =
-                true
-        end
-    end
-
-    return result
-end
-
-local function getCatalogRecipes(skillLineID)
+local function getCatalogRecipeMap(skillLineID)
     local database =
         PT.EnsureDatabase()
 
@@ -63,13 +47,84 @@ local function getCatalogRecipes(skillLineID)
             tostring(skillLineID)
         ]
 
+    local result = {}
+
     if not catalog
         or type(catalog.recipes) ~= "table"
     then
-        return {}
+        return result
     end
 
-    return catalog.recipes
+    for _, recipe in ipairs(
+        catalog.recipes
+    ) do
+        if recipe.recipeId then
+            result[
+                recipe.recipeId
+            ] =
+                recipe
+        end
+    end
+
+    return result
+end
+
+local function collectRecipeOperations(
+    skillLineID,
+    learnedRecipeIDs
+)
+    local catalogRecipes =
+        getCatalogRecipeMap(
+            skillLineID
+        )
+
+    local storedRecipes = {}
+    local unavailableRecipeIDs = {}
+    local operationRecipeCount = 0
+
+    for _, recipeID in ipairs(
+        learnedRecipeIDs
+    ) do
+        local recipe =
+            catalogRecipes[
+                recipeID
+            ]
+
+        local operationMetrics =
+            recipe
+            and copyScalarMetrics(
+                recipe.operationMetrics
+            )
+            or nil
+
+        if operationMetrics then
+            storedRecipes[
+                tostring(recipeID)
+            ] = {
+                recipeId =
+                    recipeID,
+
+                operationMetrics =
+                    operationMetrics
+            }
+
+            operationRecipeCount =
+                operationRecipeCount + 1
+        else
+            table.insert(
+                unavailableRecipeIDs,
+                recipeID
+            )
+        end
+    end
+
+    table.sort(
+        unavailableRecipeIDs
+    )
+
+    return storedRecipes,
+        unavailableRecipeIDs,
+        operationRecipeCount
 end
 
 function PT.GetCurrentCharacterStorageKey()
@@ -93,7 +148,9 @@ function PT.GetCurrentCharacterStorageKey()
     )
 end
 
-function PT.GetCharacterRecipeOperationStore(characterKey)
+function PT.GetCharacterRecipeOperationStore(
+    characterKey
+)
     local database =
         PT.EnsureDatabase()
 
@@ -129,54 +186,16 @@ function PT.StoreCharacterRecipeOperations(
         recipeSnapshot.learnedRecipeIds
         or {}
 
-    local learnedRecipeSet =
-        createLearnedRecipeSet(
+    local storedRecipes,
+        unavailableRecipeIDs,
+        operationRecipeCount =
+        collectRecipeOperations(
+            context.skillLineId,
             learnedRecipeIDs
         )
 
-    local storedRecipes = {}
-    local operationRecipeCount = 0
-
-    for _, recipe in ipairs(
-        getCatalogRecipes(
-            context.skillLineId
-        )
-    ) do
-        local recipeID =
-            recipe.recipeId
-
-        if recipeID
-            and learnedRecipeSet[recipeID]
-        then
-            local operationMetrics =
-                copyScalarMetrics(
-                    recipe.operationMetrics
-                )
-
-            if operationMetrics then
-                storedRecipes[
-                    tostring(recipeID)
-                ] = {
-                    recipeId =
-                        recipeID,
-
-                    operationMetrics =
-                        operationMetrics
-                }
-
-                operationRecipeCount =
-                    operationRecipeCount + 1
-            end
-        end
-    end
-
     local learnedRecipeCount =
         #learnedRecipeIDs
-
-    local isComplete =
-        learnedRecipeCount > 0
-        and operationRecipeCount
-            == learnedRecipeCount
 
     local capture = {
         captureVersion =
@@ -203,18 +222,23 @@ function PT.StoreCharacterRecipeOperations(
         learnedRecipeCount =
             learnedRecipeCount,
 
+        operationAttemptedCount =
+            learnedRecipeCount,
+
         operationRecipeCount =
             operationRecipeCount,
 
+        operationUnavailableCount =
+            #unavailableRecipeIDs,
+
+        operationUnavailableRecipeIds =
+            unavailableRecipeIDs,
+
         captureLevel =
-            isComplete
-            and "OPERATIONS"
-            or "RECIPES",
+            "OPERATIONS",
 
         status =
-            isComplete
-            and "COMPLETE"
-            or "PARTIAL",
+            "CAPTURED",
 
         capturedAt =
             recipeSnapshot.capturedAt
@@ -241,7 +265,9 @@ if type(
     originalCreateOpenProfessionRecipeSnapshot
 ) == "function"
 then
-    function PT.CreateOpenProfessionRecipeSnapshot(context)
+    function PT.CreateOpenProfessionRecipeSnapshot(
+        context
+    )
         local recipeSnapshot =
             originalCreateOpenProfessionRecipeSnapshot(
                 context
