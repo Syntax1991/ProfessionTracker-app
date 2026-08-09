@@ -12,17 +12,8 @@ import {
   StatusMessage
 } from "../../../shared/components/StatusMessage";
 import {
-  ProfessionCapabilityMatrix
-} from "../components/ProfessionCapabilityMatrix";
-import {
-  ProfessionCharacterCard
-} from "../components/ProfessionCharacterCard";
-import {
-  ProfessionCoverageMatrix
-} from "../components/ProfessionCoverageMatrix";
-import {
-  ProfessionRecipeFinder
-} from "../components/ProfessionRecipeFinder";
+  ProfessionDetailWorkspace
+} from "../components/ProfessionDetailWorkspace";
 import {
   useProfessionDetail
 } from "../hooks/useProfessionDetail";
@@ -100,7 +91,7 @@ export function ProfessionDetailPage() {
           </Link>
         }
         description={
-          `${getCategoryLabel(detail.profession.category)} · Fähigkeiten, Rezepte und Slot-Abdeckung deiner Crafter`
+          `${getCategoryLabel(detail.profession.category)} · Crafting-Daten kompakt verwalten`
         }
         eyebrow="BERUFSDETAIL"
         title={
@@ -114,150 +105,12 @@ export function ProfessionDetailPage() {
         </StatusMessage>
       )}
 
-      <section className="profession-detail-summary-grid">
-        <article className="panel profession-detail-summary-card">
-          <span>
-            Charaktere
-          </span>
-
-          <strong>
-            {
-              detail.summary
-                .characterCount
-            }
-          </strong>
-
-          <small>
-            {
-              detail.summary
-                .trackedCharacterCount
-            }
-            {" mit erfassten Daten"}
-          </small>
-        </article>
-
-        <article className="panel profession-detail-summary-card">
-          <span>
-            Fähigkeiten
-          </span>
-
-          <strong>
-            {
-              detail.summary
-                .coveredCapabilityCount
-            }
-            {"/"}
-            {
-              detail.summary
-                .catalogCapabilityCount
-            }
-          </strong>
-
-          <small>
-            accountweit abgedeckt
-          </small>
-        </article>
-
-        <article className="panel profession-detail-summary-card">
-          <span>
-            Rezept-Zuordnungen
-          </span>
-
-          <strong>
-            {
-              detail.summary
-                .learnedRecipeCount
-            }
-          </strong>
-
-          <small>
-            {
-              detail.summary
-                .catalogRecipeCount
-            }
-            {" Rezepte im Katalog"}
-          </small>
-        </article>
-
-        <article className="panel profession-detail-summary-card">
-          <span>
-            Slotabdeckungen
-          </span>
-
-          <strong>
-            {
-              detail.summary
-                .slotCount
-            }
-          </strong>
-
-          <small>
-            über alle Crafter
-          </small>
-        </article>
-      </section>
-
-      <ProfessionCapabilityMatrix
+      <ProfessionDetailWorkspace
         detail={detail}
-      />
-
-      <ProfessionRecipeFinder
         professionId={
           professionId
         }
       />
-
-      <ProfessionCoverageMatrix
-        detail={detail}
-      />
-
-      <section className="profession-detail-character-section">
-        <div className="profession-detail-section-heading">
-          <div>
-            <p className="eyebrow">
-              CRAFTER
-            </p>
-
-            <h2>
-              Was kann welcher Char?
-            </h2>
-          </div>
-
-          <p>
-            {
-              detail.summary
-                .missingCharacterCount
-            }
-            {
-              " Charaktere besitzen noch keine vollständig erkannten Craft-Daten."
-            }
-          </p>
-        </div>
-
-        {detail.characters.length ===
-        0 ? (
-          <section className="panel">
-            <div className="empty-state">
-              Diesem Beruf ist noch kein
-              Charakter zugewiesen.
-            </div>
-          </section>
-        ) : (
-          <div className="profession-character-list">
-            {detail.characters.map(
-              (coverage) => (
-                <ProfessionCharacterCard
-                  coverage={coverage}
-                  key={
-                    coverage
-                      .characterProfessionId
-                  }
-                />
-              )
-            )}
-          </div>
-        )}
-      </section>
     </>
   );
 }

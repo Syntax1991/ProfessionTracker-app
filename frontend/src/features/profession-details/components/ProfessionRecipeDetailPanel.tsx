@@ -1,0 +1,257 @@
+import {
+  Link
+} from "react-router-dom";
+import type {
+  ProfessionRecipeCatalogItem,
+  ProfessionRecipeCrafter
+} from "../types/professionRecipe.types";
+
+type ProfessionRecipeDetailPanelProps = {
+  recipe:
+    ProfessionRecipeCatalogItem;
+};
+
+function formatModifier(
+  value: number | null
+): string {
+  if (value === null) {
+    return "–";
+  }
+
+  return value > 0
+    ? `+${value}`
+    : `${value}`;
+}
+
+function getOperationSkill(
+  crafter:
+    ProfessionRecipeCrafter
+): number {
+  return (
+    crafter.operation
+      .effectiveSkill ??
+    crafter.effectiveSkill
+  );
+}
+
+export function ProfessionRecipeDetailPanel({
+  recipe
+}: ProfessionRecipeDetailPanelProps) {
+  return (
+    <aside className="panel profession-recipe-detail">
+      <header className="profession-recipe-detail-header">
+        <div>
+          <p className="eyebrow">
+            REZEPT
+          </p>
+
+          <h3>
+            {recipe.name}
+          </h3>
+
+          <span>
+            {recipe.expansion}
+            {" · #"}
+            {recipe.gameRecipeId}
+          </span>
+        </div>
+
+        <span
+          className={
+            recipe.crafters.length > 0
+              ? "profession-recipe-available"
+              : "profession-recipe-missing"
+          }
+        >
+          {recipe.crafters.length}
+          {" Crafter"}
+        </span>
+      </header>
+
+      <div className="profession-recipe-detail-facts">
+        <div>
+          <span>
+            Schwierigkeit
+          </span>
+
+          <strong>
+            {
+              recipe.baseDifficulty ??
+              "–"
+            }
+          </strong>
+        </div>
+
+        <div>
+          <span>
+            Operation-Daten
+          </span>
+
+          <strong>
+            {
+              recipe.operationCoverage
+                .coveragePercent
+            }
+            {"%"}
+          </strong>
+        </div>
+      </div>
+
+      {recipe.capabilities.length >
+        0 && (
+        <div className="profession-recipe-detail-groups">
+          {recipe.capabilities.map(
+            (capability) => (
+              <span
+                key={
+                  capability.id
+                }
+              >
+                {capability.name}
+              </span>
+            )
+          )}
+        </div>
+      )}
+
+      <section className="profession-recipe-detail-crafters">
+        <header>
+          <h4>
+            Crafter
+          </h4>
+
+          <span>
+            {
+              recipe.crafters.length
+            }
+          </span>
+        </header>
+
+        {recipe.crafters.length ===
+        0 ? (
+          <div className="profession-recipe-detail-empty">
+            Kein erfasster Charakter
+            besitzt dieses Rezept.
+          </div>
+        ) : (
+          <div className="profession-recipe-detail-crafter-list">
+            {recipe.crafters.map(
+              (crafter) => (
+                <article
+                  className="profession-recipe-detail-crafter"
+                  key={
+                    crafter.characterId
+                  }
+                >
+                  <div className="profession-recipe-detail-crafter-header">
+                    <div>
+                      <strong>
+                        {crafter.name}
+                      </strong>
+
+                      <span>
+                        {crafter.className}
+                        {" · "}
+                        {crafter.realm}
+                      </span>
+                    </div>
+
+                    <Link
+                      to={
+                        `/characters/${crafter.characterId}`
+                      }
+                    >
+                      Details
+                    </Link>
+                  </div>
+
+                  <div className="profession-recipe-operation-chips">
+                    <span>
+                      Basis{" "}
+                      {
+                        crafter.operation
+                          .baseSkill ??
+                        crafter.skill
+                      }
+                    </span>
+
+                    <span>
+                      Bonus{" "}
+                      {
+                        formatModifier(
+                          crafter.operation
+                            .bonusSkill
+                        )
+                      }
+                    </span>
+
+                    <span>
+                      Effektiv{" "}
+                      {
+                        getOperationSkill(
+                          crafter
+                        )
+                      }
+                    </span>
+
+                    {crafter.operation
+                      .craftingQuality !==
+                      null && (
+                      <span>
+                        Q
+                        {
+                          crafter.operation
+                            .craftingQuality
+                        }
+                      </span>
+                    )}
+
+                    {crafter.operation
+                      .concentrationCost !==
+                      null && (
+                      <span>
+                        Konz.{" "}
+                        {
+                          crafter.operation
+                            .concentrationCost
+                        }
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="profession-recipe-operation-meta">
+                    <span
+                      className={
+                        crafter.operation
+                          .status ===
+                        "CAPTURED"
+                          ? "captured"
+                          : "missing"
+                      }
+                    >
+                      {
+                        crafter.operation
+                          .status ===
+                        "CAPTURED"
+                          ? "Operation erfasst"
+                          : "Operation fehlt"
+                      }
+                    </span>
+
+                    <span>
+                      KP{" "}
+                      {
+                        crafter
+                          .knowledgePoints
+                      }
+                    </span>
+                  </div>
+                </article>
+              )
+            )}
+          </div>
+        )}
+      </section>
+    </aside>
+  );
+}

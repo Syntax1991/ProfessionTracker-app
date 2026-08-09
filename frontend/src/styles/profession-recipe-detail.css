@@ -1,0 +1,224 @@
+.profession-recipe-detail {
+  position: sticky;
+  top: 14px;
+  overflow: hidden;
+}
+
+.profession-recipe-detail-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content:
+    space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom:
+    1px solid var(--border);
+}
+
+.profession-recipe-detail-header h3 {
+  margin-top: 3px;
+  font-size: 0.9rem;
+}
+
+.profession-recipe-detail-header
+  > div > span {
+  display: block;
+  margin-top: 4px;
+  color: var(--text-muted);
+  font-size: 0.6rem;
+}
+
+.profession-recipe-available,
+.profession-recipe-missing {
+  flex: 0 0 auto;
+  padding: 5px 7px;
+  border-radius: 999px;
+  font-size: 0.58rem;
+  font-weight: 800;
+}
+
+.profession-recipe-available {
+  color: #a9edcd;
+  background:
+    var(--success-soft);
+}
+
+.profession-recipe-missing {
+  color: #ffc9cd;
+  background:
+    var(--danger-soft);
+}
+
+.profession-recipe-detail-facts {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  border-bottom:
+    1px solid var(--border);
+}
+
+.profession-recipe-detail-facts > div {
+  padding: 11px 16px;
+}
+
+.profession-recipe-detail-facts
+  > div + div {
+  border-left:
+    1px solid var(--border);
+}
+
+.profession-recipe-detail-facts span {
+  display: block;
+  color: var(--text-muted);
+  font-size: 0.58rem;
+}
+
+.profession-recipe-detail-facts strong {
+  display: block;
+  margin-top: 3px;
+  font-size: 0.8rem;
+}
+
+.profession-recipe-detail-groups {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  padding: 10px 16px;
+  border-bottom:
+    1px solid var(--border);
+}
+
+.profession-recipe-detail-groups span {
+  padding: 4px 6px;
+  border-radius: 999px;
+  color: #cdbcf4;
+  background:
+    var(--primary-soft);
+  font-size: 0.56rem;
+}
+
+.profession-recipe-detail-crafters
+  > header {
+  display: flex;
+  align-items: center;
+  justify-content:
+    space-between;
+  padding: 10px 16px;
+  border-bottom:
+    1px solid var(--border);
+}
+
+.profession-recipe-detail-crafters h4 {
+  font-size: 0.68rem;
+}
+
+.profession-recipe-detail-crafters
+  > header span {
+  color: var(--text-muted);
+  font-size: 0.6rem;
+}
+
+.profession-recipe-detail-crafter-list {
+  max-height: 44vh;
+  overflow-y: auto;
+}
+
+.profession-recipe-detail-crafter {
+  padding: 11px 16px;
+  border-bottom:
+    1px solid var(--border);
+}
+
+.profession-recipe-detail-crafter:last-child {
+  border-bottom: 0;
+}
+
+.profession-recipe-detail-crafter-header {
+  display: flex;
+  align-items: center;
+  justify-content:
+    space-between;
+  gap: 10px;
+}
+
+.profession-recipe-detail-crafter-header
+  strong {
+  display: block;
+  font-size: 0.7rem;
+}
+
+.profession-recipe-detail-crafter-header
+  span {
+  display: block;
+  margin-top: 2px;
+  color: var(--text-muted);
+  font-size: 0.57rem;
+}
+
+.profession-recipe-detail-crafter-header
+  a {
+  color: #cdbcf4;
+  font-size: 0.58rem;
+  text-decoration: none;
+}
+
+.profession-recipe-operation-chips,
+.profession-recipe-operation-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 8px;
+}
+
+.profession-recipe-operation-chips
+  span,
+.profession-recipe-operation-meta
+  span {
+  padding: 4px 6px;
+  border-radius: 999px;
+  font-size: 0.56rem;
+  white-space: nowrap;
+}
+
+.profession-recipe-operation-chips span {
+  color: #a9edcd;
+  background:
+    var(--success-soft);
+}
+
+.profession-recipe-operation-meta span {
+  color: var(--text-muted);
+  background:
+    var(--surface-elevated);
+}
+
+.profession-recipe-operation-meta
+  .captured {
+  color: #a9edcd;
+  background:
+    var(--success-soft);
+}
+
+.profession-recipe-operation-meta
+  .missing {
+  color: #ffd68a;
+  background:
+    rgba(190, 134, 31, 0.18);
+}
+
+.profession-recipe-detail-empty {
+  padding: 20px 16px;
+  color: var(--text-muted);
+  font-size: 0.65rem;
+  text-align: center;
+}
+
+@media (max-width: 1200px) {
+  .profession-recipe-detail {
+    position: static;
+  }
+
+  .profession-recipe-detail-crafter-list {
+    max-height: none;
+  }
+}

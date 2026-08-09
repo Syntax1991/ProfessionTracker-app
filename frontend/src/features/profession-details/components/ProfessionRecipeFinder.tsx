@@ -15,8 +15,11 @@ import type {
   ProfessionRecipeCatalogItem
 } from "../types/professionRecipe.types";
 import {
-  ProfessionRecipeCard
-} from "./ProfessionRecipeCard";
+  ProfessionRecipeDetailPanel
+} from "./ProfessionRecipeDetailPanel";
+import {
+  ProfessionRecipeList
+} from "./ProfessionRecipeList";
 
 type ProfessionRecipeFinderProps = {
   professionId: string;
@@ -50,6 +53,16 @@ export function ProfessionRecipeFinder({
       false
     );
 
+  const [
+    selectedRecipeId,
+    setSelectedRecipeId
+  ] =
+    useState<
+      string | null
+    >(
+      null
+    );
+
   const filteredRecipes =
     useMemo(
       () => {
@@ -73,26 +86,32 @@ export function ProfessionRecipeFinder({
       ]
     );
 
+  const selectedRecipe =
+    filteredRecipes.find(
+      (recipe) =>
+        recipe.id ===
+        selectedRecipeId
+    ) ??
+    filteredRecipes[0] ??
+    null;
+
   return (
     <section className="profession-recipe-finder-section">
       <div className="profession-detail-section-heading">
         <div>
           <p className="eyebrow">
-            REZEPT FINDER
+            REZEPTE
           </p>
 
           <h2>
-            Wer kann diesen Craft?
+            Craft-Katalog
           </h2>
         </div>
 
         <p>
-          Suche nach Rezept,
-          Craft-Gruppe oder Charakter.
-          Fehlende Rezepte bleiben
-          sichtbar, damit du Lücken in
-          deiner Account-Abdeckung
-          erkennst.
+          Kompakte Liste links,
+          Details nur für das
+          ausgewählte Rezept rechts.
         </p>
       </div>
 
@@ -123,7 +142,7 @@ export function ProfessionRecipeFinder({
 
               <div>
                 <span>
-                  Abgedeckt
+                  Craftbar
                 </span>
 
                 <strong>
@@ -144,6 +163,20 @@ export function ProfessionRecipeFinder({
                     catalog.summary
                       .missingRecipeCount
                   }
+                </strong>
+              </div>
+
+              <div>
+                <span>
+                  Daten
+                </span>
+
+                <strong>
+                  {
+                    catalog.summary
+                      .operationCoveragePercent
+                  }
+                  {"%"}
                 </strong>
               </div>
             </div>
@@ -182,7 +215,7 @@ export function ProfessionRecipeFinder({
                 />
 
                 <span>
-                  Nur vorhandene Crafter
+                  Nur craftbare
                 </span>
               </label>
             </div>
@@ -202,23 +235,31 @@ export function ProfessionRecipeFinder({
           0 ? (
             <section className="panel">
               <div className="empty-state">
-                Keine Rezepte passen zu
-                diesem Filter.
+                Keine Rezepte passen
+                zu diesem Filter.
               </div>
             </section>
           ) : (
-            <div className="profession-recipe-grid">
-              {filteredRecipes.map(
-                (recipe) => (
-                  <ProfessionRecipeCard
-                    key={
-                      recipe.id
-                    }
-                    recipe={
-                      recipe
-                    }
-                  />
-                )
+            <div className="profession-recipe-browser">
+              <ProfessionRecipeList
+                onSelect={
+                  setSelectedRecipeId
+                }
+                recipes={
+                  filteredRecipes
+                }
+                selectedRecipeId={
+                  selectedRecipe?.id ??
+                  null
+                }
+              />
+
+              {selectedRecipe && (
+                <ProfessionRecipeDetailPanel
+                  recipe={
+                    selectedRecipe
+                  }
+                />
               )}
             </div>
           )}
