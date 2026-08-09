@@ -22,7 +22,8 @@ export class ProfessionDetailRepository {
 
             nodeProgress: {
               select: {
-                rank: true
+                rank: true,
+                knowledgeRank: true
               }
             },
 

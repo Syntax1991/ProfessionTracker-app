@@ -8,6 +8,13 @@ type OverviewRecord =
     >
   >[number];
 
+type OverviewNodeProgress =
+  OverviewRecord[
+    "assignments"
+  ][number][
+    "nodeProgress"
+  ][number];
+
 export function mapProfessionOverview(
   records: OverviewRecord[]
 ): ProfessionOverviewItem[] {
@@ -36,7 +43,9 @@ export function mapProfessionOverview(
               (
                 progress
               ) =>
-                progress.rank > 0
+                getInvestedSkillPoints(
+                  progress
+                ) > 0
             ).length,
           0
         );
@@ -79,7 +88,9 @@ export function mapProfessionOverview(
 
 function hasTrackedData(
   assignment:
-    OverviewRecord["assignments"][number]
+    OverviewRecord[
+      "assignments"
+    ][number]
 ): boolean {
   return (
     assignment.recipes.length > 0 ||
@@ -87,7 +98,18 @@ function hasTrackedData(
       (
         progress
       ) =>
-        progress.rank > 0
+        getInvestedSkillPoints(
+          progress
+        ) > 0
     )
+  );
+}
+
+function getInvestedSkillPoints(
+  progress: OverviewNodeProgress
+): number {
+  return (
+    progress.knowledgeRank ??
+    progress.rank
   );
 }

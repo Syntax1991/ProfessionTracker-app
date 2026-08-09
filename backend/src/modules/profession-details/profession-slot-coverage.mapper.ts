@@ -40,6 +40,19 @@ export function mapProfessionSlotCoverage(
     const progress of
     assignment.nodeProgress
   ) {
+    const skillPoints =
+      progress.knowledgeRank ??
+      progress.rank;
+
+    /*
+     * A specialization can be unlocked without
+     * any Profession Knowledge invested in it.
+     * Zero-point nodes must not count as coverage.
+     */
+    if (skillPoints <= 0) {
+      continue;
+    }
+
     const slot =
       resolveProfessionSlot(
         progress.node.name
@@ -60,9 +73,7 @@ export function mapProfessionSlotCoverage(
         name:
           slot.name,
 
-        skillPoints:
-          progress.knowledgeRank ??
-          progress.rank,
+        skillPoints,
 
         maxSkillPoints:
           progress.node
