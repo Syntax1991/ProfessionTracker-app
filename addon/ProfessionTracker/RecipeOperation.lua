@@ -1,13 +1,42 @@
 local _, PT = ...
 
-local function isValidDifficulty(
+local function isScalarValue(
     value
 )
-    return type(value) == "number"
-        and value >= 0
+    local valueType =
+        type(value)
+
+    return valueType == "number"
+        or valueType == "string"
+        or valueType == "boolean"
 end
 
-function PT.GetRecipeBaseDifficulty(
+local function copyScalarMetrics(
+    operationInfo
+)
+    local metrics = {}
+
+    for key, value in pairs(
+        operationInfo
+    ) do
+        if type(key) == "string"
+            and isScalarValue(
+                value
+            )
+        then
+            metrics[key] =
+                value
+        end
+    end
+
+    if next(metrics) == nil then
+        return nil
+    end
+
+    return metrics
+end
+
+function PT.GetRecipeOperationSnapshot(
     recipeID
 )
     if not recipeID
@@ -28,16 +57,34 @@ function PT.GetRecipeBaseDifficulty(
         )
 
     if not success
-        or not operationInfo
+        or type(operationInfo) ~= "table"
     then
         return nil
     end
 
-    if not isValidDifficulty(
-        operationInfo.baseDifficulty
-    ) then
+    return copyScalarMetrics(
+        operationInfo
+    )
+end
+
+function PT.GetRecipeBaseDifficulty(
+    recipeID
+)
+    local operationMetrics =
+        PT.GetRecipeOperationSnapshot(
+            recipeID
+        )
+
+    local baseDifficulty =
+        operationMetrics
+        and operationMetrics.baseDifficulty
+        or nil
+
+    if type(baseDifficulty) ~= "number"
+        or baseDifficulty < 0
+    then
         return nil
     end
 
-    return operationInfo.baseDifficulty
+    return baseDifficulty
 end

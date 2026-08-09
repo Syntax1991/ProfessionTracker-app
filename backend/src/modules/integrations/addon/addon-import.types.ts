@@ -9,6 +9,17 @@ export type LuaTable = {
   [key: string]: LuaValue;
 };
 
+export type AddonRecipeOperationMetric =
+  | string
+  | number
+  | boolean;
+
+export type AddonRecipeOperationMetrics =
+  Record<
+    string,
+    AddonRecipeOperationMetric
+  >;
+
 export type AddonClientInfo = {
   version: string | null;
   build: string | null;
@@ -50,6 +61,8 @@ export type AddonRecipe = {
   parentCategoryId: number | null;
   parentCategoryName: string | null;
   baseDifficulty: number | null;
+  operationMetrics:
+    AddonRecipeOperationMetrics;
 };
 
 export type AddonRecipeCatalog = {

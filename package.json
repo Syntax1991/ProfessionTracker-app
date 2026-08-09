@@ -12,6 +12,7 @@
     "db:migrate": "npm --prefix backend run db:migrate",
     "db:seed": "npm --prefix backend run db:seed",
     "db:studio": "npm --prefix backend run db:studio",
+    "inspect:recipe-operations": "node scripts/inspect-addon-recipe-operation-metrics.mjs",
     "dev:restart": "node scripts/dev-manager.mjs restart",
     "dev:stop": "node scripts/dev-manager.mjs stop"
   },
