@@ -49,6 +49,7 @@ export type AddonRecipe = {
   categoryName: string | null;
   parentCategoryId: number | null;
   parentCategoryName: string | null;
+  baseDifficulty: number | null;
 };
 
 export type AddonRecipeCatalog = {

@@ -48,6 +48,18 @@ local function getCategoryInfo(
     return categoryInfo
 end
 
+local function getBaseDifficulty(
+    recipeID
+)
+    if not PT.GetRecipeBaseDifficulty then
+        return nil
+    end
+
+    return PT.GetRecipeBaseDifficulty(
+        recipeID
+    )
+end
+
 local function createCatalogRecipe(
     recipeID
 )
@@ -115,6 +127,11 @@ local function createCatalogRecipe(
             parentCategoryInfo
             and parentCategoryInfo.name
             or nil,
+
+        baseDifficulty =
+            getBaseDifficulty(
+                resolvedRecipeID
+            ),
 
         learned =
             recipeInfo.learned

@@ -120,6 +120,9 @@ export class AddonRecipeCatalogPersistence {
               categoryId:
                 recipe.categoryId,
 
+              baseDifficulty:
+                recipe.baseDifficulty,
+
               source:
                 "ADDON",
 
@@ -138,6 +141,9 @@ export class AddonRecipeCatalogPersistence {
 
               categoryId:
                 recipe.categoryId,
+
+              baseDifficulty:
+                recipe.baseDifficulty,
 
               source:
                 "ADDON",

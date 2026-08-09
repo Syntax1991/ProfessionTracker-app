@@ -27,6 +27,22 @@ function optionalPositiveNumber(
     : null;
 }
 
+function optionalNonNegativeNumber(
+  value: LuaValue | undefined
+): number | null {
+  const number =
+    asNumber(
+      value
+    );
+
+  return (
+    number !== null &&
+    number >= 0
+  )
+    ? number
+    : null;
+}
+
 function normalizeRecipe(
   value: LuaValue
 ): AddonRecipe | null {
@@ -77,6 +93,11 @@ function normalizeRecipe(
     parentCategoryName:
       asString(
         recipe.parentCategoryName
+      ),
+
+    baseDifficulty:
+      optionalNonNegativeNumber(
+        recipe.baseDifficulty
       )
   };
 }

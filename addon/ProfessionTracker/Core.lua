@@ -1,7 +1,7 @@
 local addonName, PT = ...
 
 PT.ADDON_NAME = addonName
-PT.ADDON_VERSION = "0.6.1"
+PT.ADDON_VERSION = "0.6.2"
 PT.SCHEMA_VERSION = 4
 
 local regionNames = {
@@ -86,9 +86,11 @@ function PT.GetClientInfo()
         version =
             version
             or "unknown",
+
         build =
             build
             or "unknown",
+
         interfaceVersion =
             interfaceVersion
             or 0
