@@ -11,36 +11,78 @@ type OverviewRecord =
 export function mapProfessionOverview(
   records: OverviewRecord[]
 ): ProfessionOverviewItem[] {
-  return records.map((profession) => {
-    const trackedCharacterCount =
-      profession.assignments.filter(
-        (assignment) =>
-          assignment.nodeProgress.some(
-            (progress) =>
-              progress.rank > 0
-          )
-      ).length;
+  return records.map(
+    (
+      profession
+    ) => {
+      const trackedCharacterCount =
+        profession.assignments.filter(
+          (
+            assignment
+          ) =>
+            hasTrackedData(
+              assignment
+            )
+        ).length;
 
-    const activeNodeCount =
-      profession.assignments.reduce(
-        (total, assignment) =>
-          total +
-          assignment.nodeProgress.filter(
-            (progress) =>
-              progress.rank > 0
-          ).length,
-        0
-      );
+      const activeNodeCount =
+        profession.assignments.reduce(
+          (
+            total,
+            assignment
+          ) =>
+            total +
+            assignment.nodeProgress.filter(
+              (
+                progress
+              ) =>
+                progress.rank > 0
+            ).length,
+          0
+        );
 
-    return {
-      id: profession.id,
-      key: profession.key,
-      name: profession.name,
-      category: profession.category,
-      characterCount:
-        profession.assignments.length,
-      trackedCharacterCount,
-      activeNodeCount
-    };
-  });
+      return {
+        id:
+          profession.id,
+
+        key:
+          profession.key,
+
+        name:
+          profession.name,
+
+        category:
+          profession.category,
+
+        characterCount:
+          profession
+            .assignments
+            .length,
+
+        trackedCharacterCount,
+
+        activeNodeCount,
+
+        catalogRecipeCount:
+          profession
+            .recipes
+            .length
+      };
+    }
+  );
+}
+
+function hasTrackedData(
+  assignment:
+    OverviewRecord["assignments"][number]
+): boolean {
+  return (
+    assignment.recipes.length > 0 ||
+    assignment.nodeProgress.some(
+      (
+        progress
+      ) =>
+        progress.rank > 0
+    )
+  );
 }

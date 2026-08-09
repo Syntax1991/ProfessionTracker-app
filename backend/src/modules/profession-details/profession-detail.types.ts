@@ -7,6 +7,17 @@ export type ProfessionCoverageEntry = {
   source: string;
 };
 
+export type ProfessionRecipeCoverage = {
+  id: string;
+  gameRecipeId: number;
+  name: string;
+  skillLineId: number | null;
+  expansion: string;
+  categoryId: number | null;
+  source: string;
+  lastSyncedAt: string | null;
+};
+
 export type ProfessionCharacterCoverage = {
   characterProfessionId: string;
   character: {
@@ -24,6 +35,7 @@ export type ProfessionCharacterCoverage = {
     | "UNTRACKED"
     | "NO_CATALOG";
   slots: ProfessionCoverageEntry[];
+  recipes: ProfessionRecipeCoverage[];
 };
 
 export type ProfessionOverviewItem = {
@@ -34,6 +46,7 @@ export type ProfessionOverviewItem = {
   characterCount: number;
   trackedCharacterCount: number;
   activeNodeCount: number;
+  catalogRecipeCount: number;
 };
 
 export type ProfessionDetailView = {
@@ -48,6 +61,8 @@ export type ProfessionDetailView = {
     trackedCharacterCount: number;
     missingCharacterCount: number;
     slotCount: number;
+    catalogRecipeCount: number;
+    learnedRecipeCount: number;
   };
   characters: ProfessionCharacterCoverage[];
 };

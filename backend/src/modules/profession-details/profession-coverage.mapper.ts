@@ -1,7 +1,8 @@
 import type { ProfessionDetailRepository } from "./profession-detail.repository.js";
 import type {
   ProfessionCharacterCoverage,
-  ProfessionCoverageEntry
+  ProfessionCoverageEntry,
+  ProfessionRecipeCoverage
 } from "./profession-detail.types.js";
 import {
   compareProfessionSlotNames,
@@ -20,9 +21,13 @@ type DetailRecord =
 type DetailAssignment =
   DetailRecord["assignments"][number];
 
+type DetailRecipe =
+  DetailAssignment["recipes"][number];
+
 export function mapProfessionCharacterCoverage(
   assignment: DetailAssignment,
-  hasCatalog: boolean
+  hasSpecializationCatalog: boolean,
+  hasRecipeCatalog: boolean
 ): ProfessionCharacterCoverage {
   const slotsByKey =
     new Map<
@@ -110,6 +115,15 @@ export function mapProfessionCharacterCoverage(
         )
     );
 
+  const recipes =
+    assignment.recipes
+      .map(
+        mapRecipeCoverage
+      )
+      .sort(
+        compareRecipeCoverage
+      );
+
   return {
     characterProfessionId:
       assignment.id,
@@ -139,13 +153,68 @@ export function mapProfessionCharacterCoverage(
 
     dataStatus:
       resolveDataStatus(
-        hasCatalog,
+        hasSpecializationCatalog,
+        hasRecipeCatalog,
         hasNonSlotProgress,
-        slots.length
+        slots.length,
+        recipes.length
       ),
 
-    slots
+    slots,
+    recipes
   };
+}
+
+function mapRecipeCoverage(
+  entry: DetailRecipe
+): ProfessionRecipeCoverage {
+  return {
+    id:
+      entry.recipe.id,
+
+    gameRecipeId:
+      entry.recipe.gameRecipeId,
+
+    name:
+      entry.recipe.name,
+
+    skillLineId:
+      entry.recipe.skillLineId,
+
+    expansion:
+      entry.recipe.expansion,
+
+    categoryId:
+      entry.recipe.categoryId,
+
+    source:
+      entry.source,
+
+    lastSyncedAt:
+      entry.lastSyncedAt
+        ?.toISOString() ??
+      null
+  };
+}
+
+function compareRecipeCoverage(
+  left:
+    ProfessionRecipeCoverage,
+  right:
+    ProfessionRecipeCoverage
+): number {
+  return (
+    left.expansion.localeCompare(
+      right.expansion,
+      "de"
+    ) ||
+    left.name.localeCompare(
+      right.name,
+      "de"
+    ) ||
+    left.gameRecipeId -
+      right.gameRecipeId
+  );
 }
 
 function shouldReplaceSlot(
@@ -197,16 +266,24 @@ function shouldReplaceSlot(
 }
 
 function resolveDataStatus(
-  hasCatalog: boolean,
+  hasSpecializationCatalog: boolean,
+  hasRecipeCatalog: boolean,
   hasNonSlotProgress: boolean,
-  slotCount: number
+  slotCount: number,
+  recipeCount: number
 ): ProfessionCharacterCoverage["dataStatus"] {
-  if (!hasCatalog) {
-    return "NO_CATALOG";
+  if (
+    slotCount > 0 ||
+    recipeCount > 0
+  ) {
+    return "TRACKED";
   }
 
-  if (slotCount > 0) {
-    return "TRACKED";
+  if (
+    !hasSpecializationCatalog &&
+    !hasRecipeCatalog
+  ) {
+    return "NO_CATALOG";
   }
 
   if (hasNonSlotProgress) {

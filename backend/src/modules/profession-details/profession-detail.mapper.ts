@@ -19,9 +19,14 @@ type DetailRecord =
 export function mapProfessionDetail(
   profession: DetailRecord
 ): ProfessionDetailView {
-  const hasCatalog =
+  const hasSpecializationCatalog =
     profession
       .specializationTrees
+      .length > 0;
+
+  const hasRecipeCatalog =
+    profession
+      .recipes
       .length > 0;
 
   const characters =
@@ -30,7 +35,8 @@ export function mapProfessionDetail(
         (assignment) =>
           mapProfessionCharacterCoverage(
             assignment,
-            hasCatalog
+            hasSpecializationCatalog,
+            hasRecipeCatalog
           )
       )
       .sort(
@@ -72,6 +78,16 @@ export function mapProfessionDetail(
       slotCount:
         sumSlotCoverage(
           characters
+        ),
+
+      catalogRecipeCount:
+        profession
+          .recipes
+          .length,
+
+      learnedRecipeCount:
+        sumRecipeCoverage(
+          characters
         )
     },
 
@@ -90,6 +106,21 @@ function sumSlotCoverage(
     ) =>
       total +
       character.slots.length,
+    0
+  );
+}
+
+function sumRecipeCoverage(
+  characters:
+    ProfessionCharacterCoverage[]
+): number {
+  return characters.reduce(
+    (
+      total,
+      character
+    ) =>
+      total +
+      character.recipes.length,
     0
   );
 }
