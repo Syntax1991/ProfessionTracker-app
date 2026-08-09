@@ -1,6 +1,6 @@
-# Profession Tracker
+# SynTrack
 
-Profession Tracker replaces the previous World of Warcraft crafting
+SynTrack replaces the previous World of Warcraft crafting
 spreadsheet with a modular web application.
 
 ## MVP features

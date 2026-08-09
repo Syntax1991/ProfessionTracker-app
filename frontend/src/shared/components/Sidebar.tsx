@@ -31,7 +31,7 @@ export function Sidebar() {
 
           <div className="brand-copy">
             <strong>
-              Profession Tracker
+              SynTrack
             </strong>
 
             <span>

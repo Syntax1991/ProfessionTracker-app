@@ -1,6 +1,6 @@
-# Profession Tracker WoW Addon
+# SynTrack WoW Addon
 
-This directory contains the in-game data collector for Profession Tracker.
+This directory contains the in-game data collector for SynTrack.
 
 ## Version 0.4.0
 

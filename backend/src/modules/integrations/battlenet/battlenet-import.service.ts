@@ -287,7 +287,7 @@ export class BattleNetImportService {
     ) {
       throw new AppError(
         401,
-        "Bitte Profession Tracker zuerst mit Battle.net verbinden."
+        "Bitte SynTrack zuerst mit Battle.net verbinden."
       );
     }
 

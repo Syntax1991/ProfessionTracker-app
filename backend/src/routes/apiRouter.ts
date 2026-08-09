@@ -22,7 +22,7 @@ apiRouter.get(
     response.json({
       ok: true,
       service:
-        "Profession Tracker API",
+        "SynTrack API",
       timestamp:
         new Date()
           .toISOString()

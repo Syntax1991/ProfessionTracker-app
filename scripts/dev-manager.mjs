@@ -31,7 +31,7 @@ async function shutdown(
 
   writeInfo();
   writeInfo(
-    "Beende Profession Tracker …"
+    "Beende SynTrack …"
   );
 
   await terminateStartedChildren();
@@ -65,7 +65,7 @@ async function startManagedServers() {
   }
 
   writeInfo(
-    "Starte Profession Tracker …"
+    "Starte SynTrack …"
   );
 
   const startedServices =
@@ -87,7 +87,7 @@ async function startManagedServers() {
 
   writeInfo();
   writeInfo(
-    "Profession Tracker läuft:"
+    "SynTrack läuft:"
   );
 
   writeInfo(

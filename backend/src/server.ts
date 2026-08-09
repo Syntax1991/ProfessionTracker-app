@@ -6,7 +6,7 @@ const server = app.listen(
   env.PORT,
   () => {
     console.log(
-      `Profession Tracker API is running on http://localhost:${env.PORT}`
+      `SynTrack API is running on http://localhost:${env.PORT}`
     );
   }
 );
