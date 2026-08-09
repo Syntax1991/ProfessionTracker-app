@@ -180,15 +180,21 @@ local function handleSlashCommand(
     end
 
     PT.Print(
-        "Befehle: /pt status, /pt sync"
+        "Befehle: /st status, /st sync"
     )
 end
 
 local function initializeSlashCommands()
     SLASH_PROFESSIONTRACKER1 =
-        "/professiontracker"
+        "/syntrack"
 
     SLASH_PROFESSIONTRACKER2 =
+        "/st"
+
+    SLASH_PROFESSIONTRACKER3 =
+        "/professiontracker"
+
+    SLASH_PROFESSIONTRACKER4 =
         "/pt"
 
     SlashCmdList.PROFESSIONTRACKER =

@@ -1,7 +1,7 @@
 local addonName, PT = ...
 
 PT.ADDON_NAME = addonName
-PT.ADDON_VERSION = "0.6.0"
+PT.ADDON_VERSION = "0.6.1"
 PT.SCHEMA_VERSION = 4
 
 local regionNames = {
@@ -14,7 +14,7 @@ local regionNames = {
 
 function PT.Print(message)
     print(
-        "|cff9d78e8Profession Tracker:|r "
+        "|cff9d78e8SynTrack:|r "
             .. tostring(message)
     )
 end
