@@ -4,6 +4,12 @@ export class ProfessionDetailRepository {
   findOverview() {
     return prisma.profession.findMany({
       include: {
+        capabilities: {
+          select: {
+            id: true
+          }
+        },
+
         recipes: {
           select: {
             id: true
@@ -54,6 +60,12 @@ export class ProfessionDetailRepository {
         category: true,
 
         specializationTrees: {
+          select: {
+            id: true
+          }
+        },
+
+        capabilities: {
           select: {
             id: true
           }
@@ -120,7 +132,26 @@ export class ProfessionDetailRepository {
                     skillLineId: true,
                     expansion: true,
                     name: true,
-                    categoryId: true
+                    categoryId: true,
+
+                    capabilities: {
+                      select: {
+                        isPrimary: true,
+
+                        capability: {
+                          select: {
+                            id: true,
+                            key: true,
+                            name: true,
+                            type: true,
+                            slotKey: true,
+                            description: true,
+                            expansion: true,
+                            sortOrder: true
+                          }
+                        }
+                      }
+                    }
                   }
                 }
               }

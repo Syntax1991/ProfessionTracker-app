@@ -1,13 +1,10 @@
+import { mapProfessionCapabilities } from "./profession-capability.mapper.js";
 import type { ProfessionDetailRepository } from "./profession-detail.repository.js";
 import type {
-  ProfessionCharacterCoverage,
-  ProfessionCoverageEntry,
-  ProfessionRecipeCoverage
+  ProfessionCharacterCoverage
 } from "./profession-detail.types.js";
-import {
-  compareProfessionSlotNames,
-  resolveProfessionSlot
-} from "./profession-slot.mapper.js";
+import { mapProfessionRecipeCoverage } from "./profession-recipe-coverage.mapper.js";
+import { mapProfessionSlotCoverage } from "./profession-slot-coverage.mapper.js";
 
 type DetailRecord =
   NonNullable<
@@ -21,108 +18,26 @@ type DetailRecord =
 type DetailAssignment =
   DetailRecord["assignments"][number];
 
-type DetailRecipe =
-  DetailAssignment["recipes"][number];
-
 export function mapProfessionCharacterCoverage(
   assignment: DetailAssignment,
   hasSpecializationCatalog: boolean,
-  hasRecipeCatalog: boolean
+  hasRecipeCatalog: boolean,
+  hasCapabilityCatalog: boolean
 ): ProfessionCharacterCoverage {
-  const slotsByKey =
-    new Map<
-      string,
-      ProfessionCoverageEntry
-    >();
-
-  let hasNonSlotProgress =
-    false;
-
-  for (
-    const progress of
-    assignment.nodeProgress
-  ) {
-    const slot =
-      resolveProfessionSlot(
-        progress.node.name
-      );
-
-    if (!slot) {
-      hasNonSlotProgress =
-        true;
-
-      continue;
-    }
-
-    const entry:
-      ProfessionCoverageEntry = {
-        id:
-          `slot:${slot.key}`,
-
-        name:
-          slot.name,
-
-        skillPoints:
-          progress.knowledgeRank ??
-          progress.rank,
-
-        maxSkillPoints:
-          progress.node
-            .knowledgeMaxRank ??
-          progress.node.maxRank,
-
-        unlocked:
-          progress.rank > 0 ||
-          (
-            progress.unlockRank ??
-            0
-          ) > 0,
-
-        source:
-          progress.source
-      };
-
-    const existing =
-      slotsByKey.get(
-        slot.key
-      );
-
-    if (
-      !existing ||
-      shouldReplaceSlot(
-        entry,
-        existing
-      )
-    ) {
-      slotsByKey.set(
-        slot.key,
-        entry
-      );
-    }
-  }
-
-  const slots =
-    [
-      ...slotsByKey.values()
-    ].sort(
-      (
-        left,
-        right
-      ) =>
-        compareProfessionSlotNames(
-          left.name,
-          right.name
-        )
+  const slotCoverage =
+    mapProfessionSlotCoverage(
+      assignment
     );
 
   const recipes =
-    assignment.recipes
-      .map(
-        mapRecipeCoverage
-      )
-      .sort(
-        compareRecipeCoverage
-      );
+    mapProfessionRecipeCoverage(
+      assignment
+    );
+
+  const capabilities =
+    mapProfessionCapabilities(
+      assignment
+    );
 
   return {
     characterProfessionId:
@@ -155,133 +70,42 @@ export function mapProfessionCharacterCoverage(
       resolveDataStatus(
         hasSpecializationCatalog,
         hasRecipeCatalog,
-        hasNonSlotProgress,
-        slots.length,
-        recipes.length
+        hasCapabilityCatalog,
+        slotCoverage.hasNonSlotProgress,
+        slotCoverage.slots.length,
+        recipes.length,
+        capabilities.length
       ),
 
-    slots,
-    recipes
+    slots:
+      slotCoverage.slots,
+
+    recipes,
+    capabilities
   };
-}
-
-function mapRecipeCoverage(
-  entry: DetailRecipe
-): ProfessionRecipeCoverage {
-  return {
-    id:
-      entry.recipe.id,
-
-    gameRecipeId:
-      entry.recipe.gameRecipeId,
-
-    name:
-      entry.recipe.name,
-
-    skillLineId:
-      entry.recipe.skillLineId,
-
-    expansion:
-      entry.recipe.expansion,
-
-    categoryId:
-      entry.recipe.categoryId,
-
-    source:
-      entry.source,
-
-    lastSyncedAt:
-      entry.lastSyncedAt
-        ?.toISOString() ??
-      null
-  };
-}
-
-function compareRecipeCoverage(
-  left:
-    ProfessionRecipeCoverage,
-  right:
-    ProfessionRecipeCoverage
-): number {
-  return (
-    left.expansion.localeCompare(
-      right.expansion,
-      "de"
-    ) ||
-    left.name.localeCompare(
-      right.name,
-      "de"
-    ) ||
-    left.gameRecipeId -
-      right.gameRecipeId
-  );
-}
-
-function shouldReplaceSlot(
-  candidate:
-    ProfessionCoverageEntry,
-  existing:
-    ProfessionCoverageEntry
-): boolean {
-  if (
-    candidate.skillPoints !==
-    existing.skillPoints
-  ) {
-    return (
-      candidate.skillPoints >
-      existing.skillPoints
-    );
-  }
-
-  if (
-    candidate.maxSkillPoints !==
-    existing.maxSkillPoints
-  ) {
-    if (
-      candidate.maxSkillPoints ===
-      null
-    ) {
-      return false;
-    }
-
-    if (
-      existing.maxSkillPoints ===
-      null
-    ) {
-      return true;
-    }
-
-    return (
-      candidate.maxSkillPoints >
-      existing.maxSkillPoints
-    );
-  }
-
-  return (
-    candidate.source ===
-      "ADDON" &&
-    existing.source !==
-      "ADDON"
-  );
 }
 
 function resolveDataStatus(
   hasSpecializationCatalog: boolean,
   hasRecipeCatalog: boolean,
+  hasCapabilityCatalog: boolean,
   hasNonSlotProgress: boolean,
   slotCount: number,
-  recipeCount: number
+  recipeCount: number,
+  capabilityCount: number
 ): ProfessionCharacterCoverage["dataStatus"] {
   if (
     slotCount > 0 ||
-    recipeCount > 0
+    recipeCount > 0 ||
+    capabilityCount > 0
   ) {
     return "TRACKED";
   }
 
   if (
     !hasSpecializationCatalog &&
-    !hasRecipeCatalog
+    !hasRecipeCatalog &&
+    !hasCapabilityCatalog
   ) {
     return "NO_CATALOG";
   }

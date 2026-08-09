@@ -29,6 +29,11 @@ export function mapProfessionDetail(
       .recipes
       .length > 0;
 
+  const hasCapabilityCatalog =
+    profession
+      .capabilities
+      .length > 0;
+
   const characters =
     profession.assignments
       .map(
@@ -36,7 +41,8 @@ export function mapProfessionDetail(
           mapProfessionCharacterCoverage(
             assignment,
             hasSpecializationCatalog,
-            hasRecipeCatalog
+            hasRecipeCatalog,
+            hasCapabilityCatalog
           )
       )
       .sort(
@@ -88,6 +94,16 @@ export function mapProfessionDetail(
       learnedRecipeCount:
         sumRecipeCoverage(
           characters
+        ),
+
+      catalogCapabilityCount:
+        profession
+          .capabilities
+          .length,
+
+      coveredCapabilityCount:
+        countCoveredCapabilities(
+          characters
         )
     },
 
@@ -123,6 +139,30 @@ function sumRecipeCoverage(
       character.recipes.length,
     0
   );
+}
+
+function countCoveredCapabilities(
+  characters:
+    ProfessionCharacterCoverage[]
+): number {
+  const capabilityIds =
+    new Set<string>();
+
+  for (
+    const character of
+    characters
+  ) {
+    for (
+      const capability of
+      character.capabilities
+    ) {
+      capabilityIds.add(
+        capability.id
+      );
+    }
+  }
+
+  return capabilityIds.size;
 }
 
 function compareCharacterCoverage(

@@ -18,6 +18,18 @@ export type ProfessionRecipeCoverage = {
   lastSyncedAt: string | null;
 };
 
+export type ProfessionCapabilityCoverage = {
+  id: string;
+  key: string;
+  name: string;
+  type: string;
+  slotKey: string | null;
+  description: string | null;
+  expansion: string;
+  recipeCount: number;
+  primaryRecipeCount: number;
+};
+
 export type ProfessionCharacterCoverage = {
   characterProfessionId: string;
   character: {
@@ -36,6 +48,7 @@ export type ProfessionCharacterCoverage = {
     | "NO_CATALOG";
   slots: ProfessionCoverageEntry[];
   recipes: ProfessionRecipeCoverage[];
+  capabilities: ProfessionCapabilityCoverage[];
 };
 
 export type ProfessionOverviewItem = {
@@ -47,6 +60,7 @@ export type ProfessionOverviewItem = {
   trackedCharacterCount: number;
   activeNodeCount: number;
   catalogRecipeCount: number;
+  capabilityCount: number;
 };
 
 export type ProfessionDetailView = {
@@ -63,6 +77,8 @@ export type ProfessionDetailView = {
     slotCount: number;
     catalogRecipeCount: number;
     learnedRecipeCount: number;
+    catalogCapabilityCount: number;
+    coveredCapabilityCount: number;
   };
   characters: ProfessionCharacterCoverage[];
 };

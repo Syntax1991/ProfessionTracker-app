@@ -66,6 +66,11 @@ export function mapProfessionOverview(
         catalogRecipeCount:
           profession
             .recipes
+            .length,
+
+        capabilityCount:
+          profession
+            .capabilities
             .length
       };
     }
