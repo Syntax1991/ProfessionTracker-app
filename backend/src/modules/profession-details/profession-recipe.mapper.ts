@@ -1,3 +1,6 @@
+import {
+  calculateProfessionRecipeReadiness
+} from "./profession-recipe-readiness.js";
 import type {
   ProfessionRecipeRepository
 } from "./profession-recipe.repository.js";
@@ -77,7 +80,11 @@ function mapRecipe(
   const crafters =
     recipe.characters
       .map(
-        mapCrafter
+        (relation) =>
+          mapCrafter(
+            recipe.baseDifficulty,
+            relation
+          )
       )
       .sort(
         compareCrafters
@@ -136,6 +143,7 @@ function mapCapability(
 }
 
 function mapCrafter(
+  baseDifficulty: number | null,
   relation:
     RecipeRecord["characters"][number]
 ): ProfessionRecipeCrafter {
@@ -145,6 +153,12 @@ function mapCrafter(
   const effectiveSkill =
     assignment.skill +
     assignment.skillModifier;
+
+  const readiness =
+    calculateProfessionRecipeReadiness(
+      baseDifficulty,
+      effectiveSkill
+    );
 
   return {
     characterId:
@@ -172,6 +186,15 @@ function mapCrafter(
 
     knowledgePoints:
       assignment.knowledgePoints,
+
+    baselineStatus:
+      readiness.baselineStatus,
+
+    baselineSkillGap:
+      readiness.baselineSkillGap,
+
+    baselineSkillSurplus:
+      readiness.baselineSkillSurplus,
 
     source:
       relation.source,
@@ -210,7 +233,16 @@ function compareCrafters(
   right:
     ProfessionRecipeCrafter
 ): number {
+  const statusDifference =
+    getStatusPriority(
+      left.baselineStatus
+    ) -
+    getStatusPriority(
+      right.baselineStatus
+    );
+
   return (
+    statusDifference ||
     right.effectiveSkill -
       left.effectiveSkill ||
     left.name.localeCompare(
@@ -222,4 +254,20 @@ function compareCrafters(
       "de"
     )
   );
+}
+
+function getStatusPriority(
+  status:
+    ProfessionRecipeCrafter["baselineStatus"]
+): number {
+  switch (status) {
+    case "BASE_SKILL_SUFFICIENT":
+      return 0;
+
+    case "RECIPE_BONUS_REQUIRED":
+      return 1;
+
+    case "UNKNOWN":
+      return 2;
+  }
 }

@@ -8,6 +8,11 @@ export type ProfessionRecipeCapability = {
   isPrimary: boolean;
 };
 
+export type ProfessionRecipeBaselineStatus =
+  | "UNKNOWN"
+  | "BASE_SKILL_SUFFICIENT"
+  | "RECIPE_BONUS_REQUIRED";
+
 export type ProfessionRecipeCrafter = {
   characterId: string;
   name: string;
@@ -18,6 +23,16 @@ export type ProfessionRecipeCrafter = {
   skillModifier: number;
   effectiveSkill: number;
   knowledgePoints: number;
+
+  baselineStatus:
+    ProfessionRecipeBaselineStatus;
+
+  baselineSkillGap:
+    number | null;
+
+  baselineSkillSurplus:
+    number | null;
+
   source: string;
   lastSyncedAt: string | null;
 };
@@ -29,8 +44,10 @@ export type ProfessionRecipeCatalogItem = {
   expansion: string;
   categoryId: number | null;
   baseDifficulty: number | null;
+
   capabilities:
     ProfessionRecipeCapability[];
+
   crafters:
     ProfessionRecipeCrafter[];
 };

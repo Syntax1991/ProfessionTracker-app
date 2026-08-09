@@ -2,7 +2,9 @@ import {
   Link
 } from "react-router-dom";
 import type {
-  ProfessionRecipeCatalogItem
+  ProfessionRecipeBaselineStatus,
+  ProfessionRecipeCatalogItem,
+  ProfessionRecipeCrafter
 } from "../types/professionRecipe.types";
 
 type ProfessionRecipeCardProps = {
@@ -18,6 +20,60 @@ function formatModifier(
   }
 
   return `${value}`;
+}
+
+function getReadinessLabel(
+  crafter:
+    ProfessionRecipeCrafter
+): string {
+  switch (
+    crafter.baselineStatus
+  ) {
+    case "BASE_SKILL_SUFFICIENT":
+      if (
+        crafter.baselineSkillSurplus !==
+          null &&
+        crafter.baselineSkillSurplus >
+          0
+      ) {
+        return (
+          `Grundskill reicht · +${crafter.baselineSkillSurplus} Reserve`
+        );
+      }
+
+      return "Grundskill reicht";
+
+    case "RECIPE_BONUS_REQUIRED":
+      if (
+        crafter.baselineSkillGap !==
+        null
+      ) {
+        return (
+          `${crafter.baselineSkillGap} Skill vor Rezeptboni offen`
+        );
+      }
+
+      return "Rezeptboni erforderlich";
+
+    case "UNKNOWN":
+      return "Basischeck offen";
+  }
+}
+
+function getReadinessClass(
+  status:
+    ProfessionRecipeBaselineStatus
+): string {
+  switch (status) {
+    case "BASE_SKILL_SUFFICIENT":
+      return "sufficient";
+
+    case "RECIPE_BONUS_REQUIRED":
+      return "bonus-required";
+
+    case "UNKNOWN":
+      return "unknown";
+  }
 }
 
 export function ProfessionRecipeCard({
@@ -86,7 +142,7 @@ export function ProfessionRecipeCard({
 
         <section>
           <h4>
-            Schwierigkeit
+            Grundschwierigkeit
           </h4>
 
           <p className="profession-recipe-difficulty">
@@ -96,6 +152,13 @@ export function ProfessionRecipeCard({
               : recipe.baseDifficulty}
           </p>
         </section>
+      </div>
+
+      <div className="profession-recipe-baseline-note">
+        Basischeck: Vergleicht nur
+        effektiven Berufsskill und
+        Grundschwierigkeit. Das ist noch
+        kein finaler Safe-Craft-Status.
       </div>
 
       <section className="profession-recipe-crafters">
@@ -126,7 +189,7 @@ export function ProfessionRecipeCard({
                       `/characters/${crafter.characterId}`
                     }
                   >
-                    <div>
+                    <div className="profession-recipe-crafter-identity">
                       <strong>
                         {crafter.name}
                       </strong>
@@ -136,6 +199,18 @@ export function ProfessionRecipeCard({
                         {" · "}
                         {crafter.realm}
                       </span>
+
+                      <small
+                        className={
+                          `profession-recipe-readiness ${getReadinessClass(crafter.baselineStatus)}`
+                        }
+                      >
+                        {
+                          getReadinessLabel(
+                            crafter
+                          )
+                        }
+                      </small>
                     </div>
 
                     <div className="profession-recipe-crafter-stats">

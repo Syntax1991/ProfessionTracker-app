@@ -1,0 +1,55 @@
+.profession-recipe-baseline-note {
+  padding: 9px 16px;
+  border-bottom:
+    1px solid var(--border);
+  color: var(--text-muted);
+  background:
+    var(--surface-elevated);
+  font-size: 0.6rem;
+  line-height: 1.45;
+}
+
+.profession-recipe-crafter-identity {
+  min-width: 0;
+}
+
+.profession-recipe-crafter-identity
+  > small.profession-recipe-readiness {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 6px;
+  padding: 4px 7px;
+  border-radius: 999px;
+  font-size: 0.56rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.profession-recipe-readiness.sufficient {
+  color: #a9edcd;
+  background:
+    var(--success-soft);
+}
+
+.profession-recipe-readiness.bonus-required {
+  color: #ffd28a;
+  background:
+    var(--warning-soft);
+}
+
+.profession-recipe-readiness.unknown {
+  color: var(--text-secondary);
+  background:
+    var(--surface-hover);
+}
+
+@media (max-width: 620px) {
+  .profession-recipe-crafter-identity {
+    width: 100%;
+  }
+
+  .profession-recipe-crafter-identity
+    > small.profession-recipe-readiness {
+    white-space: normal;
+  }
+}
