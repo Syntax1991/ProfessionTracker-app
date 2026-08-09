@@ -136,19 +136,20 @@ model CraftCapability {
 }
 
 model CraftRecipe {
-  id             String    @id @default(cuid())
-  professionId   String
-  gameRecipeId   Int
-  skillLineId    Int?
-  expansion      String    @default("MIDNIGHT")
-  name           String
-  categoryId     Int?
-  craftedItemId  Int?
-  baseDifficulty Int?
-  source         String    @default("ADDON")
-  lastSyncedAt   DateTime?
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  id                   String    @id @default(cuid())
+  professionId         String
+  gameRecipeId         Int
+  skillLineId          Int?
+  expansion            String    @default("MIDNIGHT")
+  name                 String
+  categoryId           Int?
+  craftedItemId        Int?
+  baseDifficulty       Int?
+  operationMetricsJson String?
+  source               String    @default("ADDON")
+  lastSyncedAt         DateTime?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
 
   profession   Profession               @relation(fields: [professionId], references: [id], onDelete: Cascade)
   capabilities CraftRecipeCapability[]

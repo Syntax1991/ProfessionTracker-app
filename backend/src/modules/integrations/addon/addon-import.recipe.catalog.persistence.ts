@@ -5,6 +5,9 @@ import {
   getSyncDate
 } from "./addon-import.persistence-utils.js";
 import { AddonRecipeCapabilityPersistence } from "./addon-import.recipe.capability.persistence.js";
+import {
+  serializeRecipeOperationMetrics
+} from "./addon-import.recipe.operation-metrics.js";
 import { createRecipeMapKey } from "./addon-import.recipe.persistence-utils.js";
 import type {
   AddonImportTransaction,
@@ -90,6 +93,11 @@ export class AddonRecipeCatalogPersistence {
       const recipe of
       catalog.recipes
     ) {
+      const operationMetricsJson =
+        serializeRecipeOperationMetrics(
+          recipe.operationMetrics
+        );
+
       const storedRecipe =
         await transaction
           .craftRecipe
@@ -123,6 +131,8 @@ export class AddonRecipeCatalogPersistence {
               baseDifficulty:
                 recipe.baseDifficulty,
 
+              operationMetricsJson,
+
               source:
                 "ADDON",
 
@@ -144,6 +154,8 @@ export class AddonRecipeCatalogPersistence {
 
               baseDifficulty:
                 recipe.baseDifficulty,
+
+              operationMetricsJson,
 
               source:
                 "ADDON",
