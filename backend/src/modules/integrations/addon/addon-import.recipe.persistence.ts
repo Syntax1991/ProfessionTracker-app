@@ -1,5 +1,12 @@
-import { AddonRecipeCatalogPersistence } from "./addon-import.recipe.catalog.persistence.js";
-import { AddonCharacterRecipePersistence } from "./addon-import.recipe.character.persistence.js";
+import {
+  AddonRecipeCatalogPersistence
+} from "./addon-import.recipe.catalog.persistence.js";
+import {
+  AddonCharacterRecipePersistence
+} from "./addon-import.recipe.character.persistence.js";
+import {
+  AddonCharacterRecipeOperationPersistence
+} from "./addon-import.recipe.character-operation.persistence.js";
 import type {
   AddonImportTransaction,
   ProfessionIdMap,
@@ -15,6 +22,9 @@ export class AddonRecipePersistence {
 
   private readonly characterPersistence =
     new AddonCharacterRecipePersistence();
+
+  private readonly operationPersistence =
+    new AddonCharacterRecipeOperationPersistence();
 
   async persist(
     transaction: AddonImportTransaction,
@@ -48,6 +58,13 @@ export class AddonRecipePersistence {
       professionIds,
       recipeIds,
       result
+    );
+
+    await this.operationPersistence.persist(
+      transaction,
+      snapshot,
+      professionIds,
+      recipeIds
     );
 
     return result;

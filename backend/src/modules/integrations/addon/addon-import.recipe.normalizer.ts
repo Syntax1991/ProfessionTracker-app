@@ -5,10 +5,12 @@ import {
   numericValues,
   unixTimestampToIso
 } from "./addon-import.lua-utils.js";
+import {
+  normalizeOperationMetrics
+} from "./addon-import.operation-metrics.normalizer.js";
 import type {
   AddonRecipe,
   AddonRecipeCatalog,
-  AddonRecipeOperationMetrics,
   LuaValue
 } from "./addon-import.types.js";
 
@@ -42,43 +44,6 @@ function optionalNonNegativeNumber(
   )
     ? number
     : null;
-}
-
-function normalizeOperationMetrics(
-  value: LuaValue | undefined
-): AddonRecipeOperationMetrics {
-  const table =
-    asTable(
-      value
-    );
-
-  if (!table) {
-    return {};
-  }
-
-  const metrics:
-    AddonRecipeOperationMetrics = {};
-
-  for (
-    const [
-      key,
-      metric
-    ] of
-    Object.entries(
-      table
-    )
-  ) {
-    if (
-      typeof metric === "number" ||
-      typeof metric === "string" ||
-      typeof metric === "boolean"
-    ) {
-      metrics[key] =
-        metric;
-    }
-  }
-
-  return metrics;
 }
 
 function normalizeRecipe(

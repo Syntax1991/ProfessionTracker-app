@@ -1,6 +1,15 @@
-import { normalizeCatalog } from "./addon-import.catalog.normalizer.js";
-import { normalizeCharacter } from "./addon-import.character.normalizer.js";
-import { normalizeRecipeCatalog } from "./addon-import.recipe.normalizer.js";
+import {
+  normalizeCatalog
+} from "./addon-import.catalog.normalizer.js";
+import {
+  normalizeCharacter
+} from "./addon-import.character.normalizer.js";
+import {
+  normalizeCharacterRecipeOperations
+} from "./addon-import.character-recipe-operation.normalizer.js";
+import {
+  normalizeRecipeCatalog
+} from "./addon-import.recipe.normalizer.js";
 import {
   asNumber,
   asString,
@@ -140,6 +149,11 @@ export function normalizeAddonSnapshot(
           )
       : [];
 
+  const characterRecipeOperations =
+    normalizeCharacterRecipeOperations(
+      root.characterRecipeOperations
+    );
+
   const client =
     asTable(
       root.client
@@ -177,6 +191,7 @@ export function normalizeAddonSnapshot(
 
     catalogs,
     recipeCatalogs,
+    characterRecipeOperations,
     characters
   };
 }

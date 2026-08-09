@@ -174,14 +174,30 @@ model CraftRecipeCapability {
 }
 
 model CharacterCraftRecipe {
-  id                    String    @id @default(cuid())
-  characterProfessionId String
-  craftRecipeId         String
-  learned               Boolean   @default(true)
-  source                String    @default("ADDON")
-  lastSyncedAt          DateTime?
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
+  id                          String    @id @default(cuid())
+  characterProfessionId       String
+  craftRecipeId               String
+  learned                     Boolean   @default(true)
+  baseSkill                   Int?
+  bonusSkill                  Int?
+  effectiveSkill              Int?
+  craftingQuality             Int?
+  craftingQualityId           Int?
+  guaranteedCraftingQualityId Int?
+  lowerSkillThreshold         Int?
+  upperSkillThreshold         Int?
+  concentrationCost           Int?
+  concentrationCurrencyId     Int?
+  ingenuityRefund             Int?
+  quality                     Float?
+  operationMetricsJson        String?
+  operationCapturedAt         DateTime?
+  operationCaptureVersion     Int?
+  operationScopeVersion       Int?
+  source                      String    @default("ADDON")
+  lastSyncedAt                DateTime?
+  createdAt                   DateTime  @default(now())
+  updatedAt                   DateTime  @updatedAt
 
   characterProfession CharacterProfession @relation(fields: [characterProfessionId], references: [id], onDelete: Cascade)
   recipe              CraftRecipe         @relation(fields: [craftRecipeId], references: [id], onDelete: Cascade)
@@ -189,6 +205,7 @@ model CharacterCraftRecipe {
   @@unique([characterProfessionId, craftRecipeId])
   @@index([craftRecipeId])
   @@index([source])
+  @@index([operationCaptureVersion])
 }
 
 model BattleNetConnection {

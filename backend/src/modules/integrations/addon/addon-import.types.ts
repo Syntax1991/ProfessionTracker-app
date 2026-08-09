@@ -73,6 +73,30 @@ export type AddonRecipeCatalog = {
   capturedAt: string | null;
 };
 
+export type AddonCharacterRecipeOperation = {
+  gameRecipeId: number;
+  operationMetrics:
+    AddonRecipeOperationMetrics;
+};
+
+export type AddonCharacterRecipeOperationCapture = {
+  characterKey: string;
+  skillLineId: number;
+  captureVersion: number;
+  scopeVersion: number;
+  displayName: string | null;
+  expansionName: string | null;
+  parentSkillLineId: number | null;
+  parentProfessionName: string | null;
+  status: string | null;
+  learnedRecipeCount: number;
+  operationEligibleCount: number;
+  operationRecipeCount: number;
+  capturedAt: string | null;
+  recipes:
+    AddonCharacterRecipeOperation[];
+};
+
 export type AddonNodeProgress = {
   externalTreeId: number;
   externalNodeId: number;
@@ -122,6 +146,8 @@ export type AddonSnapshot = {
   client: AddonClientInfo;
   catalogs: AddonProfessionCatalog[];
   recipeCatalogs: AddonRecipeCatalog[];
+  characterRecipeOperations:
+    AddonCharacterRecipeOperationCapture[];
   characters: AddonCharacter[];
 };
 
