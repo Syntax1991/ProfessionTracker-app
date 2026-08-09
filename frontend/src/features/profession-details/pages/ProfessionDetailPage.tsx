@@ -2,9 +2,15 @@ import {
   Link,
   useParams
 } from "react-router-dom";
-import { LoadingPanel } from "../../../shared/components/LoadingPanel";
-import { PageHeader } from "../../../shared/components/PageHeader";
-import { StatusMessage } from "../../../shared/components/StatusMessage";
+import {
+  LoadingPanel
+} from "../../../shared/components/LoadingPanel";
+import {
+  PageHeader
+} from "../../../shared/components/PageHeader";
+import {
+  StatusMessage
+} from "../../../shared/components/StatusMessage";
 import {
   ProfessionCapabilityMatrix
 } from "../components/ProfessionCapabilityMatrix";
@@ -14,6 +20,9 @@ import {
 import {
   ProfessionCoverageMatrix
 } from "../components/ProfessionCoverageMatrix";
+import {
+  ProfessionRecipeFinder
+} from "../components/ProfessionRecipeFinder";
 import {
   useProfessionDetail
 } from "../hooks/useProfessionDetail";
@@ -190,6 +199,12 @@ export function ProfessionDetailPage() {
 
       <ProfessionCapabilityMatrix
         detail={detail}
+      />
+
+      <ProfessionRecipeFinder
+        professionId={
+          professionId
+        }
       />
 
       <ProfessionCoverageMatrix

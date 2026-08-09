@@ -1,6 +1,10 @@
-import type { RequestHandler } from "express";
+import type {
+  RequestHandler
+} from "express";
 import { ProfessionDetailService } from "./profession-detail.service.js";
-import { professionDetailParamsSchema } from "./profession-detail.validation.js";
+import {
+  professionDetailParamsSchema
+} from "./profession-detail.validation.js";
 
 export class ProfessionDetailController {
   constructor(
@@ -14,7 +18,8 @@ export class ProfessionDetailController {
       response
     ) => {
       response.json(
-        await this.service.getOverview()
+        await this.service
+          .getOverview()
       );
     };
 
@@ -24,14 +29,35 @@ export class ProfessionDetailController {
       response
     ) => {
       const params =
-        professionDetailParamsSchema.parse(
-          request.params
-        );
+        professionDetailParamsSchema
+          .parse(
+            request.params
+          );
 
       response.json(
-        await this.service.getDetail(
-          params.professionId
-        )
+        await this.service
+          .getDetail(
+            params.professionId
+          )
+      );
+    };
+
+  getRecipes:
+    RequestHandler = async (
+      request,
+      response
+    ) => {
+      const params =
+        professionDetailParamsSchema
+          .parse(
+            request.params
+          );
+
+      response.json(
+        await this.service
+          .getRecipes(
+            params.professionId
+          )
       );
     };
 }
