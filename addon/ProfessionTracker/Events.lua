@@ -19,8 +19,8 @@ local automaticRefreshEvents = {
 
     SKILL_LINES_CHANGED = {
         reason = "skill-lines-changed",
-        delay = 0.5,
-        announce = true
+        delay = 1.5,
+        announce = false
     },
 
     TRADE_SKILL_SHOW = {
@@ -54,9 +54,7 @@ local automaticRefreshEvents = {
     }
 }
 
-local function trimCommand(
-    value
-)
+local function trimCommand(value)
     local command =
         string.lower(
             value
@@ -152,18 +150,28 @@ local function scheduleInitialSync()
     )
 end
 
-local function handleSlashCommand(
-    input
-)
+local function printCaptureStatus()
+    if PT.PrintCurrentProfessionCaptureStatus then
+        PT.PrintCurrentProfessionCaptureStatus()
+        return
+    end
+
+    PT.PrintStatus()
+end
+
+local function handleSlashCommand(input)
     local command =
         trimCommand(
             input
         )
 
-    if command == ""
-        or command == "status"
-    then
+    if command == "" then
         PT.PrintStatus()
+        return
+    end
+
+    if command == "status" then
+        printCaptureStatus()
         return
     end
 
@@ -212,9 +220,7 @@ local function handleAddonLoaded(
     initializeSlashCommands()
 end
 
-local function handleAutomaticRefresh(
-    event
-)
+local function handleAutomaticRefresh(event)
     local configuration =
         automaticRefreshEvents[
             event

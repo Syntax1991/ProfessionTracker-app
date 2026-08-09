@@ -1,7 +1,7 @@
 local addonName, PT = ...
 
 PT.ADDON_NAME = addonName
-PT.ADDON_VERSION = "0.6.3"
+PT.ADDON_VERSION = "0.6.4"
 PT.SCHEMA_VERSION = 4
 
 local regionNames = {
@@ -25,11 +25,8 @@ function PT.NormalizeKeyPart(value)
     end
 
     local normalizedValue =
-        tostring(value)
-
-    normalizedValue =
         string.lower(
-            normalizedValue
+            tostring(value)
         )
 
     normalizedValue =
@@ -120,6 +117,11 @@ function PT.EnsureDatabase()
         ProfessionTrackerDB.recipeCatalog
         or {}
 
+    -- Operation data must survive normal character snapshot refreshes.
+    ProfessionTrackerDB.characterRecipeOperations =
+        ProfessionTrackerDB.characterRecipeOperations
+        or {}
+
     ProfessionTrackerDB.client =
         PT.GetClientInfo()
 
@@ -143,14 +145,11 @@ function PT.GetStoredCharacterCount()
 end
 
 function PT.PrintStatus()
-    local characterCount =
-        PT.GetStoredCharacterCount()
-
     PT.Print(
         string.format(
             "Version %s · %d gespeicherte Charaktere · Auto-Sync aktiv",
             PT.ADDON_VERSION,
-            characterCount
+            PT.GetStoredCharacterCount()
         )
     )
 end
