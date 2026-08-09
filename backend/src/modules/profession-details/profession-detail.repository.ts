@@ -1,16 +1,29 @@
 import { prisma } from "../../infrastructure/database/prismaClient.js";
+import {
+  TRACKED_PROFESSION_EXPANSION
+} from "./profession-expansion.constants.js";
 
 export class ProfessionDetailRepository {
   findOverview() {
     return prisma.profession.findMany({
       include: {
         capabilities: {
+          where: {
+            expansion:
+              TRACKED_PROFESSION_EXPANSION
+          },
+
           select: {
             id: true
           }
         },
 
         recipes: {
+          where: {
+            expansion:
+              TRACKED_PROFESSION_EXPANSION
+          },
+
           select: {
             id: true
           }
@@ -21,6 +34,15 @@ export class ProfessionDetailRepository {
             id: true,
 
             nodeProgress: {
+              where: {
+                node: {
+                  tree: {
+                    expansion:
+                      TRACKED_PROFESSION_EXPANSION
+                  }
+                }
+              },
+
               select: {
                 rank: true,
                 knowledgeRank: true
@@ -29,7 +51,12 @@ export class ProfessionDetailRepository {
 
             recipes: {
               where: {
-                learned: true
+                learned: true,
+
+                recipe: {
+                  expansion:
+                    TRACKED_PROFESSION_EXPANSION
+                }
               },
 
               select: {
@@ -61,18 +88,33 @@ export class ProfessionDetailRepository {
         category: true,
 
         specializationTrees: {
+          where: {
+            expansion:
+              TRACKED_PROFESSION_EXPANSION
+          },
+
           select: {
             id: true
           }
         },
 
         capabilities: {
+          where: {
+            expansion:
+              TRACKED_PROFESSION_EXPANSION
+          },
+
           select: {
             id: true
           }
         },
 
         recipes: {
+          where: {
+            expansion:
+              TRACKED_PROFESSION_EXPANSION
+          },
+
           select: {
             id: true
           }
@@ -98,6 +140,13 @@ export class ProfessionDetailRepository {
               where: {
                 rank: {
                   gt: 0
+                },
+
+                node: {
+                  tree: {
+                    expansion:
+                      TRACKED_PROFESSION_EXPANSION
+                  }
                 }
               },
 
@@ -119,7 +168,12 @@ export class ProfessionDetailRepository {
 
             recipes: {
               where: {
-                learned: true
+                learned: true,
+
+                recipe: {
+                  expansion:
+                    TRACKED_PROFESSION_EXPANSION
+                }
               },
 
               select: {
@@ -136,6 +190,13 @@ export class ProfessionDetailRepository {
                     categoryId: true,
 
                     capabilities: {
+                      where: {
+                        capability: {
+                          expansion:
+                            TRACKED_PROFESSION_EXPANSION
+                        }
+                      },
+
                       select: {
                         isPrimary: true,
 

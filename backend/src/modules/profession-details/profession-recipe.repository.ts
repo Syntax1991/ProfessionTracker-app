@@ -1,4 +1,7 @@
 import { prisma } from "../../infrastructure/database/prismaClient.js";
+import {
+  TRACKED_PROFESSION_EXPANSION
+} from "./profession-expansion.constants.js";
 
 export class ProfessionRecipeRepository {
   findByProfessionId(
@@ -15,6 +18,11 @@ export class ProfessionRecipeRepository {
         name: true,
 
         recipes: {
+          where: {
+            expansion:
+              TRACKED_PROFESSION_EXPANSION
+          },
+
           orderBy: [
             {
               name: "asc"
@@ -33,6 +41,13 @@ export class ProfessionRecipeRepository {
             baseDifficulty: true,
 
             capabilities: {
+              where: {
+                capability: {
+                  expansion:
+                    TRACKED_PROFESSION_EXPANSION
+                }
+              },
+
               select: {
                 isPrimary: true,
 

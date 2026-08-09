@@ -1,0 +1,2 @@
+export const TRACKED_PROFESSION_EXPANSION =
+  "MIDNIGHT";
