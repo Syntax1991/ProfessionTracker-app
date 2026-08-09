@@ -1,6 +1,13 @@
 import {
   calculateProfessionRecipeReadiness
 } from "./profession-recipe-readiness.js";
+import {
+  createProfessionRecipeOperationCoverage,
+  mapProfessionRecipeOperation
+} from "./profession-recipe-operation.mapper.js";
+import {
+  createProfessionRecipeCatalogSummary
+} from "./profession-recipe-summary.js";
 import type {
   ProfessionRecipeRepository
 } from "./profession-recipe.repository.js";
@@ -31,13 +38,6 @@ export function mapProfessionRecipeCatalog(
       mapRecipe
     );
 
-  const craftableRecipeCount =
-    items.filter(
-      (recipe) =>
-        recipe.crafters.length >
-        0
-    ).length;
-
   return {
     profession: {
       id:
@@ -50,16 +50,10 @@ export function mapProfessionRecipeCatalog(
         record.name
     },
 
-    summary: {
-      catalogRecipeCount:
-        items.length,
-
-      craftableRecipeCount,
-
-      missingRecipeCount:
-        items.length -
-        craftableRecipeCount
-    },
+    summary:
+      createProfessionRecipeCatalogSummary(
+        items
+      ),
 
     items
   };
@@ -90,6 +84,14 @@ function mapRecipe(
         compareCrafters
       );
 
+  const operationCoverage =
+    createProfessionRecipeOperationCoverage(
+      crafters.map(
+        (crafter) =>
+          crafter.operation
+      )
+    );
+
   return {
     id:
       recipe.id,
@@ -110,7 +112,8 @@ function mapRecipe(
       recipe.baseDifficulty,
 
     capabilities,
-    crafters
+    crafters,
+    operationCoverage
   };
 }
 
@@ -195,6 +198,11 @@ function mapCrafter(
 
     baselineSkillSurplus:
       readiness.baselineSkillSurplus,
+
+    operation:
+      mapProfessionRecipeOperation(
+        relation
+      ),
 
     source:
       relation.source,

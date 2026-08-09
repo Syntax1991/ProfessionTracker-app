@@ -13,6 +13,36 @@ export type ProfessionRecipeBaselineStatus =
   | "BASE_SKILL_SUFFICIENT"
   | "RECIPE_BONUS_REQUIRED";
 
+export type ProfessionRecipeOperationStatus =
+  | "CAPTURED"
+  | "MISSING";
+
+export type ProfessionRecipeOperation = {
+  status: ProfessionRecipeOperationStatus;
+  baseSkill: number | null;
+  bonusSkill: number | null;
+  effectiveSkill: number | null;
+  craftingQuality: number | null;
+  craftingQualityId: number | null;
+  guaranteedCraftingQualityId: number | null;
+  lowerSkillThreshold: number | null;
+  upperSkillThreshold: number | null;
+  concentrationCost: number | null;
+  concentrationCurrencyId: number | null;
+  ingenuityRefund: number | null;
+  quality: number | null;
+  capturedAt: string | null;
+  captureVersion: number | null;
+  scopeVersion: number | null;
+};
+
+export type ProfessionRecipeOperationCoverage = {
+  totalCrafterCount: number;
+  capturedCrafterCount: number;
+  missingCrafterCount: number;
+  coveragePercent: number;
+};
+
 export type ProfessionRecipeCrafter = {
   characterId: string;
   name: string;
@@ -33,6 +63,9 @@ export type ProfessionRecipeCrafter = {
   baselineSkillSurplus:
     number | null;
 
+  operation:
+    ProfessionRecipeOperation;
+
   source: string;
   lastSyncedAt: string | null;
 };
@@ -50,6 +83,19 @@ export type ProfessionRecipeCatalogItem = {
 
   crafters:
     ProfessionRecipeCrafter[];
+
+  operationCoverage:
+    ProfessionRecipeOperationCoverage;
+};
+
+export type ProfessionRecipeCatalogSummary = {
+  catalogRecipeCount: number;
+  craftableRecipeCount: number;
+  missingRecipeCount: number;
+  crafterRecipeCount: number;
+  operationCapturedCrafterRecipeCount: number;
+  operationMissingCrafterRecipeCount: number;
+  operationCoveragePercent: number;
 };
 
 export type ProfessionRecipeCatalog = {
@@ -59,11 +105,8 @@ export type ProfessionRecipeCatalog = {
     name: string;
   };
 
-  summary: {
-    catalogRecipeCount: number;
-    craftableRecipeCount: number;
-    missingRecipeCount: number;
-  };
+  summary:
+    ProfessionRecipeCatalogSummary;
 
   items:
     ProfessionRecipeCatalogItem[];

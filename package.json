@@ -16,6 +16,7 @@
     "inspect:stored-recipe-operations": "node scripts/inspect-stored-recipe-operation-metrics.mjs",
     "inspect:character-recipe-operations": "node scripts/inspect-character-recipe-operations.mjs",
     "inspect:stored-character-recipe-operations": "node scripts/inspect-stored-character-recipe-operations.mjs",
+    "inspect:profession-recipe-operation-api": "node scripts/inspect-profession-recipe-operation-api.mjs",
     "dev:restart": "node scripts/dev-manager.mjs restart",
     "dev:stop": "node scripts/dev-manager.mjs stop"
   },

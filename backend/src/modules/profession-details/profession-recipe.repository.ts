@@ -58,6 +58,22 @@ export class ProfessionRecipeRepository {
               select: {
                 source: true,
                 lastSyncedAt: true,
+                baseSkill: true,
+                bonusSkill: true,
+                effectiveSkill: true,
+                craftingQuality: true,
+                craftingQualityId: true,
+                guaranteedCraftingQualityId: true,
+                lowerSkillThreshold: true,
+                upperSkillThreshold: true,
+                concentrationCost: true,
+                concentrationCurrencyId: true,
+                ingenuityRefund: true,
+                quality: true,
+                operationMetricsJson: true,
+                operationCapturedAt: true,
+                operationCaptureVersion: true,
+                operationScopeVersion: true,
 
                 characterProfession: {
                   select: {
