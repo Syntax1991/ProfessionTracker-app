@@ -1,7 +1,55 @@
 import { prisma } from "../../infrastructure/database/prismaClient.js";
 import {
-  TRACKED_PROFESSION_EXPANSION
+  TRACKED_PROFESSION_DATA_SOURCE,
+  TRACKED_PROFESSION_EXPANSION,
+  TRACKED_PROFESSION_EXPANSION_LABEL
 } from "./profession-expansion.constants.js";
+
+function createTrackedAssignmentWhere() {
+  /*
+   * A newly learned Midnight profession may not have recipes or invested
+   * specialization points yet. Until profession skill metrics are stored
+   * per expansion, the imported expansion display name is the fallback
+   * evidence that the character actually owns the Midnight profession.
+   */
+  return {
+    OR: [
+      {
+        specializationSummary: {
+          contains:
+            TRACKED_PROFESSION_EXPANSION_LABEL
+        }
+      },
+      {
+        nodeProgress: {
+          some: {
+            source:
+              TRACKED_PROFESSION_DATA_SOURCE,
+
+            node: {
+              tree: {
+                expansion:
+                  TRACKED_PROFESSION_EXPANSION
+              }
+            }
+          }
+        }
+      },
+      {
+        recipes: {
+          some: {
+            learned: true,
+
+            recipe: {
+              expansion:
+                TRACKED_PROFESSION_EXPANSION
+            }
+          }
+        }
+      }
+    ]
+  };
+}
 
 export class ProfessionDetailRepository {
   findOverview() {
@@ -30,11 +78,17 @@ export class ProfessionDetailRepository {
         },
 
         assignments: {
+          where:
+            createTrackedAssignmentWhere(),
+
           select: {
             id: true,
 
             nodeProgress: {
               where: {
+                source:
+                  TRACKED_PROFESSION_DATA_SOURCE,
+
                 node: {
                   tree: {
                     expansion:
@@ -121,6 +175,9 @@ export class ProfessionDetailRepository {
         },
 
         assignments: {
+          where:
+            createTrackedAssignmentWhere(),
+
           select: {
             id: true,
             skill: true,
@@ -138,6 +195,9 @@ export class ProfessionDetailRepository {
 
             nodeProgress: {
               where: {
+                source:
+                  TRACKED_PROFESSION_DATA_SOURCE,
+
                 rank: {
                   gt: 0
                 },

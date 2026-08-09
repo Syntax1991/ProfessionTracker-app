@@ -1,8 +1,9 @@
 import { AppError } from "../../../shared/errors/AppError.js";
 import {
   createNodeMapKey,
-  getActiveExpansion,
-  getSyncDate
+  getSyncDate,
+  getTrackedExpansion,
+  isTrackedExpansion
 } from "./addon-import.persistence-utils.js";
 import type {
   AddonImportTransaction,
@@ -29,7 +30,10 @@ export class AddonCharacterPersistence {
       progressEntries: 0
     };
 
-    for (const character of snapshot.characters) {
+    for (
+      const character of
+      snapshot.characters
+    ) {
       await this.persistCharacter(
         transaction,
         character,
@@ -60,30 +64,46 @@ export class AddonCharacterPersistence {
       await transaction.character.upsert({
         where: {
           name_realm_region: {
-            name: character.name,
-            realm: character.realm,
-            region: character.region
+            name:
+              character.name,
+            realm:
+              character.realm,
+            region:
+              character.region
           }
         },
 
         create: {
-          name: character.name,
-          realm: character.realm,
-          region: character.region,
-          className: character.className,
-          level: character.level,
-          source: "ADDON",
-          lastSyncedAt: syncDate
+          name:
+            character.name,
+          realm:
+            character.realm,
+          region:
+            character.region,
+          className:
+            character.className,
+          level:
+            character.level,
+          source:
+            "ADDON",
+          lastSyncedAt:
+            syncDate
         },
 
         update: {
-          className: character.className,
-          level: character.level,
-          lastSyncedAt: syncDate
+          className:
+            character.className,
+          level:
+            character.level,
+          lastSyncedAt:
+            syncDate
         }
       });
 
-    for (const profession of character.professions) {
+    for (
+      const profession of
+      character.professions
+    ) {
       await this.persistProfession(
         transaction,
         storedCharacter.id,
@@ -94,7 +114,8 @@ export class AddonCharacterPersistence {
         result
       );
 
-      result.professionAssignments += 1;
+      result.professionAssignments +=
+        1;
     }
   }
 
@@ -129,8 +150,8 @@ export class AddonCharacterPersistence {
       );
     }
 
-    const activeExpansion =
-      getActiveExpansion(
+    const trackedExpansion =
+      getTrackedExpansion(
         profession
       );
 
@@ -146,44 +167,61 @@ export class AddonCharacterPersistence {
         create: {
           characterId,
           professionId,
+
           skill:
-            profession.skillLevel,
+            trackedExpansion
+              ? profession.skillLevel
+              : 0,
+
           skillModifier:
-            profession.skillModifier,
+            trackedExpansion
+              ? profession.skillModifier
+              : 0,
+
           knowledgePoints:
-            activeExpansion
+            trackedExpansion
               ?.investedKnowledge ??
             0,
+
           specializationSummary:
-            activeExpansion
+            trackedExpansion
               ?.displayName ??
             null
         },
 
         update: {
           skill:
-            profession.skillLevel,
+            trackedExpansion
+              ? profession.skillLevel
+              : 0,
+
           skillModifier:
-            profession.skillModifier,
+            trackedExpansion
+              ? profession.skillModifier
+              : 0,
+
           knowledgePoints:
-            activeExpansion
+            trackedExpansion
               ?.investedKnowledge ??
             0,
+
           specializationSummary:
-            activeExpansion
+            trackedExpansion
               ?.displayName ??
             null
         }
       });
 
+    /*
+     * Once addon data is imported it is authoritative for specialization
+     * progress. Legacy manual progress must not survive beside the snapshot.
+     */
     await transaction
       .characterProfessionNodeProgress
       .deleteMany({
         where: {
           characterProfessionId:
-            assignment.id,
-          source:
-            "ADDON"
+            assignment.id
         }
       });
 
@@ -205,8 +243,22 @@ export class AddonCharacterPersistence {
     syncDate: Date,
     result: CharacterPersistenceResult
   ): Promise<void> {
-    for (const expansion of profession.expansions) {
-      for (const progress of expansion.progress) {
+    for (
+      const expansion of
+      profession.expansions
+    ) {
+      if (
+        !isTrackedExpansion(
+          expansion
+        )
+      ) {
+        continue;
+      }
+
+      for (
+        const progress of
+        expansion.progress
+      ) {
         const nodeId =
           nodeIds.get(
             createNodeMapKey(
@@ -236,14 +288,19 @@ export class AddonCharacterPersistence {
             create: {
               characterProfessionId,
               nodeId,
+
               rank:
                 progress.rank,
+
               knowledgeRank:
                 progress.knowledgeRank,
+
               unlockRank:
                 progress.unlockRank,
+
               source:
                 "ADDON",
+
               lastSyncedAt:
                 syncDate
             },
@@ -251,18 +308,23 @@ export class AddonCharacterPersistence {
             update: {
               rank:
                 progress.rank,
+
               knowledgeRank:
                 progress.knowledgeRank,
+
               unlockRank:
                 progress.unlockRank,
+
               source:
                 "ADDON",
+
               lastSyncedAt:
                 syncDate
             }
           });
 
-        result.progressEntries += 1;
+        result.progressEntries +=
+          1;
       }
     }
   }

@@ -164,6 +164,51 @@ export function createNodeMapKey(
   ].join(":");
 }
 
+export function isTrackedExpansion(
+  expansion: AddonExpansion
+): boolean {
+  return (
+    createExpansionKey(
+      expansion.expansionName,
+      expansion.skillLineId
+    ) === "MIDNIGHT"
+  );
+}
+
+export function getTrackedExpansion(
+  profession: AddonProfession
+): AddonExpansion | null {
+  if (
+    profession
+      .activeExpansionSkillLineId !==
+    null
+  ) {
+    const active =
+      profession.expansions.find(
+        (expansion) =>
+          expansion.skillLineId ===
+          profession
+            .activeExpansionSkillLineId
+      );
+
+    if (
+      active &&
+      isTrackedExpansion(
+        active
+      )
+    ) {
+      return active;
+    }
+  }
+
+  return (
+    profession.expansions.find(
+      isTrackedExpansion
+    ) ??
+    null
+  );
+}
+
 export function getActiveExpansion(
   profession: AddonProfession
 ): AddonExpansion | null {

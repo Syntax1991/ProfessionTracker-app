@@ -1,2 +1,8 @@
 export const TRACKED_PROFESSION_EXPANSION =
   "MIDNIGHT";
+
+export const TRACKED_PROFESSION_EXPANSION_LABEL =
+  "Midnight";
+
+export const TRACKED_PROFESSION_DATA_SOURCE =
+  "ADDON";
