@@ -10,6 +10,16 @@ type ProfessionRecipeCardProps = {
     ProfessionRecipeCatalogItem;
 };
 
+function formatModifier(
+  value: number
+): string {
+  if (value > 0) {
+    return `+${value}`;
+  }
+
+  return `${value}`;
+}
+
 export function ProfessionRecipeCard({
   recipe
 }: ProfessionRecipeCardProps) {
@@ -130,17 +140,34 @@ export function ProfessionRecipeCard({
 
                     <div className="profession-recipe-crafter-stats">
                       <span>
-                        Skill
+                        Basis
                         {" "}
                         {crafter.skill}
+                      </span>
+
+                      <span>
+                        Bonus
+                        {" "}
+                        {
+                          formatModifier(
+                            crafter.skillModifier
+                          )
+                        }
+                      </span>
+
+                      <span>
+                        Effektiv
+                        {" "}
+                        {
+                          crafter.effectiveSkill
+                        }
                       </span>
 
                       <span>
                         KP
                         {" "}
                         {
-                          crafter
-                            .knowledgePoints
+                          crafter.knowledgePoints
                         }
                       </span>
                     </div>

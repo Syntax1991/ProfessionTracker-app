@@ -142,6 +142,10 @@ function mapCrafter(
   const assignment =
     relation.characterProfession;
 
+  const effectiveSkill =
+    assignment.skill +
+    assignment.skillModifier;
+
   return {
     characterId:
       assignment.character.id,
@@ -160,6 +164,11 @@ function mapCrafter(
 
     skill:
       assignment.skill,
+
+    skillModifier:
+      assignment.skillModifier,
+
+    effectiveSkill,
 
     knowledgePoints:
       assignment.knowledgePoints,
@@ -202,6 +211,8 @@ function compareCrafters(
     ProfessionRecipeCrafter
 ): number {
   return (
+    right.effectiveSkill -
+      left.effectiveSkill ||
     left.name.localeCompare(
       right.name,
       "de"

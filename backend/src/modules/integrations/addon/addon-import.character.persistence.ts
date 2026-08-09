@@ -18,26 +18,18 @@ import type {
 
 export class AddonCharacterPersistence {
   async persist(
-    transaction:
-      AddonImportTransaction,
-    snapshot:
-      AddonSnapshot,
-    professionIds:
-      ProfessionIdMap,
-    nodeIds:
-      AddonNodeIdMap
+    transaction: AddonImportTransaction,
+    snapshot: AddonSnapshot,
+    professionIds: ProfessionIdMap,
+    nodeIds: AddonNodeIdMap
   ): Promise<CharacterPersistenceResult> {
-    const result:
-      CharacterPersistenceResult = {
-        characters: 0,
-        professionAssignments: 0,
-        progressEntries: 0
-      };
+    const result: CharacterPersistenceResult = {
+      characters: 0,
+      professionAssignments: 0,
+      progressEntries: 0
+    };
 
-    for (
-      const character of
-      snapshot.characters
-    ) {
+    for (const character of snapshot.characters) {
       await this.persistCharacter(
         transaction,
         character,
@@ -53,16 +45,11 @@ export class AddonCharacterPersistence {
   }
 
   private async persistCharacter(
-    transaction:
-      AddonImportTransaction,
-    character:
-      AddonCharacter,
-    professionIds:
-      ProfessionIdMap,
-    nodeIds:
-      AddonNodeIdMap,
-    result:
-      CharacterPersistenceResult
+    transaction: AddonImportTransaction,
+    character: AddonCharacter,
+    professionIds: ProfessionIdMap,
+    nodeIds: AddonNodeIdMap,
+    result: CharacterPersistenceResult
   ): Promise<void> {
     const syncDate =
       getSyncDate(
@@ -70,61 +57,33 @@ export class AddonCharacterPersistence {
       );
 
     const storedCharacter =
-      await transaction
-        .character
-        .upsert({
-          where: {
-            name_realm_region: {
-              name:
-                character.name,
-
-              realm:
-                character.realm,
-
-              region:
-                character.region
-            }
-          },
-
-          create: {
-            name:
-              character.name,
-
-            realm:
-              character.realm,
-
-            region:
-              character.region,
-
-            className:
-              character.className,
-
-            level:
-              character.level,
-
-            source:
-              "ADDON",
-
-            lastSyncedAt:
-              syncDate
-          },
-
-          update: {
-            className:
-              character.className,
-
-            level:
-              character.level,
-
-            lastSyncedAt:
-              syncDate
+      await transaction.character.upsert({
+        where: {
+          name_realm_region: {
+            name: character.name,
+            realm: character.realm,
+            region: character.region
           }
-        });
+        },
 
-    for (
-      const profession of
-      character.professions
-    ) {
+        create: {
+          name: character.name,
+          realm: character.realm,
+          region: character.region,
+          className: character.className,
+          level: character.level,
+          source: "ADDON",
+          lastSyncedAt: syncDate
+        },
+
+        update: {
+          className: character.className,
+          level: character.level,
+          lastSyncedAt: syncDate
+        }
+      });
+
+    for (const profession of character.professions) {
       await this.persistProfession(
         transaction,
         storedCharacter.id,
@@ -135,24 +94,18 @@ export class AddonCharacterPersistence {
         result
       );
 
-      result.professionAssignments +=
-        1;
+      result.professionAssignments += 1;
     }
   }
 
   private async persistProfession(
-    transaction:
-      AddonImportTransaction,
+    transaction: AddonImportTransaction,
     characterId: string,
-    profession:
-      AddonProfession,
-    professionIds:
-      ProfessionIdMap,
-    nodeIds:
-      AddonNodeIdMap,
+    profession: AddonProfession,
+    professionIds: ProfessionIdMap,
+    nodeIds: AddonNodeIdMap,
     syncDate: Date,
-    result:
-      CharacterPersistenceResult
+    result: CharacterPersistenceResult
   ): Promise<void> {
     const professionKey =
       profession.professionKey;
@@ -182,49 +135,46 @@ export class AddonCharacterPersistence {
       );
 
     const assignment =
-      await transaction
-        .characterProfession
-        .upsert({
-          where: {
-            characterId_professionId: {
-              characterId,
-              professionId
-            }
-          },
-
-          create: {
+      await transaction.characterProfession.upsert({
+        where: {
+          characterId_professionId: {
             characterId,
-            professionId,
-
-            skill:
-              profession.skillLevel,
-
-            knowledgePoints:
-              activeExpansion
-                ?.investedKnowledge ??
-              0,
-
-            specializationSummary:
-              activeExpansion
-                ?.displayName ??
-              null
-          },
-
-          update: {
-            skill:
-              profession.skillLevel,
-
-            knowledgePoints:
-              activeExpansion
-                ?.investedKnowledge ??
-              0,
-
-            specializationSummary:
-              activeExpansion
-                ?.displayName ??
-              null
+            professionId
           }
-        });
+        },
+
+        create: {
+          characterId,
+          professionId,
+          skill:
+            profession.skillLevel,
+          skillModifier:
+            profession.skillModifier,
+          knowledgePoints:
+            activeExpansion
+              ?.investedKnowledge ??
+            0,
+          specializationSummary:
+            activeExpansion
+              ?.displayName ??
+            null
+        },
+
+        update: {
+          skill:
+            profession.skillLevel,
+          skillModifier:
+            profession.skillModifier,
+          knowledgePoints:
+            activeExpansion
+              ?.investedKnowledge ??
+            0,
+          specializationSummary:
+            activeExpansion
+              ?.displayName ??
+            null
+        }
+      });
 
     await transaction
       .characterProfessionNodeProgress
@@ -232,20 +182,31 @@ export class AddonCharacterPersistence {
         where: {
           characterProfessionId:
             assignment.id,
-
           source:
             "ADDON"
         }
       });
 
-    for (
-      const expansion of
-      profession.expansions
-    ) {
-      for (
-        const progress of
-        expansion.progress
-      ) {
+    await this.persistProgress(
+      transaction,
+      assignment.id,
+      profession,
+      nodeIds,
+      syncDate,
+      result
+    );
+  }
+
+  private async persistProgress(
+    transaction: AddonImportTransaction,
+    characterProfessionId: string,
+    profession: AddonProfession,
+    nodeIds: AddonNodeIdMap,
+    syncDate: Date,
+    result: CharacterPersistenceResult
+  ): Promise<void> {
+    for (const expansion of profession.expansions) {
+      for (const progress of expansion.progress) {
         const nodeId =
           nodeIds.get(
             createNodeMapKey(
@@ -267,31 +228,22 @@ export class AddonCharacterPersistence {
           .upsert({
             where: {
               characterProfessionId_nodeId: {
-                characterProfessionId:
-                  assignment.id,
-
+                characterProfessionId,
                 nodeId
               }
             },
 
             create: {
-              characterProfessionId:
-                assignment.id,
-
+              characterProfessionId,
               nodeId,
-
               rank:
                 progress.rank,
-
               knowledgeRank:
                 progress.knowledgeRank,
-
               unlockRank:
                 progress.unlockRank,
-
               source:
                 "ADDON",
-
               lastSyncedAt:
                 syncDate
             },
@@ -299,23 +251,18 @@ export class AddonCharacterPersistence {
             update: {
               rank:
                 progress.rank,
-
               knowledgeRank:
                 progress.knowledgeRank,
-
               unlockRank:
                 progress.unlockRank,
-
               source:
                 "ADDON",
-
               lastSyncedAt:
                 syncDate
             }
           });
 
-        result.progressEntries +=
-          1;
+        result.progressEntries += 1;
       }
     }
   }

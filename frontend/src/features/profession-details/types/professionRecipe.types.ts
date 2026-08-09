@@ -15,6 +15,8 @@ export type ProfessionRecipeCrafter = {
   className: string;
   level: number;
   skill: number;
+  skillModifier: number;
+  effectiveSkill: number;
   knowledgePoints: number;
   source: string;
   lastSyncedAt: string | null;

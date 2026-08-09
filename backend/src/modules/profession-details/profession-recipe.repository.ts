@@ -62,6 +62,7 @@ export class ProfessionRecipeRepository {
                 characterProfession: {
                   select: {
                     skill: true,
+                    skillModifier: true,
                     knowledgePoints: true,
 
                     character: {

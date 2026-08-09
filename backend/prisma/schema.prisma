@@ -42,11 +42,12 @@ model Profession {
 }
 
 model CharacterProfession {
-  id                    String  @id @default(cuid())
+  id                    String @id @default(cuid())
   characterId           String
   professionId          String
-  skill                 Int     @default(0)
-  knowledgePoints       Int     @default(0)
+  skill                 Int    @default(0)
+  skillModifier         Int    @default(0)
+  knowledgePoints       Int    @default(0)
   specializationSummary String?
 
   character  Character  @relation(fields: [characterId], references: [id], onDelete: Cascade)
@@ -60,13 +61,13 @@ model CharacterProfession {
 }
 
 model ProfessionSpecializationTree {
-  id           String  @id @default(cuid())
+  id           String @id @default(cuid())
   professionId String
-  expansion    String  @default("MIDNIGHT")
+  expansion    String @default("MIDNIGHT")
   key          String
   name         String
   description  String?
-  sortOrder    Int     @default(0)
+  sortOrder    Int    @default(0)
 
   profession Profession                     @relation(fields: [professionId], references: [id], onDelete: Cascade)
   nodes      ProfessionSpecializationNode[]
@@ -76,7 +77,7 @@ model ProfessionSpecializationTree {
 }
 
 model ProfessionSpecializationNode {
-  id               String  @id @default(cuid())
+  id               String @id @default(cuid())
   treeId           String
   parentNodeId     String?
   key              String
@@ -84,11 +85,11 @@ model ProfessionSpecializationNode {
   description      String?
   maxRank          Int?
   knowledgeMaxRank Int?
-  sortOrder        Int     @default(0)
+  sortOrder        Int    @default(0)
 
-  tree     ProfessionSpecializationTree      @relation(fields: [treeId], references: [id], onDelete: Cascade)
-  parent   ProfessionSpecializationNode?     @relation("SpecializationNodeHierarchy", fields: [parentNodeId], references: [id], onDelete: SetNull)
-  children ProfessionSpecializationNode[]    @relation("SpecializationNodeHierarchy")
+  tree     ProfessionSpecializationTree   @relation(fields: [treeId], references: [id], onDelete: Cascade)
+  parent   ProfessionSpecializationNode?  @relation("SpecializationNodeHierarchy", fields: [parentNodeId], references: [id], onDelete: SetNull)
+  children ProfessionSpecializationNode[] @relation("SpecializationNodeHierarchy")
   progress CharacterProfessionNodeProgress[]
 
   @@unique([treeId, key])
@@ -116,15 +117,15 @@ model CharacterProfessionNodeProgress {
 }
 
 model CraftCapability {
-  id           String  @id @default(cuid())
+  id           String @id @default(cuid())
   professionId String
-  expansion    String  @default("MIDNIGHT")
+  expansion    String @default("MIDNIGHT")
   key          String
   name         String
   type         String
   slotKey      String?
   description  String?
-  sortOrder    Int     @default(0)
+  sortOrder    Int    @default(0)
 
   profession Profession              @relation(fields: [professionId], references: [id], onDelete: Cascade)
   recipes    CraftRecipeCapability[]
