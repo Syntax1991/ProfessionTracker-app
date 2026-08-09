@@ -4,6 +4,7 @@ import {
   createExpansionKey,
   getSyncDate
 } from "./addon-import.persistence-utils.js";
+import { AddonRecipeCapabilityPersistence } from "./addon-import.recipe.capability.persistence.js";
 import { createRecipeMapKey } from "./addon-import.recipe.persistence-utils.js";
 import type {
   AddonImportTransaction,
@@ -16,6 +17,9 @@ import type {
 } from "./addon-import.types.js";
 
 export class AddonRecipeCatalogPersistence {
+  private readonly capabilityPersistence =
+    new AddonRecipeCapabilityPersistence();
+
   async persist(
     transaction: AddonImportTransaction,
     snapshot: AddonSnapshot,
@@ -93,6 +97,7 @@ export class AddonRecipeCatalogPersistence {
             where: {
               professionId_gameRecipeId: {
                 professionId,
+
                 gameRecipeId:
                   recipe.gameRecipeId
               }
@@ -100,17 +105,24 @@ export class AddonRecipeCatalogPersistence {
 
             create: {
               professionId,
+
               gameRecipeId:
                 recipe.gameRecipeId,
+
               skillLineId:
                 catalog.skillLineId,
+
               expansion,
+
               name:
                 recipe.name,
+
               categoryId:
                 recipe.categoryId,
+
               source:
                 "ADDON",
+
               lastSyncedAt:
                 syncDate
             },
@@ -118,13 +130,18 @@ export class AddonRecipeCatalogPersistence {
             update: {
               skillLineId:
                 catalog.skillLineId,
+
               expansion,
+
               name:
                 recipe.name,
+
               categoryId:
                 recipe.categoryId,
+
               source:
                 "ADDON",
+
               lastSyncedAt:
                 syncDate
             }
@@ -135,6 +152,15 @@ export class AddonRecipeCatalogPersistence {
           catalog.skillLineId,
           recipe.gameRecipeId
         ),
+        storedRecipe.id
+      );
+
+      await this.capabilityPersistence.persist(
+        transaction,
+        professionId,
+        expansion,
+        catalog.skillLineId,
+        recipe,
         storedRecipe.id
       );
 

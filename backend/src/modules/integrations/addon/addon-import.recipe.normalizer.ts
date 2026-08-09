@@ -11,6 +11,22 @@ import type {
   LuaValue
 } from "./addon-import.types.js";
 
+function optionalPositiveNumber(
+  value: LuaValue | undefined
+): number | null {
+  const number =
+    asNumber(
+      value
+    );
+
+  return (
+    number !== null &&
+    number > 0
+  )
+    ? number
+    : null;
+}
+
 function normalizeRecipe(
   value: LuaValue
 ): AddonRecipe | null {
@@ -34,11 +50,6 @@ function normalizeRecipe(
     return null;
   }
 
-  const categoryId =
-    asNumber(
-      recipe.categoryId
-    );
-
   return {
     gameRecipeId,
 
@@ -49,10 +60,24 @@ function normalizeRecipe(
       `Recipe ${gameRecipeId}`,
 
     categoryId:
-      categoryId !== null &&
-      categoryId > 0
-        ? categoryId
-        : null
+      optionalPositiveNumber(
+        recipe.categoryId
+      ),
+
+    categoryName:
+      asString(
+        recipe.categoryName
+      ),
+
+    parentCategoryId:
+      optionalPositiveNumber(
+        recipe.parentCategoryId
+      ),
+
+    parentCategoryName:
+      asString(
+        recipe.parentCategoryName
+      )
   };
 }
 

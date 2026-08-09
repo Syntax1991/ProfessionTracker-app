@@ -16,6 +16,7 @@ SpecializationProgress.lua
 ProfessionAutoSyncCandidates.lua
 ProfessionAutoSync.lua
 ProfessionSnapshots.lua
+RecipeCatalog.lua
 Recipes.lua
 Professions.lua
 Character.lua

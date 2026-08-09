@@ -46,6 +46,9 @@ export type AddonRecipe = {
   gameRecipeId: number;
   name: string;
   categoryId: number | null;
+  categoryName: string | null;
+  parentCategoryId: number | null;
+  parentCategoryName: string | null;
 };
 
 export type AddonRecipeCatalog = {
