@@ -23,3 +23,9 @@ export type CharacterPersistenceResult = {
   professionAssignments: number;
   progressEntries: number;
 };
+
+export type RecipePersistenceResult = {
+  catalogs: number;
+  recipes: number;
+  learnedRecipes: number;
+};

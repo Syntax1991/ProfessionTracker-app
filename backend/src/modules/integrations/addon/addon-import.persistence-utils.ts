@@ -1,4 +1,7 @@
-import { inferProfessionKeyFromCatalog } from "./addon-import.normalizer.js";
+import {
+  inferProfessionKeyFromCatalog,
+  inferProfessionKeyFromRecipeCatalog
+} from "./addon-import.normalizer.js";
 import type {
   AddonExpansion,
   AddonProfession,
@@ -239,6 +242,23 @@ export function collectProfessionKeys(
   ) {
     const professionKey =
       inferProfessionKeyFromCatalog(
+        catalog,
+        snapshot
+      );
+
+    if (professionKey) {
+      keys.add(
+        professionKey
+      );
+    }
+  }
+
+  for (
+    const catalog of
+    snapshot.recipeCatalogs
+  ) {
+    const professionKey =
+      inferProfessionKeyFromRecipeCatalog(
         catalog,
         snapshot
       );

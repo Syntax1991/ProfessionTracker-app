@@ -7,12 +7,56 @@ import {
   asNumber,
   asString,
   asTable,
+  numericValues,
   unixTimestampToIso
 } from "./addon-import.lua-utils.js";
 import {
   normalizeKnowledgeSpent,
   normalizeProgress
 } from "./addon-import.progress.normalizer.js";
+
+function normalizeRecipeIds(
+  value: LuaValue | undefined
+): number[] | null {
+  const recipeTable =
+    asTable(
+      value
+    );
+
+  if (!recipeTable) {
+    return null;
+  }
+
+  const recipeIds =
+    numericValues(
+      recipeTable
+    )
+      .map(
+        (recipeId) =>
+          asNumber(
+            recipeId
+          )
+      )
+      .filter(
+        (
+          recipeId
+        ): recipeId is number =>
+          recipeId !== null
+      );
+
+  return [
+    ...new Set(
+      recipeIds
+    )
+  ]
+    .sort(
+      (
+        left,
+        right
+      ) =>
+        left - right
+    );
+}
 
 export function normalizeExpansion(
   key: string,
@@ -100,6 +144,16 @@ export function normalizeExpansion(
 
     investedKnowledge,
     progress,
+
+    recipeIds:
+      normalizeRecipeIds(
+        expansion.recipeIds
+      ),
+
+    recipeCapturedAt:
+      unixTimestampToIso(
+        expansion.recipeCapturedAt
+      ),
 
     capturedAt:
       unixTimestampToIso(

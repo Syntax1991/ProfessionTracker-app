@@ -42,6 +42,20 @@ export type AddonProfessionCatalog = {
   trees: AddonSpecializationTree[];
 };
 
+export type AddonRecipe = {
+  gameRecipeId: number;
+  name: string;
+  categoryId: number | null;
+};
+
+export type AddonRecipeCatalog = {
+  skillLineId: number;
+  displayName: string;
+  expansionName: string | null;
+  recipes: AddonRecipe[];
+  capturedAt: string | null;
+};
+
 export type AddonNodeProgress = {
   externalTreeId: number;
   externalNodeId: number;
@@ -57,6 +71,8 @@ export type AddonExpansion = {
   knowledgeAvailable: number;
   investedKnowledge: number;
   progress: AddonNodeProgress[];
+  recipeIds: number[] | null;
+  recipeCapturedAt: string | null;
   capturedAt: string | null;
 };
 
@@ -88,6 +104,7 @@ export type AddonSnapshot = {
   schemaVersion: number;
   client: AddonClientInfo;
   catalogs: AddonProfessionCatalog[];
+  recipeCatalogs: AddonRecipeCatalog[];
   characters: AddonCharacter[];
 };
 

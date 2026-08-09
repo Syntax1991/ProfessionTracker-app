@@ -1,5 +1,6 @@
 import { normalizeCatalog } from "./addon-import.catalog.normalizer.js";
 import { normalizeCharacter } from "./addon-import.character.normalizer.js";
+import { normalizeRecipeCatalog } from "./addon-import.recipe.normalizer.js";
 import {
   asNumber,
   asString,
@@ -9,6 +10,7 @@ import {
 import type {
   AddonCharacter,
   AddonProfessionCatalog,
+  AddonRecipeCatalog,
   AddonSnapshot,
   LuaTable
 } from "./addon-import.types.js";
@@ -19,6 +21,11 @@ export function normalizeAddonSnapshot(
   const catalogTable =
     asTable(
       root.professionCatalog
+    );
+
+  const recipeCatalogTable =
+    asTable(
+      root.recipeCatalog
     );
 
   const characterTable =
@@ -45,6 +52,37 @@ export function normalizeAddonSnapshot(
             (
               catalog
             ): catalog is AddonProfessionCatalog =>
+              catalog !== null
+          )
+          .sort(
+            (
+              left,
+              right
+            ) =>
+              left.skillLineId -
+              right.skillLineId
+          )
+      : [];
+
+  const recipeCatalogs =
+    recipeCatalogTable
+      ? Object.entries(
+          recipeCatalogTable
+        )
+          .map(
+            ([
+              key,
+              value
+            ]) =>
+              normalizeRecipeCatalog(
+                key,
+                value
+              )
+          )
+          .filter(
+            (
+              catalog
+            ): catalog is AddonRecipeCatalog =>
               catalog !== null
           )
           .sort(
@@ -138,15 +176,14 @@ export function normalizeAddonSnapshot(
     },
 
     catalogs,
+    recipeCatalogs,
     characters
   };
 }
 
-export function inferProfessionKeyFromCatalog(
-  catalog:
-    AddonProfessionCatalog,
-  snapshot:
-    AddonSnapshot
+function inferProfessionKeyFromSkillLine(
+  skillLineId: number,
+  snapshot: AddonSnapshot
 ): string | null {
   for (
     const character of
@@ -161,7 +198,7 @@ export function inferProfessionKeyFromCatalog(
         profession.expansions.some(
           (expansion) =>
             expansion.skillLineId ===
-            catalog.skillLineId
+            skillLineId
         )
       ) {
         return profession.professionKey;
@@ -169,7 +206,39 @@ export function inferProfessionKeyFromCatalog(
     }
   }
 
-  return inferProfessionKeyFromName(
-    catalog.displayName
+  return null;
+}
+
+export function inferProfessionKeyFromCatalog(
+  catalog:
+    AddonProfessionCatalog,
+  snapshot:
+    AddonSnapshot
+): string | null {
+  return (
+    inferProfessionKeyFromSkillLine(
+      catalog.skillLineId,
+      snapshot
+    ) ??
+    inferProfessionKeyFromName(
+      catalog.displayName
+    )
+  );
+}
+
+export function inferProfessionKeyFromRecipeCatalog(
+  catalog:
+    AddonRecipeCatalog,
+  snapshot:
+    AddonSnapshot
+): string | null {
+  return (
+    inferProfessionKeyFromSkillLine(
+      catalog.skillLineId,
+      snapshot
+    ) ??
+    inferProfessionKeyFromName(
+      catalog.displayName
+    )
   );
 }

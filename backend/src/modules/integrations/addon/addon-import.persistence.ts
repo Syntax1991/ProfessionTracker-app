@@ -3,6 +3,7 @@ import { AppError } from "../../../shared/errors/AppError.js";
 import { AddonCatalogPersistence } from "./addon-import.catalog.persistence.js";
 import { AddonCharacterPersistence } from "./addon-import.character.persistence.js";
 import { collectProfessionKeys } from "./addon-import.persistence-utils.js";
+import { AddonRecipePersistence } from "./addon-import.recipe.persistence.js";
 import type {
   ProfessionIdMap
 } from "./addon-import.persistence.types.js";
@@ -17,6 +18,9 @@ export class AddonImportPersistence {
 
   private readonly characterPersistence =
     new AddonCharacterPersistence();
+
+  private readonly recipePersistence =
+    new AddonRecipePersistence();
 
   async persist(
     snapshot: AddonSnapshot
@@ -45,6 +49,12 @@ export class AddonImportPersistence {
             professionIds,
             catalogResult.nodeIds
           );
+
+        await this.recipePersistence.persist(
+          transaction,
+          snapshot,
+          professionIds
+        );
 
         return {
           addonVersion:
