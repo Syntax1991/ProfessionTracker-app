@@ -6,6 +6,8 @@ export type ProfessionOverviewItem = {
   characterCount: number;
   trackedCharacterCount: number;
   activeNodeCount: number;
+  catalogRecipeCount: number;
+  capabilityCount: number;
 };
 
 export type ProfessionOverview = {
@@ -21,8 +23,32 @@ export type ProfessionCoverageEntry = {
   source: string;
 };
 
+export type ProfessionRecipeCoverage = {
+  id: string;
+  gameRecipeId: number;
+  name: string;
+  skillLineId: number | null;
+  expansion: string;
+  categoryId: number | null;
+  source: string;
+  lastSyncedAt: string | null;
+};
+
+export type ProfessionCapabilityCoverage = {
+  id: string;
+  key: string;
+  name: string;
+  type: string;
+  slotKey: string | null;
+  description: string | null;
+  expansion: string;
+  recipeCount: number;
+  primaryRecipeCount: number;
+};
+
 export type ProfessionCharacterCoverage = {
   characterProfessionId: string;
+
   character: {
     id: string;
     name: string;
@@ -30,14 +56,24 @@ export type ProfessionCharacterCoverage = {
     className: string;
     level: number;
   };
+
   skill: number;
   knowledgePoints: number;
+
   dataStatus:
     | "TRACKED"
     | "PARTIAL"
     | "UNTRACKED"
     | "NO_CATALOG";
-  slots: ProfessionCoverageEntry[];
+
+  slots:
+    ProfessionCoverageEntry[];
+
+  recipes:
+    ProfessionRecipeCoverage[];
+
+  capabilities:
+    ProfessionCapabilityCoverage[];
 };
 
 export type ProfessionDetail = {
@@ -47,11 +83,18 @@ export type ProfessionDetail = {
     name: string;
     category: string;
   };
+
   summary: {
     characterCount: number;
     trackedCharacterCount: number;
     missingCharacterCount: number;
     slotCount: number;
+    catalogRecipeCount: number;
+    learnedRecipeCount: number;
+    catalogCapabilityCount: number;
+    coveredCapabilityCount: number;
   };
-  characters: ProfessionCharacterCoverage[];
+
+  characters:
+    ProfessionCharacterCoverage[];
 };

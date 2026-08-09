@@ -5,9 +5,18 @@ import {
 import { LoadingPanel } from "../../../shared/components/LoadingPanel";
 import { PageHeader } from "../../../shared/components/PageHeader";
 import { StatusMessage } from "../../../shared/components/StatusMessage";
-import { ProfessionCharacterCard } from "../components/ProfessionCharacterCard";
-import { ProfessionCoverageMatrix } from "../components/ProfessionCoverageMatrix";
-import { useProfessionDetail } from "../hooks/useProfessionDetail";
+import {
+  ProfessionCapabilityMatrix
+} from "../components/ProfessionCapabilityMatrix";
+import {
+  ProfessionCharacterCard
+} from "../components/ProfessionCharacterCard";
+import {
+  ProfessionCoverageMatrix
+} from "../components/ProfessionCoverageMatrix";
+import {
+  useProfessionDetail
+} from "../hooks/useProfessionDetail";
 
 function getCategoryLabel(
   category: string
@@ -82,7 +91,7 @@ export function ProfessionDetailPage() {
           </Link>
         }
         description={
-          `${getCategoryLabel(detail.profession.category)} · Equipment-Slot-Abdeckung deiner Crafter`
+          `${getCategoryLabel(detail.profession.category)} · Fähigkeiten, Rezepte und Slot-Abdeckung deiner Crafter`
         }
         eyebrow="BERUFSDETAIL"
         title={
@@ -110,24 +119,54 @@ export function ProfessionDetailPage() {
           </strong>
 
           <small>
-            mit diesem Beruf
+            {
+              detail.summary
+                .trackedCharacterCount
+            }
+            {" mit erfassten Daten"}
           </small>
         </article>
 
         <article className="panel profession-detail-summary-card">
           <span>
-            Mit Slotdaten
+            Fähigkeiten
           </span>
 
           <strong>
             {
               detail.summary
-                .trackedCharacterCount
+                .coveredCapabilityCount
+            }
+            {"/"}
+            {
+              detail.summary
+                .catalogCapabilityCount
             }
           </strong>
 
           <small>
-            mit erkanntem Equipment-Slot
+            accountweit abgedeckt
+          </small>
+        </article>
+
+        <article className="panel profession-detail-summary-card">
+          <span>
+            Rezept-Zuordnungen
+          </span>
+
+          <strong>
+            {
+              detail.summary
+                .learnedRecipeCount
+            }
+          </strong>
+
+          <small>
+            {
+              detail.summary
+                .catalogRecipeCount
+            }
+            {" Rezepte im Katalog"}
           </small>
         </article>
 
@@ -149,6 +188,10 @@ export function ProfessionDetailPage() {
         </article>
       </section>
 
+      <ProfessionCapabilityMatrix
+        detail={detail}
+      />
+
       <ProfessionCoverageMatrix
         detail={detail}
       />
@@ -161,7 +204,7 @@ export function ProfessionDetailPage() {
             </p>
 
             <h2>
-              Zugewiesene Charaktere
+              Was kann welcher Char?
             </h2>
           </div>
 
@@ -171,7 +214,7 @@ export function ProfessionDetailPage() {
                 .missingCharacterCount
             }
             {
-              " Charaktere besitzen noch keine erkannten Slotdaten."
+              " Charaktere besitzen noch keine vollständig erkannten Craft-Daten."
             }
           </p>
         </div>

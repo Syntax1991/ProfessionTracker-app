@@ -1,6 +1,13 @@
 import { Link } from "react-router-dom";
-import type { ProfessionCharacterCoverage } from "../types/professionDetail.types";
-import { ProfessionCoverageList } from "./ProfessionCoverageList";
+import type {
+  ProfessionCharacterCoverage
+} from "../types/professionDetail.types";
+import {
+  ProfessionCapabilityList
+} from "./ProfessionCapabilityList";
+import {
+  ProfessionCoverageList
+} from "./ProfessionCoverageList";
 
 type ProfessionCharacterCardProps = {
   coverage:
@@ -9,11 +16,14 @@ type ProfessionCharacterCardProps = {
 
 const statusLabels = {
   TRACKED:
-    "Slots erfasst",
+    "Daten erfasst",
+
   PARTIAL:
-    "Keine Slotdaten",
+    "Teilweise erfasst",
+
   UNTRACKED:
     "Nicht erfasst",
+
   NO_CATALOG:
     "Kein Katalog"
 } as const;
@@ -93,22 +103,46 @@ export function ProfessionCharacterCard({
 
         <div>
           <span>
-            Slots
+            Fähigkeiten
           </span>
 
           <strong>
-            {coverage.slots.length}
+            {
+              coverage
+                .capabilities
+                .length
+            }
+          </strong>
+        </div>
+
+        <div>
+          <span>
+            Gelernte Rezepte
+          </span>
+
+          <strong>
+            {
+              coverage
+                .recipes
+                .length
+            }
           </strong>
         </div>
       </div>
 
       <div className="profession-character-coverage-grid">
+        <ProfessionCapabilityList
+          capabilities={
+            coverage.capabilities
+          }
+        />
+
         <ProfessionCoverageList
           emptyText="Für diesen Charakter wurden noch keine tatsächlichen Equipment-Slots erkannt."
           entries={
             coverage.slots
           }
-          title="Herstellbare Slots"
+          title="Equipment-Slots"
         />
       </div>
     </article>
