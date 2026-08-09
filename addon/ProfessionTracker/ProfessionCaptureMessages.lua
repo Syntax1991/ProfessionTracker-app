@@ -6,10 +6,12 @@ local loginWarningScheduled = false
 
 local function formatCapturedStatus(status)
     return string.format(
-        "%d mit Operation-Daten · %d ohne · %d gelernt",
+        "%d/%d Operation-Daten · %d ohne Operation-Modell · %d gelernt",
         status.operationRecipeCount
             or 0,
-        status.operationUnavailableCount
+        status.operationEligibleCount
+            or 0,
+        status.operationExcludedCount
             or 0,
         status.learnedRecipeCount
             or 0
@@ -21,10 +23,18 @@ local function printProfessionStatus(status)
         PT.Print(
             status.professionName
                 .. ": OPERATIONS · "
-                .. formatCapturedStatus(
-                    status
-                )
+                .. formatCapturedStatus(status)
                 .. " · erfasst"
+        )
+
+        return
+    end
+
+    if status.state == "LEGACY" then
+        PT.Print(
+            status.professionName
+                .. ": OPERATIONS · ältere Capture-Version · "
+                .. "wird beim nächsten Öffnen automatisch aktualisiert"
         )
 
         return
@@ -33,7 +43,7 @@ local function printProfessionStatus(status)
     if status.state == "STALE" then
         PT.Print(
             status.professionName
-                .. ": STALE · Datenversion veraltet, Beruf einmal öffnen"
+                .. ": STALE · Datenversion unbekannt, Beruf einmal öffnen"
         )
 
         return
@@ -79,9 +89,7 @@ function PT.PrintCurrentProfessionCaptureStatus()
         "Crafting-Datenstatus:"
     )
 
-    for _, status in ipairs(
-        statuses
-    ) do
+    for _, status in ipairs(statuses) do
         printProfessionStatus(
             status
         )
@@ -92,7 +100,11 @@ function PT.WarnMissingProfessionCaptureData()
     for _, status in ipairs(
         PT.GetCurrentProfessionCaptureStatuses()
     ) do
-        if status.state ~= "CAPTURED" then
+        local requiresCapture =
+            status.state ~= "CAPTURED"
+            and status.state ~= "LEGACY"
+
+        if requiresCapture then
             local warningKey =
                 tostring(
                     status.professionSkillLineId
@@ -123,17 +135,18 @@ local function createCaptureSignature(capture)
                 capture.status
                 or "UNKNOWN"
             ),
-
             tostring(
                 capture.operationRecipeCount
                 or 0
             ),
-
             tostring(
-                capture.operationUnavailableCount
+                capture.operationEligibleCount
                 or 0
             ),
-
+            tostring(
+                capture.operationExcludedCount
+                or 0
+            ),
             tostring(
                 capture.learnedRecipeCount
                 or 0
@@ -176,11 +189,13 @@ function PT.OnCharacterRecipeOperationsCaptured(
 
     PT.Print(
         string.format(
-            "%s erfasst · %d mit Operation-Daten · %d ohne · %d gelernt",
+            "%s erfasst · %d/%d Operation-Daten · %d ohne Operation-Modell · %d gelernt",
             professionName,
             capture.operationRecipeCount
                 or 0,
-            capture.operationUnavailableCount
+            capture.operationEligibleCount
+                or 0,
+            capture.operationExcludedCount
                 or 0,
             capture.learnedRecipeCount
                 or 0

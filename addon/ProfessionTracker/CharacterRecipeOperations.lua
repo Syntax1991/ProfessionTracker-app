@@ -1,6 +1,6 @@
 local _, PT = ...
 
-local CAPTURE_VERSION = 2
+local CAPTURE_VERSION = 3
 
 PT.CHARACTER_RECIPE_OPERATION_CAPTURE_VERSION =
     CAPTURE_VERSION
@@ -71,7 +71,7 @@ end
 
 local function collectRecipeOperations(
     skillLineID,
-    learnedRecipeIDs
+    operationEligibleRecipeIDs
 )
     local catalogRecipes =
         getCatalogRecipeMap(
@@ -83,7 +83,7 @@ local function collectRecipeOperations(
     local operationRecipeCount = 0
 
     for _, recipeID in ipairs(
-        learnedRecipeIDs
+        operationEligibleRecipeIDs
     ) do
         local recipe =
             catalogRecipes[
@@ -186,20 +186,31 @@ function PT.StoreCharacterRecipeOperations(
         recipeSnapshot.learnedRecipeIds
         or {}
 
+    local operationEligibleRecipeIDs =
+        recipeSnapshot.operationEligibleRecipeIds
+        or learnedRecipeIDs
+
     local storedRecipes,
         unavailableRecipeIDs,
         operationRecipeCount =
         collectRecipeOperations(
             context.skillLineId,
-            learnedRecipeIDs
+            operationEligibleRecipeIDs
         )
 
     local learnedRecipeCount =
         #learnedRecipeIDs
 
+    local operationEligibleCount =
+        #operationEligibleRecipeIDs
+
     local capture = {
         captureVersion =
             CAPTURE_VERSION,
+
+        scopeVersion =
+            recipeSnapshot.scopeVersion
+            or 1,
 
         characterKey =
             PT.GetCurrentCharacterStorageKey(),
@@ -222,8 +233,18 @@ function PT.StoreCharacterRecipeOperations(
         learnedRecipeCount =
             learnedRecipeCount,
 
+        operationEligibleCount =
+            operationEligibleCount,
+
+        operationExcludedCount =
+            math.max(
+                learnedRecipeCount
+                    - operationEligibleCount,
+                0
+            ),
+
         operationAttemptedCount =
-            learnedRecipeCount,
+            operationEligibleCount,
 
         operationRecipeCount =
             operationRecipeCount,
@@ -233,6 +254,15 @@ function PT.StoreCharacterRecipeOperations(
 
         operationUnavailableRecipeIds =
             unavailableRecipeIDs,
+
+        sourceRecipeCount =
+            recipeSnapshot.sourceRecipeCount,
+
+        excludedRecipeCount =
+            recipeSnapshot.excludedRecipeCount,
+
+        excludedByReason =
+            recipeSnapshot.excludedByReason,
 
         captureLevel =
             "OPERATIONS",

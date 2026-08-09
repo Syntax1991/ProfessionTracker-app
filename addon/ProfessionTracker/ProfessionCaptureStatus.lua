@@ -1,76 +1,5 @@
 local _, PT = ...
 
-local craftingProfessionSkillLines = {
-    [164] = true,
-    [165] = true,
-    [171] = true,
-    [197] = true,
-    [202] = true,
-    [333] = true,
-    [755] = true,
-    [773] = true
-}
-
-local function isMidnightExpansion(expansion)
-    if type(expansion) ~= "table" then
-        return false
-    end
-
-    local expansionName =
-        expansion.expansionName
-        or expansion.displayName
-
-    if type(expansionName) ~= "string" then
-        return false
-    end
-
-    return string.find(
-        string.lower(expansionName),
-        "midnight",
-        1,
-        true
-    ) ~= nil
-end
-
-local function findMidnightExpansion(profession)
-    if type(profession.expansions) ~= "table" then
-        return nil
-    end
-
-    local activeSkillLineID =
-        profession.activeExpansionSkillLineId
-
-    if activeSkillLineID then
-        local expansion =
-            profession.expansions[
-                tostring(activeSkillLineID)
-            ]
-            or profession.expansions[
-                activeSkillLineID
-            ]
-
-        if expansion
-            and isMidnightExpansion(
-                expansion
-            )
-        then
-            return expansion
-        end
-    end
-
-    for _, expansion in pairs(
-        profession.expansions
-    ) do
-        if isMidnightExpansion(
-            expansion
-        ) then
-            return expansion
-        end
-    end
-
-    return nil
-end
-
 local function findOperationCapture(
     characterKey,
     profession
@@ -118,18 +47,22 @@ local function findOperationCapture(
     return nil
 end
 
-local function hasRecipes(expansion)
-    return type(expansion) == "table"
-        and type(expansion.recipeIds) == "table"
-end
-
 local function applyOperationCapture(
     status,
     capture
 )
+    local captureVersion =
+        capture.captureVersion
+        or 1
+
     local learnedRecipeCount =
         capture.learnedRecipeCount
         or 0
+
+    local operationEligibleCount =
+        capture.operationEligibleCount
+        or capture.operationAttemptedCount
+        or learnedRecipeCount
 
     local operationRecipeCount =
         capture.operationRecipeCount
@@ -141,15 +74,26 @@ local function applyOperationCapture(
     if unavailableCount == nil then
         unavailableCount =
             math.max(
-                learnedRecipeCount
+                operationEligibleCount
                     - operationRecipeCount,
                 0
             )
     end
 
+    local excludedCount =
+        capture.operationExcludedCount
+
+    if excludedCount == nil then
+        excludedCount =
+            math.max(
+                learnedRecipeCount
+                    - operationEligibleCount,
+                0
+            )
+    end
+
     status.captureVersion =
-        capture.captureVersion
-        or 1
+        captureVersion
 
     status.expansionSkillLineId =
         capture.skillLineId
@@ -158,9 +102,12 @@ local function applyOperationCapture(
     status.learnedRecipeCount =
         learnedRecipeCount
 
+    status.operationEligibleCount =
+        operationEligibleCount
+
     status.operationAttemptedCount =
         capture.operationAttemptedCount
-        or learnedRecipeCount
+        or operationEligibleCount
 
     status.operationRecipeCount =
         operationRecipeCount
@@ -168,15 +115,26 @@ local function applyOperationCapture(
     status.operationUnavailableCount =
         unavailableCount
 
+    status.operationExcludedCount =
+        excludedCount
+
     status.captureLevel =
         "OPERATIONS"
 
-    if status.captureVersion == 1
-        or status.captureVersion
-            == PT.CHARACTER_RECIPE_OPERATION_CAPTURE_VERSION
+    if captureVersion
+        == PT.CHARACTER_RECIPE_OPERATION_CAPTURE_VERSION
     then
         status.state =
             "CAPTURED"
+
+        return
+    end
+
+    if captureVersion == 1
+        or captureVersion == 2
+    then
+        status.state =
+            "LEGACY"
 
         return
     end
@@ -190,7 +148,7 @@ local function createProfessionStatus(
     profession
 )
     local expansion =
-        findMidnightExpansion(
+        PT.FindMidnightProfessionExpansion(
             profession
         )
 
@@ -225,6 +183,9 @@ local function createProfessionStatus(
         learnedRecipeCount =
             nil,
 
+        operationEligibleCount =
+            nil,
+
         operationAttemptedCount =
             nil,
 
@@ -232,6 +193,9 @@ local function createProfessionStatus(
             nil,
 
         operationUnavailableCount =
+            nil,
+
+        operationExcludedCount =
             nil
     }
 
@@ -244,7 +208,9 @@ local function createProfessionStatus(
             or status.expansionSkillLineId
     end
 
-    if hasRecipes(expansion) then
+    if PT.ProfessionExpansionHasRecipes(
+        expansion
+    ) then
         status.captureLevel =
             "RECIPES"
     end
@@ -272,6 +238,28 @@ local function getCurrentCharacter()
         characterKey
 end
 
+local function shouldTrackProfession(
+    profession
+)
+    if type(profession) ~= "table" then
+        return false
+    end
+
+    local skillLineID =
+        profession.skillLineId
+
+    if not PT.IsSupportedCraftingProfession(
+        skillLineID
+    ) then
+        return false
+    end
+
+    return (
+        profession.skillLevel
+        or 0
+    ) > 0
+end
+
 function PT.GetCurrentProfessionCaptureStatuses()
     local character,
         characterKey =
@@ -288,18 +276,9 @@ function PT.GetCurrentProfessionCaptureStatuses()
     for _, profession in ipairs(
         character.professions
     ) do
-        local skillLineID =
-            profession.skillLineId
-
-        if skillLineID
-            and craftingProfessionSkillLines[
-                skillLineID
-            ]
-            and (
-                profession.skillLevel
-                or 0
-            ) > 0
-        then
+        if shouldTrackProfession(
+            profession
+        ) then
             table.insert(
                 statuses,
                 createProfessionStatus(

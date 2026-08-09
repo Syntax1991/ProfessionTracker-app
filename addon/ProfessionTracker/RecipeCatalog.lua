@@ -1,181 +1,56 @@
 local _, PT = ...
 
-local function getRecipeInfo(
-    recipeID
+local function incrementReason(
+    reasons,
+    reason
 )
-    if not C_TradeSkillUI
-        or not C_TradeSkillUI.GetRecipeInfo
-    then
-        return nil
-    end
+    local key =
+        reason
+        or "UNKNOWN"
 
-    local success,
-        recipeInfo =
-        pcall(
-            C_TradeSkillUI.GetRecipeInfo,
-            recipeID
-        )
-
-    if not success then
-        return nil
-    end
-
-    return recipeInfo
+    reasons[key] =
+        (
+            reasons[key]
+            or 0
+        ) + 1
 end
 
-local function getCategoryInfo(
-    categoryID
-)
-    if not categoryID
-        or categoryID == 0
-        or not C_TradeSkillUI
-        or not C_TradeSkillUI.GetCategoryInfo
-    then
-        return nil
-    end
-
-    local success,
-        categoryInfo =
-        pcall(
-            C_TradeSkillUI.GetCategoryInfo,
-            categoryID
-        )
-
-    if not success then
-        return nil
-    end
-
-    return categoryInfo
-end
-
-local function getOperationMetrics(
-    recipeID
-)
-    if not PT.GetRecipeOperationSnapshot then
-        return nil
-    end
-
-    return PT.GetRecipeOperationSnapshot(
-        recipeID
-    )
-end
-
-local function createCatalogRecipe(
-    recipeID
-)
-    local recipeInfo =
-        getRecipeInfo(
-            recipeID
-        )
-
-    if not recipeInfo then
-        return nil
-    end
-
-    local resolvedRecipeID =
-        recipeInfo.recipeID
-        or recipeID
-
-    if not resolvedRecipeID then
-        return nil
-    end
-
-    local categoryID =
-        recipeInfo.categoryID
-        or 0
-
-    local categoryInfo =
-        getCategoryInfo(
-            categoryID
-        )
-
-    local parentCategoryID =
-        categoryInfo
-        and categoryInfo.parentCategoryID
-        or 0
-
-    local parentCategoryInfo =
-        getCategoryInfo(
-            parentCategoryID
-        )
-
-    local operationMetrics =
-        getOperationMetrics(
-            resolvedRecipeID
-        )
-
-    return {
-        recipeId =
-            resolvedRecipeID,
-
-        name =
-            recipeInfo.name
-            or (
-                "Recipe "
-                .. tostring(
-                    resolvedRecipeID
-                )
-            ),
-
-        categoryId =
-            categoryID,
-
-        categoryName =
-            categoryInfo
-            and categoryInfo.name
-            or nil,
-
-        parentCategoryId =
-            parentCategoryID,
-
-        parentCategoryName =
-            parentCategoryInfo
-            and parentCategoryInfo.name
-            or nil,
-
-        baseDifficulty =
-            operationMetrics
-            and operationMetrics.baseDifficulty
-            or nil,
-
-        operationMetrics =
-            operationMetrics,
-
-        learned =
-            recipeInfo.learned
-            == true
-    }
-end
-
-local function collectRecipes()
+local function collectRecipes(context)
     if not C_TradeSkillUI
         or not C_TradeSkillUI.GetAllRecipeIDs
+        or not PT.CreateRecipeCatalogEntry
     then
-        return nil,
-            nil
+        return nil
     end
 
-    local recipeIDs =
+    local sourceRecipeIDs =
         C_TradeSkillUI.GetAllRecipeIDs()
         or {}
 
     local catalogRecipes = {}
     local learnedRecipeIDs = {}
+    local operationEligibleRecipeIDs = {}
     local seenRecipeIDs = {}
+    local excludedByReason = {}
 
     for _, recipeID in ipairs(
-        recipeIDs
+        sourceRecipeIDs
     ) do
-        local recipe =
-            createCatalogRecipe(
-                recipeID
+        local recipe,
+            exclusionReason =
+            PT.CreateRecipeCatalogEntry(
+                recipeID,
+                context
             )
 
-        if recipe
-            and not seenRecipeIDs[
-                recipe.recipeId
-            ]
-        then
+        if not recipe then
+            incrementReason(
+                excludedByReason,
+                exclusionReason
+            )
+        elseif not seenRecipeIDs[
+            recipe.recipeId
+        ] then
             seenRecipeIDs[
                 recipe.recipeId
             ] = true
@@ -196,16 +71,20 @@ local function collectRecipes()
                     learnedRecipeIDs,
                     recipe.recipeId
                 )
+
+                if recipe.operationEligible then
+                    table.insert(
+                        operationEligibleRecipeIDs,
+                        recipe.recipeId
+                    )
+                end
             end
         end
     end
 
     table.sort(
         catalogRecipes,
-        function(
-            left,
-            right
-        )
+        function(left, right)
             return left.recipeId
                 < right.recipeId
         end
@@ -215,13 +94,35 @@ local function collectRecipes()
         learnedRecipeIDs
     )
 
-    return catalogRecipes,
-        learnedRecipeIDs
+    table.sort(
+        operationEligibleRecipeIDs
+    )
+
+    return {
+        recipes =
+            catalogRecipes,
+
+        learnedRecipeIds =
+            learnedRecipeIDs,
+
+        operationEligibleRecipeIds =
+            operationEligibleRecipeIDs,
+
+        sourceRecipeCount =
+            #sourceRecipeIDs,
+
+        excludedRecipeCount =
+            #sourceRecipeIDs
+            - #catalogRecipes,
+
+        excludedByReason =
+            excludedByReason
+    }
 end
 
 local function storeRecipeCatalog(
     context,
-    recipes,
+    collection,
     capturedAt
 )
     local database =
@@ -235,6 +136,10 @@ local function storeRecipeCatalog(
     database.recipeCatalog[
         catalogKey
     ] = {
+        scopeVersion =
+            PT.RECIPE_SCOPE_VERSION
+            or 1,
+
         skillLineId =
             context.skillLineId,
 
@@ -244,8 +149,17 @@ local function storeRecipeCatalog(
         expansionName =
             context.expansionName,
 
+        sourceRecipeCount =
+            collection.sourceRecipeCount,
+
+        excludedRecipeCount =
+            collection.excludedRecipeCount,
+
+        excludedByReason =
+            collection.excludedByReason,
+
         recipes =
-            recipes,
+            collection.recipes,
 
         capturedAt =
             capturedAt
@@ -262,12 +176,13 @@ function PT.CreateOpenProfessionRecipeSnapshot(
         return nil
     end
 
-    local catalogRecipes,
-        learnedRecipeIDs =
-        collectRecipes()
+    local collection =
+        collectRecipes(
+            context
+        )
 
-    if not catalogRecipes
-        or #catalogRecipes == 0
+    if not collection
+        or #collection.recipes == 0
     then
         return nil
     end
@@ -277,11 +192,15 @@ function PT.CreateOpenProfessionRecipeSnapshot(
 
     storeRecipeCatalog(
         context,
-        catalogRecipes,
+        collection,
         capturedAt
     )
 
     return {
+        scopeVersion =
+            PT.RECIPE_SCOPE_VERSION
+            or 1,
+
         skillLineId =
             context.skillLineId,
 
@@ -298,10 +217,22 @@ function PT.CreateOpenProfessionRecipeSnapshot(
             context.parentProfessionName,
 
         recipeCount =
-            #catalogRecipes,
+            #collection.recipes,
 
         learnedRecipeIds =
-            learnedRecipeIDs,
+            collection.learnedRecipeIds,
+
+        operationEligibleRecipeIds =
+            collection.operationEligibleRecipeIds,
+
+        sourceRecipeCount =
+            collection.sourceRecipeCount,
+
+        excludedRecipeCount =
+            collection.excludedRecipeCount,
+
+        excludedByReason =
+            collection.excludedByReason,
 
         capturedAt =
             capturedAt
