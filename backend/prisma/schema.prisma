@@ -37,6 +37,8 @@ model Profession {
 
   assignments         CharacterProfession[]
   specializationTrees ProfessionSpecializationTree[]
+  capabilities        CraftCapability[]
+  recipes             CraftRecipe[]
 }
 
 model CharacterProfession {
@@ -51,6 +53,7 @@ model CharacterProfession {
   profession Profession @relation(fields: [professionId], references: [id], onDelete: Cascade)
 
   nodeProgress CharacterProfessionNodeProgress[]
+  recipes      CharacterCraftRecipe[]
 
   @@unique([characterId, professionId])
   @@index([professionId])
@@ -109,6 +112,80 @@ model CharacterProfessionNodeProgress {
 
   @@unique([characterProfessionId, nodeId])
   @@index([nodeId])
+  @@index([source])
+}
+
+model CraftCapability {
+  id           String  @id @default(cuid())
+  professionId String
+  expansion    String  @default("MIDNIGHT")
+  key          String
+  name         String
+  type         String
+  slotKey      String?
+  description  String?
+  sortOrder    Int     @default(0)
+
+  profession Profession              @relation(fields: [professionId], references: [id], onDelete: Cascade)
+  recipes    CraftRecipeCapability[]
+
+  @@unique([professionId, expansion, key])
+  @@index([professionId, expansion])
+  @@index([professionId, expansion, type])
+}
+
+model CraftRecipe {
+  id             String    @id @default(cuid())
+  professionId   String
+  gameRecipeId   Int
+  skillLineId    Int?
+  expansion      String    @default("MIDNIGHT")
+  name           String
+  categoryId     Int?
+  craftedItemId  Int?
+  baseDifficulty Int?
+  source         String    @default("ADDON")
+  lastSyncedAt   DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  profession   Profession               @relation(fields: [professionId], references: [id], onDelete: Cascade)
+  capabilities CraftRecipeCapability[]
+  characters   CharacterCraftRecipe[]
+
+  @@unique([professionId, gameRecipeId])
+  @@index([professionId, expansion])
+  @@index([gameRecipeId])
+  @@index([craftedItemId])
+}
+
+model CraftRecipeCapability {
+  craftRecipeId String
+  capabilityId  String
+  isPrimary     Boolean @default(false)
+
+  recipe     CraftRecipe     @relation(fields: [craftRecipeId], references: [id], onDelete: Cascade)
+  capability CraftCapability @relation(fields: [capabilityId], references: [id], onDelete: Cascade)
+
+  @@id([craftRecipeId, capabilityId])
+  @@index([capabilityId])
+}
+
+model CharacterCraftRecipe {
+  id                    String    @id @default(cuid())
+  characterProfessionId String
+  craftRecipeId         String
+  learned               Boolean   @default(true)
+  source                String    @default("ADDON")
+  lastSyncedAt          DateTime?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  characterProfession CharacterProfession @relation(fields: [characterProfessionId], references: [id], onDelete: Cascade)
+  recipe              CraftRecipe         @relation(fields: [craftRecipeId], references: [id], onDelete: Cascade)
+
+  @@unique([characterProfessionId, craftRecipeId])
+  @@index([craftRecipeId])
   @@index([source])
 }
 
