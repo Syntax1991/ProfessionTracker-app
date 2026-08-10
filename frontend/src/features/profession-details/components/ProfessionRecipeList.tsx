@@ -1,6 +1,10 @@
 import type {
   ProfessionRecipeCatalogItem
 } from "../types/professionRecipe.types";
+import {
+  getProfessionRecipeCraftStatusClassName,
+  getProfessionRecipeCraftStatusLabel
+} from "../utils/professionRecipeStatus";
 
 type ProfessionRecipeListProps = {
   recipes:
@@ -56,7 +60,7 @@ export function ProfessionRecipeList({
         </span>
 
         <span>
-          Daten
+          Status
         </span>
       </div>
 
@@ -117,21 +121,15 @@ export function ProfessionRecipeList({
                 <span>
                   <small
                     className={
-                      recipe.operationCoverage
-                        .missingCrafterCount ===
-                      0
-                        ? "profession-recipe-coverage complete"
-                        : "profession-recipe-coverage incomplete"
+                      getProfessionRecipeCraftStatusClassName(
+                        recipe.craftStatus
+                      )
                     }
                   >
                     {
-                      recipe.operationCoverage
-                        .capturedCrafterCount
-                    }
-                    {"/"}
-                    {
-                      recipe.operationCoverage
-                        .totalCrafterCount
+                      getProfessionRecipeCraftStatusLabel(
+                        recipe.craftStatus
+                      )
                     }
                   </small>
                 </span>

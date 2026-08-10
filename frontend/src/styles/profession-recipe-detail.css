@@ -28,6 +28,18 @@
   font-size: 0.6rem;
 }
 
+.profession-recipe-detail-statuses {
+  display: flex;
+  align-items: flex-end;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.profession-recipe-detail-statuses
+  > span {
+  margin-top: 0;
+}
+
 .profession-recipe-available,
 .profession-recipe-missing {
   flex: 0 0 auto;
@@ -153,6 +165,18 @@
   margin-top: 2px;
   color: var(--text-muted);
   font-size: 0.57rem;
+}
+
+.profession-recipe-detail-crafter-actions {
+  display: flex;
+  align-items: flex-end;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.profession-recipe-detail-crafter-actions
+  > span {
+  margin-top: 0;
 }
 
 .profession-recipe-detail-crafter-header

@@ -1,10 +1,15 @@
 import {
-  calculateProfessionRecipeReadiness
-} from "./profession-recipe-readiness.js";
+  calculateProfessionRecipeCraftStatus,
+  getBestProfessionRecipeCraftStatus,
+  getProfessionRecipeCraftStatusPriority
+} from "./profession-recipe-craft-status.js";
 import {
   createProfessionRecipeOperationCoverage,
   mapProfessionRecipeOperation
 } from "./profession-recipe-operation.mapper.js";
+import {
+  calculateProfessionRecipeReadiness
+} from "./profession-recipe-readiness.js";
 import {
   createProfessionRecipeCatalogSummary
 } from "./profession-recipe-summary.js";
@@ -92,6 +97,14 @@ function mapRecipe(
       )
     );
 
+  const craftStatus =
+    getBestProfessionRecipeCraftStatus(
+      crafters.map(
+        (crafter) =>
+          crafter.craftStatus
+      )
+    );
+
   return {
     id:
       recipe.id,
@@ -111,6 +124,7 @@ function mapRecipe(
     baseDifficulty:
       recipe.baseDifficulty,
 
+    craftStatus,
     capabilities,
     crafters,
     operationCoverage
@@ -163,6 +177,17 @@ function mapCrafter(
       effectiveSkill
     );
 
+  const operation =
+    mapProfessionRecipeOperation(
+      relation
+    );
+
+  const craftStatus =
+    calculateProfessionRecipeCraftStatus(
+      baseDifficulty,
+      operation
+    );
+
   return {
     characterId:
       assignment.character.id,
@@ -199,10 +224,8 @@ function mapCrafter(
     baselineSkillSurplus:
       readiness.baselineSkillSurplus,
 
-    operation:
-      mapProfessionRecipeOperation(
-        relation
-      ),
+    craftStatus,
+    operation,
 
     source:
       relation.source,
@@ -242,17 +265,21 @@ function compareCrafters(
     ProfessionRecipeCrafter
 ): number {
   const statusDifference =
-    getStatusPriority(
-      left.baselineStatus
+    getProfessionRecipeCraftStatusPriority(
+      left.craftStatus
     ) -
-    getStatusPriority(
-      right.baselineStatus
+    getProfessionRecipeCraftStatusPriority(
+      right.craftStatus
     );
 
   return (
     statusDifference ||
-    right.effectiveSkill -
-      left.effectiveSkill ||
+    getCrafterEffectiveSkill(
+      right
+    ) -
+      getCrafterEffectiveSkill(
+        left
+      ) ||
     left.name.localeCompare(
       right.name,
       "de"
@@ -264,18 +291,13 @@ function compareCrafters(
   );
 }
 
-function getStatusPriority(
-  status:
-    ProfessionRecipeCrafter["baselineStatus"]
+function getCrafterEffectiveSkill(
+  crafter:
+    ProfessionRecipeCrafter
 ): number {
-  switch (status) {
-    case "BASE_SKILL_SUFFICIENT":
-      return 0;
-
-    case "RECIPE_BONUS_REQUIRED":
-      return 1;
-
-    case "UNKNOWN":
-      return 2;
-  }
+  return (
+    crafter.operation
+      .effectiveSkill ??
+    crafter.effectiveSkill
+  );
 }

@@ -43,6 +43,44 @@
     var(--surface-hover);
 }
 
+.profession-craft-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 58px;
+  padding: 5px 7px;
+  border-radius: 999px;
+  font-size: 0.54rem;
+  font-weight: 850;
+  letter-spacing: 0.035em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.profession-craft-status.safe {
+  color: #a9edcd;
+  background:
+    var(--success-soft);
+}
+
+.profession-craft-status.concentration {
+  color: #ffd68a;
+  background:
+    var(--warning-soft);
+}
+
+.profession-craft-status.not-safe {
+  color: #ffc9cd;
+  background:
+    var(--danger-soft);
+}
+
+.profession-craft-status.unknown {
+  color: var(--text-secondary);
+  background:
+    var(--surface-hover);
+}
+
 @media (max-width: 620px) {
   .profession-recipe-crafter-identity {
     width: 100%;

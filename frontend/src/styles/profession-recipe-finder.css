@@ -116,7 +116,7 @@
     minmax(120px, 1fr)
     70px
     70px
-    76px;
+    112px;
   gap: 10px;
   align-items: center;
 }
@@ -252,7 +252,7 @@
     grid-template-columns:
       minmax(0, 1fr)
       62px
-      62px;
+      110px;
   }
 
   .profession-recipe-list-group,

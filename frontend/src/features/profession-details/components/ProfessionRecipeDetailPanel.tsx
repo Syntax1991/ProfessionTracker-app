@@ -5,6 +5,10 @@ import type {
   ProfessionRecipeCatalogItem,
   ProfessionRecipeCrafter
 } from "../types/professionRecipe.types";
+import {
+  getProfessionRecipeCraftStatusClassName,
+  getProfessionRecipeCraftStatusLabel
+} from "../utils/professionRecipeStatus";
 
 type ProfessionRecipeDetailPanelProps = {
   recipe:
@@ -56,16 +60,32 @@ export function ProfessionRecipeDetailPanel({
           </span>
         </div>
 
-        <span
-          className={
-            recipe.crafters.length > 0
-              ? "profession-recipe-available"
-              : "profession-recipe-missing"
-          }
-        >
-          {recipe.crafters.length}
-          {" Crafter"}
-        </span>
+        <div className="profession-recipe-detail-statuses">
+          <span
+            className={
+              getProfessionRecipeCraftStatusClassName(
+                recipe.craftStatus
+              )
+            }
+          >
+            {
+              getProfessionRecipeCraftStatusLabel(
+                recipe.craftStatus
+              )
+            }
+          </span>
+
+          <span
+            className={
+              recipe.crafters.length > 0
+                ? "profession-recipe-available"
+                : "profession-recipe-missing"
+            }
+          >
+            {recipe.crafters.length}
+            {" Crafter"}
+          </span>
+        </div>
       </header>
 
       <div className="profession-recipe-detail-facts">
@@ -156,13 +176,29 @@ export function ProfessionRecipeDetailPanel({
                       </span>
                     </div>
 
-                    <Link
-                      to={
-                        `/characters/${crafter.characterId}`
-                      }
-                    >
-                      Details
-                    </Link>
+                    <div className="profession-recipe-detail-crafter-actions">
+                      <span
+                        className={
+                          getProfessionRecipeCraftStatusClassName(
+                            crafter.craftStatus
+                          )
+                        }
+                      >
+                        {
+                          getProfessionRecipeCraftStatusLabel(
+                            crafter.craftStatus
+                          )
+                        }
+                      </span>
+
+                      <Link
+                        to={
+                          `/characters/${crafter.characterId}`
+                        }
+                      >
+                        Details
+                      </Link>
+                    </div>
                   </div>
 
                   <div className="profession-recipe-operation-chips">

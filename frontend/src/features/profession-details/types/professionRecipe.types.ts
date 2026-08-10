@@ -13,6 +13,12 @@ export type ProfessionRecipeBaselineStatus =
   | "BASE_SKILL_SUFFICIENT"
   | "RECIPE_BONUS_REQUIRED";
 
+export type ProfessionRecipeCraftStatus =
+  | "SAFE"
+  | "CONCENTRATION"
+  | "NOT_SAFE"
+  | "UNKNOWN";
+
 export type ProfessionRecipeOperationStatus =
   | "CAPTURED"
   | "MISSING";
@@ -66,6 +72,9 @@ export type ProfessionRecipeCrafter = {
   baselineSkillSurplus:
     number | null;
 
+  craftStatus:
+    ProfessionRecipeCraftStatus;
+
   operation:
     ProfessionRecipeOperation;
 
@@ -80,6 +89,9 @@ export type ProfessionRecipeCatalogItem = {
   expansion: string;
   categoryId: number | null;
   baseDifficulty: number | null;
+
+  craftStatus:
+    ProfessionRecipeCraftStatus;
 
   capabilities:
     ProfessionRecipeCapability[];
