@@ -1,6 +1,6 @@
 local _, PT = ...
 
-local CAPTURE_VERSION = 3
+local CAPTURE_VERSION = 4
 
 PT.CHARACTER_RECIPE_OPERATION_CAPTURE_VERSION =
     CAPTURE_VERSION
@@ -98,6 +98,17 @@ local function collectRecipeOperations(
             or nil
 
         if operationMetrics then
+            local reagentSimulation =
+                nil
+
+            if PT.GetRecipeReagentSimulationSnapshot then
+                reagentSimulation =
+                    PT.GetRecipeReagentSimulationSnapshot(
+                        recipeID,
+                        recipe.reagentSchema
+                    )
+            end
+
             storedRecipes[
                 tostring(recipeID)
             ] = {
@@ -105,7 +116,10 @@ local function collectRecipeOperations(
                     recipeID,
 
                 operationMetrics =
-                    operationMetrics
+                    operationMetrics,
+
+                reagentSimulation =
+                    reagentSimulation
             }
 
             operationRecipeCount =
@@ -265,7 +279,7 @@ function PT.StoreCharacterRecipeOperations(
             recipeSnapshot.excludedByReason,
 
         captureLevel =
-            "OPERATIONS",
+            "OPERATIONS_AND_REAGENTS",
 
         status =
             "CAPTURED",

@@ -11,9 +11,13 @@ local function isScalarValue(
         or valueType == "boolean"
 end
 
-local function copyScalarMetrics(
+function PT.CopyRecipeOperationMetrics(
     operationInfo
 )
+    if type(operationInfo) ~= "table" then
+        return nil
+    end
+
     local metrics = {}
 
     for key, value in pairs(
@@ -37,7 +41,9 @@ local function copyScalarMetrics(
 end
 
 function PT.GetRecipeOperationSnapshot(
-    recipeID
+    recipeID,
+    craftingReagents,
+    applyConcentration
 )
     if not recipeID
         or not C_TradeSkillUI
@@ -46,14 +52,19 @@ function PT.GetRecipeOperationSnapshot(
         return nil
     end
 
+    local reagents =
+        type(craftingReagents) == "table"
+        and craftingReagents
+        or {}
+
     local success,
         operationInfo =
         pcall(
             C_TradeSkillUI.GetCraftingOperationInfo,
             recipeID,
-            {},
+            reagents,
             nil,
-            false
+            applyConcentration == true
         )
 
     if not success
@@ -62,7 +73,7 @@ function PT.GetRecipeOperationSnapshot(
         return nil
     end
 
-    return copyScalarMetrics(
+    return PT.CopyRecipeOperationMetrics(
         operationInfo
     )
 end

@@ -7,6 +7,9 @@ import {
 import {
   normalizeOperationMetrics
 } from "./addon-import.operation-metrics.normalizer.js";
+import {
+  normalizeCharacterRecipeReagentSimulation
+} from "./addon-import.character-recipe-simulation.normalizer.js";
 import type {
   AddonCharacterRecipeOperation,
   AddonCharacterRecipeOperationCapture,
@@ -57,7 +60,13 @@ function normalizeOperationRecipe(
 
   return {
     gameRecipeId,
-    operationMetrics
+
+    operationMetrics,
+
+    reagentSimulation:
+      normalizeCharacterRecipeReagentSimulation(
+        recipe.reagentSimulation
+      )
   };
 }
 

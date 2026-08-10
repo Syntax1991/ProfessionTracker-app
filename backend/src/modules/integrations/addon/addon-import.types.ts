@@ -95,10 +95,8 @@ export type AddonRecipe = {
   baseDifficulty: number | null;
   operationMetrics:
     AddonRecipeOperationMetrics;
-
   reagentSchema:
     AddonRecipeReagentSchema | null;
-
   reagentSchemaJson: string | null;
 };
 
@@ -110,10 +108,27 @@ export type AddonRecipeCatalog = {
   capturedAt: string | null;
 };
 
+export type AddonCharacterRecipeReagentSimulation = {
+  captureVersion: number;
+  status: string | null;
+  requiredModifiedSlotCount: number;
+  simulatedSlotCount: number;
+  qualitySlotCount: number;
+  concentrationCaptured: boolean;
+  lowestQualityOperation:
+    AddonRecipeOperationMetrics;
+  highestQualityOperation:
+    AddonRecipeOperationMetrics;
+  highestQualityConcentrationOperation:
+    AddonRecipeOperationMetrics;
+};
+
 export type AddonCharacterRecipeOperation = {
   gameRecipeId: number;
   operationMetrics:
     AddonRecipeOperationMetrics;
+  reagentSimulation:
+    AddonCharacterRecipeReagentSimulation | null;
 };
 
 export type AddonCharacterRecipeOperationCapture = {

@@ -41,6 +41,17 @@ function integerMetric(
     : null;
 }
 
+function serializeReagentSimulation(
+  operation:
+    AddonCharacterRecipeOperation
+): string | null {
+  return operation.reagentSimulation
+    ? JSON.stringify(
+        operation.reagentSimulation
+      )
+    : null;
+}
+
 export function createCharacterRecipeOperationValues(
   operation:
     AddonCharacterRecipeOperation
@@ -136,6 +147,11 @@ export function createCharacterRecipeOperationValues(
     operationMetricsJson:
       serializeRecipeOperationMetrics(
         metrics
+      ),
+
+    reagentSimulationJson:
+      serializeReagentSimulation(
+        operation
       )
   };
 }

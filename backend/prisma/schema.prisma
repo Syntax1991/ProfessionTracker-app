@@ -192,6 +192,7 @@ model CharacterCraftRecipe {
   ingenuityRefund             Int?
   quality                     Float?
   operationMetricsJson        String?
+  reagentSimulationJson       String?
   operationCapturedAt         DateTime?
   operationCaptureVersion     Int?
   operationScopeVersion       Int?
