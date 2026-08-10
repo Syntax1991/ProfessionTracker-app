@@ -36,6 +36,34 @@ local function copyScalarFields(
     return result
 end
 
+local function getReagentQuality(
+    itemID
+)
+    if not itemID
+        or not C_TradeSkillUI
+        or not C_TradeSkillUI
+            .GetItemReagentQualityByItemInfo
+    then
+        return nil
+    end
+
+    local success,
+        quality =
+        pcall(
+            C_TradeSkillUI
+                .GetItemReagentQualityByItemInfo,
+            itemID
+        )
+
+    if not success
+        or type(quality) ~= "number"
+    then
+        return nil
+    end
+
+    return quality
+end
+
 local function copyReagents(
     source
 )
@@ -45,15 +73,28 @@ local function copyReagents(
         return result
     end
 
-    for _, reagent in ipairs(
+    for index, reagent in ipairs(
         source
     ) do
         if type(reagent) == "table" then
-            table.insert(
-                result,
+            local copied =
                 copyScalarFields(
                     reagent
                 )
+
+            copied.candidateIndex =
+                index
+
+            if copied.itemID then
+                copied.quality =
+                    getReagentQuality(
+                        copied.itemID
+                    )
+            end
+
+            table.insert(
+                result,
+                copied
             )
         end
     end

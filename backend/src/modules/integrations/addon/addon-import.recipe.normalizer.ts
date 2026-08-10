@@ -8,6 +8,9 @@ import {
 import {
   normalizeOperationMetrics
 } from "./addon-import.operation-metrics.normalizer.js";
+import {
+  normalizeRecipeReagentSchema
+} from "./addon-import.recipe-reagent.normalizer.js";
 import type {
   AddonRecipe,
   AddonRecipeCatalog,
@@ -121,6 +124,11 @@ function normalizeRecipe(
     operationMetrics:
       normalizeOperationMetrics(
         recipe.operationMetrics
+      ),
+
+    reagentSchema:
+      normalizeRecipeReagentSchema(
+        recipe.reagentSchema
       ),
 
     reagentSchemaJson:

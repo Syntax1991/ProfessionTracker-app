@@ -53,6 +53,38 @@ export type AddonProfessionCatalog = {
   trees: AddonSpecializationTree[];
 };
 
+export type AddonRecipeReagentCandidate = {
+  candidateIndex: number;
+  itemId: number | null;
+  currencyId: number | null;
+  quality: number | null;
+};
+
+export type AddonRecipeReagentSlot = {
+  slotIndex: number;
+  dataSlotIndex: number;
+  dataSlotType: number;
+  reagentType: number;
+  quantityRequired: number;
+  required: boolean;
+  orderSource: number | null;
+  hiddenInCraftingForm: boolean;
+  reagents:
+    AddonRecipeReagentCandidate[];
+};
+
+export type AddonRecipeReagentSchema = {
+  recipeId: number;
+  recipeType: number | null;
+  outputItemId: number | null;
+  quantityMin: number;
+  quantityMax: number;
+  hasCraftingOperationInfo: boolean;
+  isRecraft: boolean;
+  reagentSlots:
+    AddonRecipeReagentSlot[];
+};
+
 export type AddonRecipe = {
   gameRecipeId: number;
   name: string;
@@ -63,6 +95,10 @@ export type AddonRecipe = {
   baseDifficulty: number | null;
   operationMetrics:
     AddonRecipeOperationMetrics;
+
+  reagentSchema:
+    AddonRecipeReagentSchema | null;
+
   reagentSchemaJson: string | null;
 };
 
