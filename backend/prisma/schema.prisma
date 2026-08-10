@@ -146,6 +146,7 @@ model CraftRecipe {
   craftedItemId        Int?
   baseDifficulty       Int?
   operationMetricsJson String?
+  reagentSchemaJson    String?
   source               String    @default("ADDON")
   lastSyncedAt         DateTime?
   createdAt            DateTime  @default(now())

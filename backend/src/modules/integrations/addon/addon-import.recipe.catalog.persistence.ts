@@ -133,6 +133,9 @@ export class AddonRecipeCatalogPersistence {
 
               operationMetricsJson,
 
+              reagentSchemaJson:
+                recipe.reagentSchemaJson,
+
               source:
                 "ADDON",
 
@@ -156,6 +159,9 @@ export class AddonRecipeCatalogPersistence {
                 recipe.baseDifficulty,
 
               operationMetricsJson,
+
+              reagentSchemaJson:
+                recipe.reagentSchemaJson,
 
               source:
                 "ADDON",

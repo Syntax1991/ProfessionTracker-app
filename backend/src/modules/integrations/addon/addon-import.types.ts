@@ -63,6 +63,7 @@ export type AddonRecipe = {
   baseDifficulty: number | null;
   operationMetrics:
     AddonRecipeOperationMetrics;
+  reagentSchemaJson: string | null;
 };
 
 export type AddonRecipeCatalog = {

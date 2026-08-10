@@ -46,6 +46,23 @@ function optionalNonNegativeNumber(
     : null;
 }
 
+function serializeReagentSchema(
+  value: LuaValue | undefined
+): string | null {
+  const schema =
+    asTable(
+      value
+    );
+
+  if (!schema) {
+    return null;
+  }
+
+  return JSON.stringify(
+    schema
+  );
+}
+
 function normalizeRecipe(
   value: LuaValue
 ): AddonRecipe | null {
@@ -63,9 +80,7 @@ function normalizeRecipe(
       recipe.recipeId
     );
 
-  if (
-    gameRecipeId === null
-  ) {
+  if (gameRecipeId === null) {
     return null;
   }
 
@@ -106,6 +121,11 @@ function normalizeRecipe(
     operationMetrics:
       normalizeOperationMetrics(
         recipe.operationMetrics
+      ),
+
+    reagentSchemaJson:
+      serializeReagentSchema(
+        recipe.reagentSchema
       )
   };
 }
@@ -131,11 +151,7 @@ export function normalizeRecipeCatalog(
       key
     );
 
-  if (
-    !Number.isFinite(
-      skillLineId
-    )
-  ) {
+  if (!Number.isFinite(skillLineId)) {
     return null;
   }
 
@@ -151,14 +167,14 @@ export function normalizeRecipeCatalog(
     >();
 
   for (
-    const value of
+    const recipeValue of
     numericValues(
       recipeTable
     )
   ) {
     const recipe =
       normalizeRecipe(
-        value
+        recipeValue
       );
 
     if (recipe) {

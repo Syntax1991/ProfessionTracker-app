@@ -54,6 +54,16 @@ local function getOperationMetrics(recipeID)
     )
 end
 
+local function getReagentSchema(recipeID)
+    if not PT.GetRecipeReagentSchemaSnapshot then
+        return nil
+    end
+
+    return PT.GetRecipeReagentSchemaSnapshot(
+        recipeID
+    )
+end
+
 function PT.CreateRecipeCatalogEntry(
     recipeID,
     context
@@ -116,6 +126,11 @@ function PT.CreateRecipeCatalogEntry(
 
     local operationMetrics =
         getOperationMetrics(
+            resolvedRecipeID
+        )
+
+    local reagentSchema =
+        getReagentSchema(
             resolvedRecipeID
         )
 
@@ -188,6 +203,9 @@ function PT.CreateRecipeCatalogEntry(
 
         operationMetrics =
             operationMetrics,
+
+        reagentSchema =
+            reagentSchema,
 
         learned =
             recipeInfo.learned
