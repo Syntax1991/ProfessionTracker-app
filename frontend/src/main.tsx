@@ -19,6 +19,7 @@ import "./styles/profession-coverage-matrix.css";
 import "./styles/profession-capability-coverage.css";
 import "./styles/profession-recipe-finder.css";
 import "./styles/profession-recipe-detail.css";
+import "./styles/profession-recipe-simulation.css";
 import "./styles/profession-recipe-readiness.css";
 import "./styles/specializations.css";
 import "./styles/forms.css";

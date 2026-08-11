@@ -11,6 +11,9 @@ import {
   calculateProfessionRecipeReadiness
 } from "./profession-recipe-readiness.js";
 import {
+  mapProfessionRecipeReagentSimulation
+} from "./profession-recipe-simulation.mapper.js";
+import {
   createProfessionRecipeCatalogSummary
 } from "./profession-recipe-summary.js";
 import type {
@@ -188,6 +191,12 @@ function mapCrafter(
       operation
     );
 
+  const reagentSimulation =
+    mapProfessionRecipeReagentSimulation(
+      baseDifficulty,
+      relation.reagentSimulationJson
+    );
+
   return {
     characterId:
       assignment.character.id,
@@ -226,6 +235,7 @@ function mapCrafter(
 
     craftStatus,
     operation,
+    reagentSimulation,
 
     source:
       relation.source,

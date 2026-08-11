@@ -1,6 +1,9 @@
 import {
   Link
 } from "react-router-dom";
+import {
+  ProfessionRecipeSimulation
+} from "./ProfessionRecipeSimulation";
 import type {
   ProfessionRecipeCatalogItem,
   ProfessionRecipeCrafter
@@ -254,6 +257,12 @@ export function ProfessionRecipeDetailPanel({
                       </span>
                     )}
                   </div>
+
+                  <ProfessionRecipeSimulation
+                    simulation={
+                      crafter.reagentSimulation
+                    }
+                  />
 
                   <div className="profession-recipe-operation-meta">
                     <span

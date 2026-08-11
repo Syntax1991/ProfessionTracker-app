@@ -86,6 +86,7 @@ export class ProfessionRecipeRepository {
                 ingenuityRefund: true,
                 quality: true,
                 operationMetricsJson: true,
+                reagentSimulationJson: true,
                 operationCapturedAt: true,
                 operationCaptureVersion: true,
                 operationScopeVersion: true,

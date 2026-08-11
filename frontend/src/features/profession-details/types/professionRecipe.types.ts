@@ -45,6 +45,41 @@ export type ProfessionRecipeOperation = {
   scopeVersion: number | null;
 };
 
+export type ProfessionRecipeReagentSimulationStatus =
+  | "CAPTURED"
+  | "NO_REQUIRED_MODIFIED_REAGENTS"
+  | "INCOMPLETE_REAGENTS"
+  | "OPERATION_UNAVAILABLE"
+  | "UNKNOWN";
+
+export type ProfessionRecipeSimulationResult = {
+  craftStatus:
+    ProfessionRecipeCraftStatus;
+
+  operation:
+    ProfessionRecipeOperation;
+};
+
+export type ProfessionRecipeReagentSimulation = {
+  status:
+    ProfessionRecipeReagentSimulationStatus;
+
+  captureVersion: number | null;
+  requiredModifiedSlotCount: number;
+  simulatedSlotCount: number;
+  qualitySlotCount: number;
+  concentrationCaptured: boolean;
+
+  lowestQuality:
+    ProfessionRecipeSimulationResult;
+
+  highestQuality:
+    ProfessionRecipeSimulationResult;
+
+  highestQualityWithConcentration:
+    ProfessionRecipeSimulationResult;
+};
+
 export type ProfessionRecipeOperationCoverage = {
   totalCrafterCount: number;
   capturedCrafterCount: number;
@@ -78,6 +113,9 @@ export type ProfessionRecipeCrafter = {
   operation:
     ProfessionRecipeOperation;
 
+  reagentSimulation:
+    ProfessionRecipeReagentSimulation | null;
+
   source: string;
   lastSyncedAt: string | null;
 };
@@ -108,10 +146,13 @@ export type ProfessionRecipeCatalogSummary = {
   craftableRecipeCount: number;
   missingRecipeCount: number;
   crafterRecipeCount: number;
+
   operationCapturedCrafterRecipeCount:
     number;
+
   operationMissingCrafterRecipeCount:
     number;
+
   operationCoveragePercent: number;
 };
 
