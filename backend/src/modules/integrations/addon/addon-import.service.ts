@@ -7,6 +7,23 @@ import type {
 } from "./addon-import.types.js";
 import { LuaSavedVariablesParser } from "./lua-saved-variables.parser.js";
 
+const MIN_SUPPORTED_ADDON_SCHEMA_VERSION =
+  4;
+
+const MAX_SUPPORTED_ADDON_SCHEMA_VERSION =
+  7;
+
+function isSupportedSchemaVersion(
+  schemaVersion: number
+): boolean {
+  return (
+    schemaVersion >=
+      MIN_SUPPORTED_ADDON_SCHEMA_VERSION &&
+    schemaVersion <=
+      MAX_SUPPORTED_ADDON_SCHEMA_VERSION
+  );
+}
+
 export class AddonImportService {
   constructor(
     private readonly persistence:
@@ -54,12 +71,13 @@ export class AddonImportService {
         );
 
       if (
-        snapshot.schemaVersion !==
-        4
+        !isSupportedSchemaVersion(
+          snapshot.schemaVersion
+        )
       ) {
         throw new AppError(
           400,
-          `Nicht unterstützte Addon-Schema-Version ${snapshot.schemaVersion}. Erwartet wird Version 4.`
+          `Nicht unterstützte Addon-Schema-Version ${snapshot.schemaVersion}. Unterstützt werden Versionen ${MIN_SUPPORTED_ADDON_SCHEMA_VERSION} bis ${MAX_SUPPORTED_ADDON_SCHEMA_VERSION}.`
         );
       }
 
