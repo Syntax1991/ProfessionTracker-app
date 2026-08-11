@@ -33,6 +33,41 @@
   font-size: 0.54rem;
 }
 
+.profession-recipe-recommendation {
+  display: grid;
+  grid-template-columns:
+    auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 7px;
+  margin-top: 7px;
+  padding: 7px 8px;
+  border:
+    1px solid var(--border);
+  border-radius: 7px;
+  background:
+    var(--primary-soft);
+}
+
+.profession-recipe-recommendation
+  span,
+.profession-recipe-recommendation
+  small {
+  color:
+    var(--text-muted);
+  font-size: 0.52rem;
+}
+
+.profession-recipe-recommendation
+  strong {
+  min-width: 0;
+  color:
+    #d9ccf7;
+  font-size: 0.57rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .profession-recipe-simulation-grid {
   display: grid;
   grid-template-columns:
@@ -109,5 +144,10 @@
 @media (max-width: 650px) {
   .profession-recipe-simulation-grid {
     grid-template-columns: 1fr;
+  }
+
+  .profession-recipe-recommendation {
+    grid-template-columns: 1fr;
+    gap: 3px;
   }
 }

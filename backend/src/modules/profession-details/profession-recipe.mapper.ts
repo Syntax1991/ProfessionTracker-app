@@ -5,6 +5,7 @@ import {
 } from "./profession-recipe-craft-status.js";
 import {
   calculateProfessionRecipeCrafterCraftStatus,
+  createProfessionRecipeCrafterRecommendation,
   getProfessionRecipeCrafterAssessmentConcentrationCost,
   getProfessionRecipeCrafterAssessmentSkill
 } from "./profession-recipe-crafter-assessment.js";
@@ -53,21 +54,14 @@ export function mapProfessionRecipeCatalog(
 
   return {
     profession: {
-      id:
-        record.id,
-
-      key:
-        record.key,
-
-      name:
-        record.name
+      id: record.id,
+      key: record.key,
+      name: record.name
     },
-
     summary:
       createProfessionRecipeCatalogSummary(
         items
       ),
-
     items
   };
 }
@@ -114,24 +108,14 @@ function mapRecipe(
     );
 
   return {
-    id:
-      recipe.id,
-
+    id: recipe.id,
     gameRecipeId:
       recipe.gameRecipeId,
-
-    name:
-      recipe.name,
-
-    expansion:
-      recipe.expansion,
-
-    categoryId:
-      recipe.categoryId,
-
+    name: recipe.name,
+    expansion: recipe.expansion,
+    categoryId: recipe.categoryId,
     baseDifficulty:
       recipe.baseDifficulty,
-
     craftStatus,
     capabilities,
     crafters,
@@ -146,22 +130,16 @@ function mapCapability(
   return {
     id:
       relation.capability.id,
-
     key:
       relation.capability.key,
-
     name:
       relation.capability.name,
-
     type:
       relation.capability.type,
-
     slotKey:
       relation.capability.slotKey,
-
     description:
       relation.capability.description,
-
     isPrimary:
       relation.isPrimary
   };
@@ -208,49 +186,41 @@ function mapCrafter(
       reagentSimulation
     );
 
+  const recommendation =
+    createProfessionRecipeCrafterRecommendation(
+      reagentSimulation
+    );
+
   return {
     characterId:
       assignment.character.id,
-
     name:
       assignment.character.name,
-
     realm:
       assignment.character.realm,
-
     className:
       assignment.character.className,
-
     level:
       assignment.character.level,
-
     skill:
       assignment.skill,
-
     skillModifier:
       assignment.skillModifier,
-
     effectiveSkill,
-
     knowledgePoints:
       assignment.knowledgePoints,
-
     baselineStatus:
       readiness.baselineStatus,
-
     baselineSkillGap:
       readiness.baselineSkillGap,
-
     baselineSkillSurplus:
       readiness.baselineSkillSurplus,
-
     craftStatus,
     operation,
     reagentSimulation,
-
+    recommendation,
     source:
       relation.source,
-
     lastSyncedAt:
       relation.lastSyncedAt
         ?.toISOString() ??

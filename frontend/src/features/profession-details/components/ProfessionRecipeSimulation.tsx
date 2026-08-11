@@ -1,4 +1,5 @@
 import type {
+  ProfessionRecipeCrafterRecommendation,
   ProfessionRecipeReagentSimulation,
   ProfessionRecipeSimulationResult
 } from "../types/professionRecipe.types";
@@ -10,6 +11,8 @@ import {
 type ProfessionRecipeSimulationProps = {
   simulation:
     ProfessionRecipeReagentSimulation | null;
+  recommendation:
+    ProfessionRecipeCrafterRecommendation;
 };
 
 type Scenario = {
@@ -53,6 +56,31 @@ function getConcentration(
     : `${cost}`;
 }
 
+function getRecommendationLabel(
+  recommendation:
+    ProfessionRecipeCrafterRecommendation
+): string {
+  switch (recommendation.kind) {
+    case "LOW_MATS":
+      return "Low Mats reichen";
+
+    case "HIGH_MATS":
+      return "High Mats";
+
+    case "HIGH_MATS_CONCENTRATION":
+      return recommendation
+        .concentrationCost === null
+        ? "High Mats + Konzentration"
+        : `High Mats + ${recommendation.concentrationCost} Konz.`;
+
+    case "NOT_REACHABLE":
+      return "Mit High Mats nicht erreichbar";
+
+    case "UNKNOWN":
+      return "Noch keine Empfehlung";
+  }
+}
+
 function getUnavailableLabel(
   simulation:
     ProfessionRecipeReagentSimulation
@@ -75,8 +103,60 @@ function getUnavailableLabel(
   }
 }
 
+function Recommendation({
+  recommendation
+}: {
+  recommendation:
+    ProfessionRecipeCrafterRecommendation;
+}) {
+  if (
+    recommendation.kind ===
+    "UNKNOWN"
+  ) {
+    return null;
+  }
+
+  return (
+    <div className="profession-recipe-recommendation">
+      <span>
+        Empfehlung
+      </span>
+
+      <strong>
+        {
+          getRecommendationLabel(
+            recommendation
+          )
+        }
+      </strong>
+
+      {recommendation.craftingQuality !==
+        null && (
+        <small>
+          Q
+          {
+            recommendation
+              .craftingQuality
+          }
+          {recommendation.effectiveSkill !==
+            null && (
+            <>
+              {" · Skill "}
+              {
+                recommendation
+                  .effectiveSkill
+              }
+            </>
+          )}
+        </small>
+      )}
+    </div>
+  );
+}
+
 export function ProfessionRecipeSimulation({
-  simulation
+  simulation,
+  recommendation
 }: ProfessionRecipeSimulationProps) {
   if (
     !simulation ||
@@ -154,6 +234,12 @@ export function ProfessionRecipeSimulation({
           {" Quality-Slots"}
         </span>
       </div>
+
+      <Recommendation
+        recommendation={
+          recommendation
+        }
+      />
 
       <div className="profession-recipe-simulation-grid">
         {scenarios.map(

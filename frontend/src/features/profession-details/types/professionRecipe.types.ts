@@ -55,7 +55,6 @@ export type ProfessionRecipeReagentSimulationStatus =
 export type ProfessionRecipeSimulationResult = {
   craftStatus:
     ProfessionRecipeCraftStatus;
-
   operation:
     ProfessionRecipeOperation;
 };
@@ -63,21 +62,34 @@ export type ProfessionRecipeSimulationResult = {
 export type ProfessionRecipeReagentSimulation = {
   status:
     ProfessionRecipeReagentSimulationStatus;
-
   captureVersion: number | null;
   requiredModifiedSlotCount: number;
   simulatedSlotCount: number;
   qualitySlotCount: number;
   concentrationCaptured: boolean;
-
   lowestQuality:
     ProfessionRecipeSimulationResult;
-
   highestQuality:
     ProfessionRecipeSimulationResult;
-
   highestQualityWithConcentration:
     ProfessionRecipeSimulationResult;
+};
+
+export type ProfessionRecipeRecommendationKind =
+  | "LOW_MATS"
+  | "HIGH_MATS"
+  | "HIGH_MATS_CONCENTRATION"
+  | "NOT_REACHABLE"
+  | "UNKNOWN";
+
+export type ProfessionRecipeCrafterRecommendation = {
+  kind:
+    ProfessionRecipeRecommendationKind;
+  craftStatus:
+    ProfessionRecipeCraftStatus;
+  effectiveSkill: number | null;
+  craftingQuality: number | null;
+  concentrationCost: number | null;
 };
 
 export type ProfessionRecipeOperationCoverage = {
@@ -97,25 +109,18 @@ export type ProfessionRecipeCrafter = {
   skillModifier: number;
   effectiveSkill: number;
   knowledgePoints: number;
-
   baselineStatus:
     ProfessionRecipeBaselineStatus;
-
-  baselineSkillGap:
-    number | null;
-
-  baselineSkillSurplus:
-    number | null;
-
+  baselineSkillGap: number | null;
+  baselineSkillSurplus: number | null;
   craftStatus:
     ProfessionRecipeCraftStatus;
-
   operation:
     ProfessionRecipeOperation;
-
   reagentSimulation:
     ProfessionRecipeReagentSimulation | null;
-
+  recommendation:
+    ProfessionRecipeCrafterRecommendation;
   source: string;
   lastSyncedAt: string | null;
 };
@@ -127,16 +132,12 @@ export type ProfessionRecipeCatalogItem = {
   expansion: string;
   categoryId: number | null;
   baseDifficulty: number | null;
-
   craftStatus:
     ProfessionRecipeCraftStatus;
-
   capabilities:
     ProfessionRecipeCapability[];
-
   crafters:
     ProfessionRecipeCrafter[];
-
   operationCoverage:
     ProfessionRecipeOperationCoverage;
 };
@@ -146,13 +147,10 @@ export type ProfessionRecipeCatalogSummary = {
   craftableRecipeCount: number;
   missingRecipeCount: number;
   crafterRecipeCount: number;
-
   operationCapturedCrafterRecipeCount:
     number;
-
   operationMissingCrafterRecipeCount:
     number;
-
   operationCoveragePercent: number;
 };
 
@@ -162,10 +160,8 @@ export type ProfessionRecipeCatalog = {
     key: string;
     name: string;
   };
-
   summary:
     ProfessionRecipeCatalogSummary;
-
   items:
     ProfessionRecipeCatalogItem[];
 };

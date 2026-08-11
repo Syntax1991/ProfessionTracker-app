@@ -262,6 +262,9 @@ export function ProfessionRecipeDetailPanel({
                     simulation={
                       crafter.reagentSimulation
                     }
+                    recommendation={
+                      crafter.recommendation
+                    }
                   />
 
                   <div className="profession-recipe-operation-meta">
