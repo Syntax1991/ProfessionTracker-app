@@ -6,6 +6,9 @@ import {
 import {
   normalizeOperationMetrics
 } from "./addon-import.operation-metrics.normalizer.js";
+import {
+  normalizeCharacterRecipeQualityScenarios
+} from "./addon-import.character-recipe-quality-scenario.normalizer.js";
 import type {
   AddonCharacterRecipeReagentSimulation,
   LuaValue
@@ -82,6 +85,31 @@ export function normalizeCharacterRecipeReagentSimulation(
     highestQualityConcentrationOperation:
       normalizeOperationMetrics(
         simulation.highestQualityConcentrationOperation
+      ),
+
+    qualityScenarioStatus:
+      asString(
+        simulation.qualityScenarioStatus
+      ),
+
+    qualityScenarioLimit:
+      nonNegativeNumber(
+        simulation.qualityScenarioLimit
+      ),
+
+    qualityScenarioCombinationCount:
+      nonNegativeNumber(
+        simulation.qualityScenarioCombinationCount
+      ),
+
+    qualityScenarioCapturedCount:
+      nonNegativeNumber(
+        simulation.qualityScenarioCapturedCount
+      ),
+
+    qualityScenarios:
+      normalizeCharacterRecipeQualityScenarios(
+        simulation.qualityScenarios
       )
   };
 }

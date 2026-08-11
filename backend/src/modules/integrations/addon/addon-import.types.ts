@@ -108,6 +108,26 @@ export type AddonRecipeCatalog = {
   capturedAt: string | null;
 };
 
+export type AddonCharacterRecipeReagentSelection = {
+  slotIndex: number;
+  dataSlotIndex: number;
+  candidateIndex: number;
+  itemId: number | null;
+  currencyId: number | null;
+  quality: number | null;
+  quantity: number;
+};
+
+export type AddonCharacterRecipeQualityScenario = {
+  scenarioIndex: number;
+  qualityScore: number;
+  qualitySignature: string | null;
+  selections:
+    AddonCharacterRecipeReagentSelection[];
+  operationMetrics:
+    AddonRecipeOperationMetrics;
+};
+
 export type AddonCharacterRecipeReagentSimulation = {
   captureVersion: number;
   status: string | null;
@@ -115,18 +135,30 @@ export type AddonCharacterRecipeReagentSimulation = {
   simulatedSlotCount: number;
   qualitySlotCount: number;
   concentrationCaptured: boolean;
+
   lowestQualityOperation:
     AddonRecipeOperationMetrics;
+
   highestQualityOperation:
     AddonRecipeOperationMetrics;
+
   highestQualityConcentrationOperation:
     AddonRecipeOperationMetrics;
+
+  qualityScenarioStatus: string | null;
+  qualityScenarioLimit: number;
+  qualityScenarioCombinationCount: number;
+  qualityScenarioCapturedCount: number;
+
+  qualityScenarios:
+    AddonCharacterRecipeQualityScenario[];
 };
 
 export type AddonCharacterRecipeOperation = {
   gameRecipeId: number;
   operationMetrics:
     AddonRecipeOperationMetrics;
+
   reagentSimulation:
     AddonCharacterRecipeReagentSimulation | null;
 };
@@ -145,6 +177,7 @@ export type AddonCharacterRecipeOperationCapture = {
   operationEligibleCount: number;
   operationRecipeCount: number;
   capturedAt: string | null;
+
   recipes:
     AddonCharacterRecipeOperation[];
 };
@@ -198,8 +231,10 @@ export type AddonSnapshot = {
   client: AddonClientInfo;
   catalogs: AddonProfessionCatalog[];
   recipeCatalogs: AddonRecipeCatalog[];
+
   characterRecipeOperations:
     AddonCharacterRecipeOperationCapture[];
+
   characters: AddonCharacter[];
 };
 
@@ -236,6 +271,7 @@ export type AddonImportPreview = {
   client: AddonClientInfo;
   catalogs: AddonCatalogPreview[];
   characters: AddonCharacterPreview[];
+
   totals: {
     characters: number;
     professionAssignments: number;
@@ -251,6 +287,7 @@ export type AddonImportResult = {
   addonVersion: string;
   schemaVersion: number;
   importedAt: string;
+
   processed: {
     catalogs: number;
     trees: number;
