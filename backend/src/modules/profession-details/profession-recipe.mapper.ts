@@ -4,6 +4,11 @@ import {
   getProfessionRecipeCraftStatusPriority
 } from "./profession-recipe-craft-status.js";
 import {
+  calculateProfessionRecipeCrafterCraftStatus,
+  getProfessionRecipeCrafterAssessmentConcentrationCost,
+  getProfessionRecipeCrafterAssessmentSkill
+} from "./profession-recipe-crafter-assessment.js";
+import {
   createProfessionRecipeOperationCoverage,
   mapProfessionRecipeOperation
 } from "./profession-recipe-operation.mapper.js";
@@ -185,7 +190,7 @@ function mapCrafter(
       relation
     );
 
-  const craftStatus =
+  const defaultCraftStatus =
     calculateProfessionRecipeCraftStatus(
       baseDifficulty,
       operation
@@ -195,6 +200,12 @@ function mapCrafter(
     mapProfessionRecipeReagentSimulation(
       baseDifficulty,
       relation.reagentSimulationJson
+    );
+
+  const craftStatus =
+    calculateProfessionRecipeCrafterCraftStatus(
+      defaultCraftStatus,
+      reagentSimulation
     );
 
   return {
@@ -282,13 +293,30 @@ function compareCrafters(
       right.craftStatus
     );
 
+  const concentrationDifference =
+    getProfessionRecipeCrafterAssessmentConcentrationCost(
+      left.craftStatus,
+      left.reagentSimulation
+    ) -
+    getProfessionRecipeCrafterAssessmentConcentrationCost(
+      right.craftStatus,
+      right.reagentSimulation
+    );
+
   return (
     statusDifference ||
-    getCrafterEffectiveSkill(
-      right
-    ) -
+    concentrationDifference ||
+    getProfessionRecipeCrafterAssessmentSkill(
+      right.reagentSimulation,
       getCrafterEffectiveSkill(
-        left
+        right
+      )
+    ) -
+      getProfessionRecipeCrafterAssessmentSkill(
+        left.reagentSimulation,
+        getCrafterEffectiveSkill(
+          left
+        )
       ) ||
     left.name.localeCompare(
       right.name,
