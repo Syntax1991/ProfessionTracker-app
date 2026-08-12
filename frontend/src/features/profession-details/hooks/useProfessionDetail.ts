@@ -66,7 +66,7 @@ export function useProfessionDetail(
           setError(
             loadError instanceof Error
               ? loadError.message
-              : "Berufsdetails konnten nicht geladen werden."
+              : "Profession details could not be loaded."
           );
         }
       }

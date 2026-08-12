@@ -92,6 +92,8 @@ export type AddonRecipe = {
   categoryName: string | null;
   parentCategoryId: number | null;
   parentCategoryName: string | null;
+  outputItemId: number | null;
+  outputItemEquipLoc: string | null;
   baseDifficulty: number | null;
   operationMetrics:
     AddonRecipeOperationMetrics;

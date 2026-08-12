@@ -34,7 +34,7 @@ export function BattleNetCharacterFilters({
   return (
     <div className="battlenet-filter-grid">
       <label>
-        <span>Suche</span>
+        <span>Search</span>
 
         <input
           onChange={(event) =>
@@ -42,7 +42,7 @@ export function BattleNetCharacterFilters({
               event.target.value
             )
           }
-          placeholder="Name, Realm oder Klasse"
+          placeholder="Name, realm or class"
           type="search"
           value={search}
         />
@@ -60,7 +60,7 @@ export function BattleNetCharacterFilters({
           value={realm}
         >
           <option value="ALL">
-            Alle Realms
+            All realms
           </option>
 
           {realms.map(
@@ -77,7 +77,7 @@ export function BattleNetCharacterFilters({
       </label>
 
       <label>
-        <span>Klasse</span>
+        <span>Class</span>
 
         <select
           onChange={(event) =>
@@ -88,7 +88,7 @@ export function BattleNetCharacterFilters({
           value={className}
         >
           <option value="ALL">
-            Alle Klassen
+            All classes
           </option>
 
           {classes.map(
@@ -105,7 +105,7 @@ export function BattleNetCharacterFilters({
       </label>
 
       <label>
-        <span>Mindestlevel</span>
+        <span>Minimum level</span>
 
         <input
           max={100}

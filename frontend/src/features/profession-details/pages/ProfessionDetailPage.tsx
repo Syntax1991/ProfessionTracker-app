@@ -22,8 +22,8 @@ function getCategoryLabel(
   category: string
 ): string {
   return category === "GATHERING"
-    ? "Sammelberuf"
-    : "Herstellungsberuf";
+    ? "Gathering profession"
+    : "Crafting profession";
 }
 
 export function ProfessionDetailPage() {
@@ -46,12 +46,12 @@ export function ProfessionDetailPage() {
     return (
       <>
         <PageHeader
-          eyebrow="BERUFSDETAIL"
-          title="Beruf"
+          eyebrow="PROFESSION DETAILS"
+          title="Profession"
         />
 
         <StatusMessage type="error">
-          Die Berufs-ID fehlt.
+          The profession ID is missing.
         </StatusMessage>
       </>
     );
@@ -64,8 +64,8 @@ export function ProfessionDetailPage() {
     return (
       <>
         <PageHeader
-          eyebrow="BERUFSDETAIL"
-          title="Beruf wird geladen"
+          eyebrow="PROFESSION DETAILS"
+          title="Loading profession"
         />
 
         {error ? (
@@ -87,13 +87,13 @@ export function ProfessionDetailPage() {
             className="button button-secondary"
             to="/professions"
           >
-            Zurück zu Berufen
+            Back to professions
           </Link>
         }
         description={
-          `${getCategoryLabel(detail.profession.category)} · Crafting-Daten kompakt verwalten`
+          `${getCategoryLabel(detail.profession.category)} · Manage crafting data at a glance`
         }
-        eyebrow="BERUFSDETAIL"
+        eyebrow="PROFESSION DETAILS"
         title={
           detail.profession.name
         }

@@ -17,8 +17,7 @@ export function BattleNetCharacterTable({
   if (characters.length === 0) {
     return (
       <div className="empty-state">
-        Keine Charaktere entsprechen
-        den aktuellen Filtern.
+        No characters match the current filters.
       </div>
     );
   }
@@ -28,9 +27,9 @@ export function BattleNetCharacterTable({
       <table className="battlenet-character-table">
         <thead>
           <tr>
-            <th>Auswahl</th>
-            <th>Charakter</th>
-            <th>Klasse</th>
+            <th>Selection</th>
+            <th>Character</th>
+            <th>Class</th>
             <th>Level</th>
             <th>Status</th>
           </tr>
@@ -56,7 +55,7 @@ export function BattleNetCharacterTable({
                   <td>
                     <input
                       aria-label={
-                        `${character.name} auswählen`
+                        `Select ${character.name}`
                       }
                       checked={selected}
                       onChange={() =>
@@ -109,8 +108,8 @@ export function BattleNetCharacterTable({
                       }
                     >
                       {character.imported
-                        ? "Bereits importiert"
-                        : "Neu"}
+                        ? "Already imported"
+                        : "New"}
                     </span>
                   </td>
                 </tr>

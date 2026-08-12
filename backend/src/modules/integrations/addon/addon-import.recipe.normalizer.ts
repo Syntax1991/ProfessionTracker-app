@@ -87,6 +87,11 @@ function normalizeRecipe(
     return null;
   }
 
+  const reagentSchema =
+    normalizeRecipeReagentSchema(
+      recipe.reagentSchema
+    );
+
   return {
     gameRecipeId,
 
@@ -116,6 +121,19 @@ function normalizeRecipe(
         recipe.parentCategoryName
       ),
 
+    outputItemId:
+      optionalPositiveNumber(
+        recipe.outputItemId
+      ) ??
+      reagentSchema
+        ?.outputItemId ??
+      null,
+
+    outputItemEquipLoc:
+      asString(
+        recipe.outputItemEquipLoc
+      ),
+
     baseDifficulty:
       optionalNonNegativeNumber(
         recipe.baseDifficulty
@@ -126,10 +144,7 @@ function normalizeRecipe(
         recipe.operationMetrics
       ),
 
-    reagentSchema:
-      normalizeRecipeReagentSchema(
-        recipe.reagentSchema
-      ),
+    reagentSchema,
 
     reagentSchemaJson:
       serializeReagentSchema(

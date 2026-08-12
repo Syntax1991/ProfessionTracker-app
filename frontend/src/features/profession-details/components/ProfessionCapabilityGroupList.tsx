@@ -1,4 +1,6 @@
-import { Link } from "react-router-dom";
+import {
+  Link
+} from "react-router-dom";
 import type {
   ProfessionCapabilityGroup
 } from "../utils/professionCapabilityGroups";
@@ -13,19 +15,19 @@ function getCapabilityTypeLabel(
 ): string {
   switch (type) {
     case "EQUIPMENT_SLOT":
-      return "Equipment-Slot";
+      return "Equipment Slot";
 
     case "EQUIPMENT_FAMILY":
       return "Equipment";
 
     case "PRODUCT_CATEGORY":
-      return "Produkt";
+      return "Product";
 
     case "SERVICE":
       return "Service";
 
     case "RECIPE_GROUP":
-      return "Rezeptgruppe";
+      return "Recipe Group";
 
     default:
       return type;
@@ -39,8 +41,9 @@ export function ProfessionCapabilityGroupList({
     return (
       <section className="panel profession-coverage-group-panel">
         <div className="profession-coverage-group-empty">
-          Noch keine Craft-Fähigkeiten aus
-          Rezeptdaten erkannt.
+          No crafting capabilities
+          have been detected from
+          recipe data yet.
         </div>
       </section>
     );
@@ -51,14 +54,13 @@ export function ProfessionCapabilityGroupList({
       <header className="profession-coverage-group-panel-header">
         <div>
           <h3>
-            Craft-Fähigkeiten
+            Crafting Capabilities
           </h3>
 
           <p>
-            Pro Fähigkeit siehst du direkt,
-            welche Charaktere sie mit ihren
-            aktuell erfassten Rezepten
-            abdecken.
+            See which characters cover
+            each capability with their
+            currently captured recipes.
           </p>
         </div>
 
@@ -93,7 +95,11 @@ export function ProfessionCapabilityGroupList({
 
                 <span>
                   {group.characters.length}
-                  {" Crafter"}
+                  {
+                    group.characters.length === 1
+                      ? " crafter"
+                      : " crafters"
+                  }
                 </span>
               </header>
 
@@ -136,7 +142,12 @@ export function ProfessionCapabilityGroupList({
                               character
                                 .recipeCount
                             }
-                            {" Rezepte"}
+                            {
+                              character
+                                .recipeCount === 1
+                                ? " recipe"
+                                : " recipes"
+                            }
                           </span>
 
                           {character
@@ -147,7 +158,7 @@ export function ProfessionCapabilityGroupList({
                                 character
                                   .primaryRecipeCount
                               }
-                              {" primär"}
+                              {" primary"}
                             </strong>
                           )}
                         </div>

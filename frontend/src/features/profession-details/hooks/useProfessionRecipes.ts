@@ -82,7 +82,7 @@ export function useProfessionRecipes(
             setError(
               loadError instanceof Error
                 ? loadError.message
-                : "Rezeptkatalog konnte nicht geladen werden."
+                : "Recipe catalog could not be loaded."
             );
           }
         }

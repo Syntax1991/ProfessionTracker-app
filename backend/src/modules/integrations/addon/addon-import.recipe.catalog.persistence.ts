@@ -62,7 +62,7 @@ export class AddonRecipeCatalogPersistence {
     if (!professionKey) {
       throw new AppError(
         400,
-        `Beruf für Rezept-Skill-Line ${catalog.skillLineId} konnte nicht bestimmt werden.`
+        `Profession for recipe skill line ${catalog.skillLineId} could not be resolved.`
       );
     }
 
@@ -74,7 +74,7 @@ export class AddonRecipeCatalogPersistence {
     if (!professionId) {
       throw new AppError(
         400,
-        `Beruf "${professionKey}" fehlt in der Datenbank.`
+        `Profession "${professionKey}" is missing from the database.`
       );
     }
 
@@ -128,6 +128,9 @@ export class AddonRecipeCatalogPersistence {
               categoryId:
                 recipe.categoryId,
 
+              craftedItemId:
+                recipe.outputItemId,
+
               baseDifficulty:
                 recipe.baseDifficulty,
 
@@ -154,6 +157,9 @@ export class AddonRecipeCatalogPersistence {
 
               categoryId:
                 recipe.categoryId,
+
+              craftedItemId:
+                recipe.outputItemId,
 
               baseDifficulty:
                 recipe.baseDifficulty,

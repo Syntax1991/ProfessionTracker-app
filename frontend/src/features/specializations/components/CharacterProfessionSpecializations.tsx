@@ -25,7 +25,7 @@ export function CharacterProfessionSpecializations({
       <div className="panel-header">
         <div>
           <p className="eyebrow">
-            BERUF
+            PROFESSION
           </p>
 
           <h2>
@@ -60,16 +60,16 @@ export function CharacterProfessionSpecializations({
             type="button"
           >
             {isSaving
-              ? "Speichern…"
-              : "Spezialisierung speichern"}
+              ? "Saving…"
+              : "Save specialization"}
           </button>
         </div>
       </div>
 
       {profession.trees.length === 0 ? (
         <div className="empty-state">
-          Für diesen Beruf ist noch kein
-          Spezialisierungskatalog hinterlegt.
+          There is no
+          specialization catalog for this profession yet.
         </div>
       ) : (
         <div className="specialization-tree-grid">

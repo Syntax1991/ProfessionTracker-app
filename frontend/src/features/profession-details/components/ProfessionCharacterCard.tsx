@@ -16,16 +16,16 @@ type ProfessionCharacterCardProps = {
 
 const statusLabels = {
   TRACKED:
-    "Daten erfasst",
+    "Data captured",
 
   PARTIAL:
-    "Teilweise erfasst",
+    "Partially captured",
 
   UNTRACKED:
-    "Nicht erfasst",
+    "Not captured",
 
   NO_CATALOG:
-    "Kein Katalog"
+    "No catalog"
 } as const;
 
 export function ProfessionCharacterCard({
@@ -75,7 +75,7 @@ export function ProfessionCharacterCard({
               `/characters/${coverage.character.id}`
             }
           >
-            Charakterdetails
+            Character Details
           </Link>
         </div>
       </header>
@@ -83,7 +83,7 @@ export function ProfessionCharacterCard({
       <div className="profession-character-stats">
         <div>
           <span>
-            Berufsskill
+            Profession Skill
           </span>
 
           <strong>
@@ -93,7 +93,7 @@ export function ProfessionCharacterCard({
 
         <div>
           <span>
-            Wissenspunkte
+            Knowledge Points
           </span>
 
           <strong>
@@ -103,7 +103,7 @@ export function ProfessionCharacterCard({
 
         <div>
           <span>
-            Fähigkeiten
+            Capabilities
           </span>
 
           <strong>
@@ -117,7 +117,7 @@ export function ProfessionCharacterCard({
 
         <div>
           <span>
-            Gelernte Rezepte
+            Learned Recipes
           </span>
 
           <strong>
@@ -138,7 +138,7 @@ export function ProfessionCharacterCard({
         />
 
         <ProfessionCoverageList
-          emptyText="Für diesen Charakter wurden noch keine tatsächlichen Equipment-Slots erkannt."
+          emptyText="No actual equipment slots have been detected for this character yet."
           entries={
             coverage.slots
           }

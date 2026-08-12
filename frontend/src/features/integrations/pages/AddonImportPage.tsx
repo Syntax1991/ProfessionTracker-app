@@ -12,7 +12,7 @@ export function AddonImportPage() {
   return (
     <>
       <PageHeader
-        description="Importiere die vom WoW-Addon erzeugte ProfessionTracker.lua, prüfe den Snapshot und übernehme Berufe, Wissenspunkte und Spezialisierungen."
+        description="Import the ProfessionTracker.lua created by the WoW addon, review the snapshot and sync professions, Knowledge Points and specializations."
         eyebrow="INTEGRATION"
         title="WoW Addon Sync"
       />
@@ -25,7 +25,7 @@ export function AddonImportPage() {
 
       {addonImport.result && (
         <StatusMessage type="info">
-          Addon-Daten wurden erfolgreich importiert.
+          Addon data was imported successfully.
         </StatusMessage>
       )}
 

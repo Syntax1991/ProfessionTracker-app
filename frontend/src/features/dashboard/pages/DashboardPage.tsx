@@ -21,12 +21,12 @@ export function DashboardPage() {
             className="button button-primary"
             to="/characters"
           >
-            Charakter hinzufügen
+            Add Character
           </Link>
         }
-        description="Plane deine Crafter-Flotte und erkenne fehlende Berufsabdeckungen."
+        description="Plan your crafter roster and identify missing profession coverage."
         eyebrow="CRAFTING COMMAND CENTER"
-        title="Übersicht"
+        title="Overview"
       />
 
       {error && (
@@ -51,7 +51,7 @@ export function DashboardPage() {
                 </p>
 
                 <h2>
-                  Berufsabdeckung
+                  Profession Coverage
                 </h2>
               </div>
 
@@ -59,7 +59,7 @@ export function DashboardPage() {
                 className="button button-secondary"
                 to="/professions"
               >
-                Details öffnen
+                Open Details
               </Link>
             </div>
 

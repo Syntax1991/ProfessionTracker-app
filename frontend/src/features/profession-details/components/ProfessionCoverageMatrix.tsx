@@ -27,25 +27,25 @@ export function ProfessionCoverageMatrix({
       <div className="profession-detail-section-heading">
         <div>
           <p className="eyebrow">
-            SLOTABDECKUNG
+            SLOT COVERAGE
           </p>
 
           <h2>
-            Herstellbare Slots
+            Craftable Slots
           </h2>
         </div>
 
         <p>
-          Angezeigt werden nur tatsächliche
+          Only actual
           Equipment-Slots wie Head, Chest,
-          Wrist, Legs oder Feet.
+          Wrist, Legs or Feet are shown.
         </p>
       </div>
 
       <div className="profession-coverage-matrix-grid">
         <ProfessionCoverageGroupList
-          description="Pro Slot siehst du alle Charaktere, die ihn aktuell abdecken."
-          emptyText="Für diesen Beruf wurden noch keine tatsächlichen Equipment-Slots erfasst."
+          description="Each slot shows every character that currently covers it."
+          emptyText="No actual equipment slots have been captured for this profession yet."
           groups={groups}
           title="Slots"
         />

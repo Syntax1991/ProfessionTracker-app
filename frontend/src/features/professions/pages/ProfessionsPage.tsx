@@ -14,9 +14,9 @@ export function ProfessionsPage() {
   return (
     <>
       <PageHeader
-        description="Öffne einen Beruf und prüfe, welche Charaktere welche Spezialisierungen und Slots abdecken."
+        description="Open a profession to review its crafters, recipes and slot coverage."
         eyebrow="CRAFTING COVERAGE"
-        title="Berufe"
+        title="Professions"
       />
 
       {error && (
@@ -36,19 +36,19 @@ export function ProfessionsPage() {
               </p>
 
               <h2>
-                Berufsabdeckung
+                Profession Coverage
               </h2>
             </div>
 
             <span className="profession-overview-total">
               {items.length}
-              {" Berufe"}
+              {" Professions"}
             </span>
           </div>
 
           {items.length === 0 ? (
             <div className="empty-state">
-              Noch keine Berufe vorhanden.
+              No professions yet.
             </div>
           ) : (
             <div className="profession-overview-grid">

@@ -20,17 +20,17 @@ export function DashboardStats({
   return (
     <section className="stats-grid">
       <article className="stat-card">
-        <span>Charaktere</span>
+        <span>Characters</span>
         <strong>
           {summary.characterCount}
         </strong>
         <small>
-          gesamte Crafter-Flotte
+          entire crafter roster
         </small>
       </article>
 
       <article className="stat-card">
-        <span>Crafting-bereit</span>
+        <span>Crafting Ready</span>
         <strong>
           {
             summary
@@ -44,7 +44,7 @@ export function DashboardStats({
       </article>
 
       <article className="stat-card">
-        <span>Berufsslots</span>
+        <span>Profession Slots</span>
         <strong>
           {
             summary
@@ -52,12 +52,12 @@ export function DashboardStats({
           }
         </strong>
         <small>
-          aktuelle Zuweisungen
+          current assignments
         </small>
       </article>
 
       <article className="stat-card accent-card">
-        <span>Abdeckung</span>
+        <span>Coverage</span>
         <strong>
           {coveragePercent}%
         </strong>
@@ -65,7 +65,7 @@ export function DashboardStats({
           {summary.coveredProfessionCount}
           {" von "}
           {summary.totalProfessionCount}
-          {" Berufen"}
+          {" Professionsn"}
         </small>
       </article>
     </section>

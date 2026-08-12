@@ -117,7 +117,7 @@ export function ProfessionCrafterCharacterPanel({
       <section className="panel profession-crafter-toolbar">
         <label>
           <span>
-            Rezept suchen
+            Search Recipes
           </span>
 
           <input
@@ -127,7 +127,7 @@ export function ProfessionCrafterCharacterPanel({
                   event.target.value
                 )
             }
-            placeholder="Rezept oder Kategorie..."
+            placeholder="Recipe or category..."
             type="search"
             value={query}
           />
@@ -150,7 +150,7 @@ export function ProfessionCrafterCharacterPanel({
             value={statusFilter}
           >
             <option value="ALL">
-              Alle
+              All
             </option>
 
             <option value="SAFE">
@@ -158,15 +158,15 @@ export function ProfessionCrafterCharacterPanel({
             </option>
 
             <option value="CONCENTRATION">
-              Konzentration
+              Concentration
             </option>
 
             <option value="NOT_SAFE">
-              Nicht safe
+              Not Safe
             </option>
 
             <option value="UNKNOWN">
-              Unbekannt
+              Unknown
             </option>
           </select>
         </label>
@@ -188,7 +188,7 @@ export function ProfessionCrafterCharacterPanel({
           }
           type="button"
         >
-          Alle
+          All
 
           <span>
             {entries.length}
@@ -241,7 +241,7 @@ export function ProfessionCrafterCharacterPanel({
         </strong>
 
         <span>
-          {" passende Rezepte"}
+          {" matching recipes"}
         </span>
       </div>
 

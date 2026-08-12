@@ -127,11 +127,11 @@ function sortGroupCharacters(
         left.recipeCount ||
       left.name.localeCompare(
         right.name,
-        "de"
+        "en"
       ) ||
       left.realm.localeCompare(
         right.realm,
-        "de"
+        "en"
       )
   );
 
@@ -147,15 +147,15 @@ function compareGroups(
   return (
     left.type.localeCompare(
       right.type,
-      "de"
+      "en"
     ) ||
     left.expansion.localeCompare(
       right.expansion,
-      "de"
+      "en"
     ) ||
     left.name.localeCompare(
       right.name,
-      "de"
+      "en"
     )
   );
 }

@@ -15,67 +15,67 @@ const prisma = new PrismaClient({
 const professions = [
   {
     key: "alchemy",
-    name: "Alchemie",
+    name: "Alchemy",
     category: "CRAFTING",
     order: 10
   },
   {
     key: "blacksmithing",
-    name: "Schmiedekunst",
+    name: "Blacksmithing",
     category: "CRAFTING",
     order: 20
   },
   {
     key: "enchanting",
-    name: "Verzauberkunst",
+    name: "Enchanting",
     category: "CRAFTING",
     order: 30
   },
   {
     key: "engineering",
-    name: "Ingenieurskunst",
+    name: "Engineering",
     category: "CRAFTING",
     order: 40
   },
   {
     key: "inscription",
-    name: "Inschriftenkunde",
+    name: "Inscription",
     category: "CRAFTING",
     order: 50
   },
   {
     key: "jewelcrafting",
-    name: "Juwelierskunst",
+    name: "Jewelcrafting",
     category: "CRAFTING",
     order: 60
   },
   {
     key: "leatherworking",
-    name: "Lederverarbeitung",
+    name: "Leatherworking",
     category: "CRAFTING",
     order: 70
   },
   {
     key: "tailoring",
-    name: "Schneiderei",
+    name: "Tailoring",
     category: "CRAFTING",
     order: 80
   },
   {
     key: "herbalism",
-    name: "Kräuterkunde",
+    name: "Herbalism",
     category: "GATHERING",
     order: 90
   },
   {
     key: "mining",
-    name: "Bergbau",
+    name: "Mining",
     category: "GATHERING",
     order: 100
   },
   {
     key: "skinning",
-    name: "Kürschnerei",
+    name: "Skinning",
     category: "GATHERING",
     order: 110
   }
@@ -132,15 +132,15 @@ async function seedBlacksmithingArmorTree() {
         professionId: blacksmithing.id,
         expansion: "MIDNIGHT",
         key: "armor",
-        name: "Rüstung",
+        name: "Armor",
         description:
-          "Spezialisierung auf die Herstellung von Rüstungsteilen.",
+          "Specialization in crafting armor pieces.",
         sortOrder: 10
       },
       update: {
-        name: "Rüstung",
+        name: "Armor",
         description:
-          "Spezialisierung auf die Herstellung von Rüstungsteilen.",
+          "Specialization in crafting armor pieces.",
         sortOrder: 10
       }
     });
@@ -156,16 +156,16 @@ async function seedBlacksmithingArmorTree() {
       create: {
         treeId: tree.id,
         key: "armor",
-        name: "Rüstung",
+        name: "Armor",
         description:
-          "Grundlegender Rüstungspfad.",
+          "Core armor specialization path.",
         sortOrder: 10
       },
       update: {
         parentNodeId: null,
-        name: "Rüstung",
+        name: "Armor",
         description:
-          "Grundlegender Rüstungspfad.",
+          "Core armor specialization path.",
         maxRank: null,
         sortOrder: 10
       }
@@ -174,65 +174,65 @@ async function seedBlacksmithingArmorTree() {
   const armorNodes: SeedNode[] = [
     {
       key: "helm",
-      name: "Helme",
+      name: "Helms",
       description:
-        "Spezialisierung auf geschmiedete Helme.",
+        "Specialization in crafted helms.",
       sortOrder: 10
     },
     {
       key: "shoulders",
-      name: "Schultern",
+      name: "Shoulders",
       description:
-        "Spezialisierung auf geschmiedete Schulterstücke.",
+        "Specialization in crafted shoulder pieces.",
       sortOrder: 20
     },
     {
       key: "chest",
-      name: "Brust",
+      name: "Chest",
       description:
-        "Spezialisierung auf geschmiedete Brustplatten.",
+        "Specialization in crafted chest pieces.",
       sortOrder: 30
     },
     {
       key: "bracers",
-      name: "Armschienen",
+      name: "Bracers",
       description:
-        "Spezialisierung auf geschmiedete Armschienen.",
+        "Specialization in crafted bracers.",
       sortOrder: 40
     },
     {
       key: "gloves",
-      name: "Handschuhe",
+      name: "Gloves",
       description:
-        "Spezialisierung auf geschmiedete Handschuhe.",
+        "Specialization in crafted gloves.",
       sortOrder: 50
     },
     {
       key: "belt",
-      name: "Gürtel",
+      name: "Belts",
       description:
-        "Spezialisierung auf geschmiedete Gürtel.",
+        "Specialization in crafted belts.",
       sortOrder: 60
     },
     {
       key: "legs",
-      name: "Beine",
+      name: "Legs",
       description:
-        "Spezialisierung auf geschmiedete Beinplatten.",
+        "Specialization in crafted leg armor.",
       sortOrder: 70
     },
     {
       key: "boots",
-      name: "Stiefel",
+      name: "Boots",
       description:
-        "Spezialisierung auf geschmiedete Stiefel.",
+        "Specialization in crafted boots.",
       sortOrder: 80
     },
     {
       key: "shield",
-      name: "Schilde",
+      name: "Shields",
       description:
-        "Spezialisierung auf geschmiedete Schilde.",
+        "Specialization in crafted shields.",
       sortOrder: 90
     }
   ];

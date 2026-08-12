@@ -1,20 +1,25 @@
 import type {
   AddonImportTransaction
 } from "./addon-import.persistence.types.js";
+import {
+  resolveRecipeEquipmentFamily,
+  resolveRecipeOutputSlot
+} from "./addon-import.recipe-output-capability.js";
 import type {
   AddonRecipe
 } from "./addon-import.types.js";
 
-function createCapabilityKey(
-  skillLineId: number,
-  categoryId: number
-): string {
-  return (
-    `addon-category:${skillLineId}:${categoryId}`
-  );
-}
+type CapabilityDefinition = {
+  key: string;
+  name: string;
+  type: string;
+  slotKey: string | null;
+  description: string | null;
+  sortOrder: number;
+  isPrimary: boolean;
+};
 
-function createDescription(
+function createCategoryDescription(
   recipe: AddonRecipe
 ): string | null {
   if (
@@ -30,6 +35,99 @@ function createDescription(
   return recipe.categoryName;
 }
 
+function createCategoryCapability(
+  skillLineId: number,
+  recipe: AddonRecipe
+): CapabilityDefinition | null {
+  if (
+    recipe.categoryId === null ||
+    !recipe.categoryName
+  ) {
+    return null;
+  }
+
+  return {
+    key:
+      `addon-category:${skillLineId}:${recipe.categoryId}`,
+    name:
+      recipe.categoryName,
+    type:
+      "RECIPE_GROUP",
+    slotKey:
+      null,
+    description:
+      createCategoryDescription(
+        recipe
+      ),
+    sortOrder:
+      recipe.categoryId,
+    isPrimary:
+      false
+  };
+}
+
+function createFamilyCapability(
+  skillLineId: number,
+  recipe: AddonRecipe
+): CapabilityDefinition | null {
+  const family =
+    resolveRecipeEquipmentFamily(
+      recipe.categoryName
+    );
+
+  if (!family) {
+    return null;
+  }
+
+  return {
+    key:
+      `addon-family:${skillLineId}:${family.key}`,
+    name:
+      family.name,
+    type:
+      "EQUIPMENT_FAMILY",
+    slotKey:
+      null,
+    description:
+      recipe.categoryName,
+    sortOrder:
+      10,
+    isPrimary:
+      true
+  };
+}
+
+function createSlotCapability(
+  skillLineId: number,
+  recipe: AddonRecipe
+): CapabilityDefinition | null {
+  const slot =
+    resolveRecipeOutputSlot(
+      recipe.outputItemEquipLoc
+    );
+
+  if (!slot) {
+    return null;
+  }
+
+  return {
+    key:
+      `addon-slot:${skillLineId}:${slot.key}`,
+    name:
+      slot.name,
+    type:
+      "EQUIPMENT_SLOT",
+    slotKey:
+      slot.key,
+    description:
+      null,
+    sortOrder:
+      20,
+    isPrimary:
+      false
+  };
+}
+
 export class AddonRecipeCapabilityPersistence {
   async persist(
     transaction:
@@ -41,14 +139,50 @@ export class AddonRecipeCapabilityPersistence {
       AddonRecipe,
     craftRecipeId: string
   ): Promise<void> {
-    if (
-      recipe.categoryId ===
-        null ||
-      !recipe.categoryName
-    ) {
-      return;
-    }
+    const definitions = [
+      createCategoryCapability(
+        skillLineId,
+        recipe
+      ),
+      createFamilyCapability(
+        skillLineId,
+        recipe
+      ),
+      createSlotCapability(
+        skillLineId,
+        recipe
+      )
+    ].filter(
+      (
+        definition
+      ): definition is
+        CapabilityDefinition =>
+        definition !== null
+    );
 
+    for (
+      const definition of
+      definitions
+    ) {
+      await this.persistDefinition(
+        transaction,
+        professionId,
+        expansion,
+        craftRecipeId,
+        definition
+      );
+    }
+  }
+
+  private async persistDefinition(
+    transaction:
+      AddonImportTransaction,
+    professionId: string,
+    expansion: string,
+    craftRecipeId: string,
+    definition:
+      CapabilityDefinition
+  ): Promise<void> {
     const capability =
       await transaction
         .craftCapability
@@ -57,60 +191,39 @@ export class AddonRecipeCapabilityPersistence {
             professionId_expansion_key: {
               professionId,
               expansion,
-
               key:
-                createCapabilityKey(
-                  skillLineId,
-                  recipe.categoryId
-                )
+                definition.key
             }
           },
 
           create: {
             professionId,
             expansion,
-
             key:
-              createCapabilityKey(
-                skillLineId,
-                recipe.categoryId
-              ),
-
+              definition.key,
             name:
-              recipe.categoryName,
-
+              definition.name,
             type:
-              "RECIPE_GROUP",
-
+              definition.type,
             slotKey:
-              null,
-
+              definition.slotKey,
             description:
-              createDescription(
-                recipe
-              ),
-
+              definition.description,
             sortOrder:
-              recipe.categoryId
+              definition.sortOrder
           },
 
           update: {
             name:
-              recipe.categoryName,
-
+              definition.name,
             type:
-              "RECIPE_GROUP",
-
+              definition.type,
             slotKey:
-              null,
-
+              definition.slotKey,
             description:
-              createDescription(
-                recipe
-              ),
-
+              definition.description,
             sortOrder:
-              recipe.categoryId
+              definition.sortOrder
           }
         });
 
@@ -120,7 +233,6 @@ export class AddonRecipeCapabilityPersistence {
         where: {
           craftRecipeId_capabilityId: {
             craftRecipeId,
-
             capabilityId:
               capability.id
           }
@@ -128,17 +240,15 @@ export class AddonRecipeCapabilityPersistence {
 
         create: {
           craftRecipeId,
-
           capabilityId:
             capability.id,
-
           isPrimary:
-            false
+            definition.isPrimary
         },
 
         update: {
           isPrimary:
-            false
+            definition.isPrimary
         }
       });
   }

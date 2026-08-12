@@ -75,18 +75,18 @@ export function AddonFilePanel({
         </div>
 
         <span className="integration-badge configured">
-          Schema 4
+          Schema 4–10
         </span>
       </div>
 
       <div className="instruction-box">
         <strong>
-          Wo finde ich die Datei?
+          Where is the file?
         </strong>
 
         <p>
-          Öffne deinen WoW-Ordner und wähle
-          unter WTF → Account → dein Account →
+          Open your WoW folder and select
+          under WTF → Account → your account →
           SavedVariables die Datei
           ProfessionTracker.lua aus.
         </p>
@@ -97,7 +97,7 @@ export function AddonFilePanel({
           className="button button-secondary"
           htmlFor="addon-savedvariables-file"
         >
-          Datei auswählen
+          Select file
         </label>
 
         <input
@@ -116,7 +116,7 @@ export function AddonFilePanel({
 
               <span>
                 {fileSize === null
-                  ? "Datei geladen"
+                  ? "File loaded"
                   : formatFileSize(
                       fileSize
                     )}
@@ -124,7 +124,7 @@ export function AddonFilePanel({
             </>
           ) : (
             <span>
-              Noch keine SavedVariables-Datei ausgewählt.
+              No SavedVariables file selected yet.
             </span>
           )}
         </div>
@@ -144,8 +144,8 @@ export function AddonFilePanel({
           type="button"
         >
           {isPreviewing
-            ? "Prüfe…"
-            : "Snapshot prüfen"}
+            ? "Reviewing…"
+            : "Review snapshot"}
         </button>
 
         <button
@@ -161,8 +161,8 @@ export function AddonFilePanel({
           type="button"
         >
           {isImporting
-            ? "Importiere…"
-            : "Daten importieren"}
+            ? "Importing…"
+            : "Import data"}
         </button>
       </div>
     </section>

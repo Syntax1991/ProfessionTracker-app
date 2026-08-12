@@ -21,7 +21,7 @@ export function CharacterTable({
   if (characters.length === 0) {
     return (
       <div className="empty-state">
-        Noch keine Charaktere vorhanden.
+        No characters yet.
       </div>
     );
   }
@@ -31,10 +31,10 @@ export function CharacterTable({
       <table>
         <thead>
           <tr>
-            <th>Charakter</th>
+            <th>Character</th>
             <th>Level</th>
-            <th>Berufe</th>
-            <th>Quelle</th>
+            <th>Professions</th>
+            <th>Source</th>
             <th aria-label="Aktionen" />
           </tr>
         </thead>
@@ -83,7 +83,7 @@ export function CharacterTable({
                     {character.professions.length ===
                       0 && (
                       <span className="muted-text">
-                        Keine Berufe
+                        No Professions
                       </span>
                     )}
 
@@ -116,7 +116,7 @@ export function CharacterTable({
                         `/characters/${character.id}/specializations`
                       }
                     >
-                      Spezialisierungen
+                      Specializations
                     </Link>
 
                     <button
@@ -128,7 +128,7 @@ export function CharacterTable({
                       }
                       type="button"
                     >
-                      Bearbeiten
+                      Edit
                     </button>
 
                     <button
@@ -140,7 +140,7 @@ export function CharacterTable({
                       }
                       type="button"
                     >
-                      Löschen
+                      Delete
                     </button>
                   </div>
                 </td>

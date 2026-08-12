@@ -33,20 +33,20 @@ export function ProfessionCapabilityMatrix({
       <div className="profession-detail-section-heading">
         <div>
           <p className="eyebrow">
-            WAS KANN WER?
+            WHO CAN CRAFT WHAT?
           </p>
 
           <h2>
-            Craft-Fähigkeiten
+            Crafting Capabilities
           </h2>
         </div>
 
         <p>
-          Die Gruppen entstehen aus den
-          tatsächlich gelernten Rezepten
-          deiner Charaktere. So siehst du
-          direkt, welcher Crafter welche
-          Produkt- oder Rezeptgruppe
+          Groups are derived from the
+          recipes actually learned by
+          your characters. This shows
+          which crafter covers which
+          product or recipe group
           abdeckt.
         </p>
       </div>

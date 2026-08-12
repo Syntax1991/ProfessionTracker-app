@@ -50,7 +50,7 @@ export function useCharacters(): CharacterActions {
         setError(
           loadError instanceof Error
             ? loadError.message
-            : "Charaktere konnten nicht geladen werden."
+            : "Characters could not be loaded."
         );
       }
       finally {
@@ -77,7 +77,7 @@ export function useCharacters(): CharacterActions {
       const message =
         createError instanceof Error
           ? createError.message
-          : "Charakter konnte nicht erstellt werden.";
+          : "Character could not be created.";
 
       setError(message);
       throw createError;
@@ -102,7 +102,7 @@ export function useCharacters(): CharacterActions {
       const message =
         updateError instanceof Error
           ? updateError.message
-          : "Charakter konnte nicht aktualisiert werden.";
+          : "Character could not be updated.";
 
       setError(message);
       throw updateError;
@@ -122,7 +122,7 @@ export function useCharacters(): CharacterActions {
       const message =
         deleteError instanceof Error
           ? deleteError.message
-          : "Charakter konnte nicht gelöscht werden.";
+          : "Character could not be deleted.";
 
       setError(message);
       throw deleteError;

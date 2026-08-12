@@ -11,7 +11,7 @@ const MIN_SUPPORTED_ADDON_SCHEMA_VERSION =
   4;
 
 const MAX_SUPPORTED_ADDON_SCHEMA_VERSION =
-  9;
+  10;
 
 function isSupportedSchemaVersion(
   schemaVersion: number
@@ -77,7 +77,7 @@ export class AddonImportService {
       ) {
         throw new AppError(
           400,
-          `Nicht unterstützte Addon-Schema-Version ${snapshot.schemaVersion}. Unterstützt werden Versionen ${MIN_SUPPORTED_ADDON_SCHEMA_VERSION} bis ${MAX_SUPPORTED_ADDON_SCHEMA_VERSION}.`
+          `Unsupported addon schema version ${snapshot.schemaVersion}. Supported versions are ${MIN_SUPPORTED_ADDON_SCHEMA_VERSION} bis ${MAX_SUPPORTED_ADDON_SCHEMA_VERSION}.`
         );
       }
 
@@ -88,7 +88,7 @@ export class AddonImportService {
       ) {
         throw new AppError(
           400,
-          "Die SavedVariables enthalten keine Charaktere."
+          "The SavedVariables do not contain any characters."
         );
       }
 
@@ -104,7 +104,7 @@ export class AddonImportService {
 
       throw new AppError(
         400,
-        "ProfessionTracker SavedVariables konnten nicht gelesen werden.",
+        "ProfessionTracker SavedVariables could not be read.",
         error instanceof Error
           ? error.message
           : String(error)

@@ -70,17 +70,17 @@ function getActionTitle(
   ) {
     case "connected":
       return state.battleTag
-        ? `${state.battleTag} · ${state.importedCharacterCount} importierte Charaktere`
-        : `Battle.net verbunden · ${state.importedCharacterCount} importierte Charaktere`;
+        ? `${state.battleTag} · ${state.importedCharacterCount} imported characters`
+        : `Battle.net connected · ${state.importedCharacterCount} imported characters`;
 
     case "disconnected":
-      return "Battle.net verbinden";
+      return "Connect Battle.net";
 
     case "unavailable":
-      return "Battle.net-Status nicht verfügbar";
+      return "Battle.net status unavailable";
 
     default:
-      return "Battle.net-Status wird geladen";
+      return "Loading Battle.net status";
   }
 }
 

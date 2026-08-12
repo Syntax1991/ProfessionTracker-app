@@ -3,15 +3,15 @@ import { BattleNetTopAction } from "../../features/integrations/components/Battl
 
 const navigationItems = [
   {
-    label: "Übersicht",
+    label: "Overview",
     path: "/"
   },
   {
-    label: "Charaktere",
+    label: "Characters",
     path: "/characters"
   },
   {
-    label: "Berufe",
+    label: "Professions",
     path: "/professions"
   },
   {
@@ -70,7 +70,7 @@ export function Sidebar() {
 
       <div className="sidebar-footer">
         <span className="online-dot" />
-        Lokales MVP
+        Local MVP
       </div>
     </aside>
   );

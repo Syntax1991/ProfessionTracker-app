@@ -19,19 +19,19 @@ export function AddonImportResultPanel({
           </p>
 
           <h2>
-            Synchronisierung abgeschlossen
+            Sync complete
           </h2>
         </div>
 
         <span className="integration-badge configured">
-          Erfolgreich
+          Successful
         </span>
       </div>
 
       <div className="import-result-grid">
         <div>
           <span>
-            Charaktere
+            Characters
           </span>
 
           <strong>
@@ -41,7 +41,7 @@ export function AddonImportResultPanel({
 
         <div>
           <span>
-            Berufe
+            Professions
           </span>
 
           <strong>
@@ -51,7 +51,7 @@ export function AddonImportResultPanel({
 
         <div>
           <span>
-            Fortschritte
+            Progress Entries
           </span>
 
           <strong>
@@ -62,15 +62,15 @@ export function AddonImportResultPanel({
 
       <div className="addon-result-meta">
         <span>
-          {result.processed.catalogs} Kataloge
+          {result.processed.catalogs} Catalogs
         </span>
 
         <span>
-          {result.processed.trees} Spezialisierungsbäume
+          {result.processed.trees} Specialization Trees
         </span>
 
         <span>
-          {result.processed.specializationNodes} Knoten
+          {result.processed.specializationNodes} Nodes
         </span>
       </div>
 
@@ -79,7 +79,7 @@ export function AddonImportResultPanel({
           className="button button-primary"
           to="/characters"
         >
-          Charaktere ansehen
+          View characters
         </Link>
       </div>
     </section>

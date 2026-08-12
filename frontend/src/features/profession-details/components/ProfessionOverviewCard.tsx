@@ -10,8 +10,8 @@ function getCategoryLabel(
   category: string
 ): string {
   return category === "GATHERING"
-    ? "Sammelberuf"
-    : "Herstellungsberuf";
+    ? "Gathering profession"
+    : "Crafting profession";
 }
 
 export function ProfessionOverviewCard({
@@ -48,7 +48,7 @@ export function ProfessionOverviewCard({
         </strong>
 
         <span>
-          zugewiesene Charaktere
+          assigned characters
         </span>
       </div>
 
@@ -58,12 +58,12 @@ export function ProfessionOverviewCard({
             profession
               .trackedCharacterCount
           }
-          {" mit Spezialisierungsdaten"}
+          {" with specialization data"}
         </span>
 
         <span>
           {profession.activeNodeCount}
-          {" aktive Pfade/Slots"}
+          {" active paths/slots"}
         </span>
       </div>
     </Link>

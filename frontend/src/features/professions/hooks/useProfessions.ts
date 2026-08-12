@@ -37,7 +37,7 @@ export function useProfessions():
         setError(
           loadError instanceof Error
             ? loadError.message
-            : "Berufe konnten nicht geladen werden."
+            : "Professions could not be loaded."
         );
       }
       finally {

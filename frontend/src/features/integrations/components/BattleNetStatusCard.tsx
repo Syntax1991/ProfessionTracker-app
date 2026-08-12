@@ -13,12 +13,12 @@ function formatExpiry(
   expiresAt: string | null
 ): string {
   if (!expiresAt) {
-    return "Nicht verbunden";
+    return "Not connected";
   }
 
   return new Date(
     expiresAt
-  ).toLocaleString("de-DE");
+  ).toLocaleString("en-GB");
 }
 
 export function BattleNetStatusCard({
@@ -39,10 +39,10 @@ export function BattleNetStatusCard({
 
           <h2>
             {status.connected
-              ? "Konto verbunden"
+              ? "Account connected"
               : status.configured
-                ? "Anmeldung erforderlich"
-                : "API nicht konfiguriert"}
+                ? "Sign-in required"
+                : "API not configured"}
           </h2>
         </div>
 
@@ -55,7 +55,7 @@ export function BattleNetStatusCard({
         >
           {status.connected
             ? "Verbunden"
-            : "Nicht verbunden"}
+            : "Not connected"}
         </span>
       </div>
 
@@ -64,12 +64,12 @@ export function BattleNetStatusCard({
           <dt>BattleTag</dt>
           <dd>
             {status.battleTag ??
-              "Noch nicht verfügbar"}
+              "Not available yet"}
           </dd>
         </div>
 
         <div>
-          <dt>Region / Sprache</dt>
+          <dt>Region / Language</dt>
           <dd>
             {status.region.toUpperCase()}
             {" · "}
@@ -78,7 +78,7 @@ export function BattleNetStatusCard({
         </div>
 
         <div>
-          <dt>Token gültig bis</dt>
+          <dt>Token expires</dt>
           <dd>
             {formatExpiry(
               status.expiresAt
@@ -87,7 +87,7 @@ export function BattleNetStatusCard({
         </div>
 
         <div>
-          <dt>Importierte Charaktere</dt>
+          <dt>Imported characters</dt>
           <dd>
             {
               status.importedCharacterCount
@@ -109,7 +109,7 @@ export function BattleNetStatusCard({
             className="button button-primary"
             href={connectUrl}
           >
-            Mit Battle.net verbinden
+            Connect with Battle.net
           </a>
         )}
 
@@ -126,8 +126,8 @@ export function BattleNetStatusCard({
               type="button"
             >
               {isLoadingCharacters
-                ? "Charaktere werden geladen…"
-                : "Charaktere auswählen"}
+                ? "Loading characters…"
+                : "Select characters"}
             </button>
 
             <button
@@ -141,8 +141,8 @@ export function BattleNetStatusCard({
               type="button"
             >
               {isDisconnecting
-                ? "Verbindung wird getrennt…"
-                : "Verbindung trennen"}
+                ? "Disconnecting…"
+                : "Disconnect"}
             </button>
           </>
         )}
@@ -151,14 +151,14 @@ export function BattleNetStatusCard({
       {!status.configured && (
         <div className="instruction-box">
           <strong>
-            Zugangsdaten fehlen
+            Credentials missing
           </strong>
 
           <p>
-            Trage Client-ID und
-            Client-Secret in
-            backend/.env ein und
-            starte das Backend neu.
+            Add the Client ID and
+            Client Secret to
+            backend/.env and
+            restart the backend.
           </p>
         </div>
       )}

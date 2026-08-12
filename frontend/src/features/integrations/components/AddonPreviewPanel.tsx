@@ -14,7 +14,7 @@ export function AddonPreviewPanel({
       <div className="panel-header">
         <div>
           <p className="eyebrow">
-            VORSCHAU
+            PREVIEW
           </p>
 
           <h2>
@@ -30,7 +30,7 @@ export function AddonPreviewPanel({
       <div className="addon-summary-grid">
         <div>
           <span>
-            Charaktere
+            Characters
           </span>
 
           <strong>
@@ -40,7 +40,7 @@ export function AddonPreviewPanel({
 
         <div>
           <span>
-            Berufszuweisungen
+            Profession Assignments
           </span>
 
           <strong>
@@ -60,7 +60,7 @@ export function AddonPreviewPanel({
 
         <div>
           <span>
-            Spezialisierungsbäume
+            Specialization Trees
           </span>
 
           <strong>
@@ -70,7 +70,7 @@ export function AddonPreviewPanel({
 
         <div>
           <span>
-            Spezialisierungsknoten
+            Specialization Nodes
           </span>
 
           <strong>
@@ -80,7 +80,7 @@ export function AddonPreviewPanel({
 
         <div>
           <span>
-            Wissenspunkte
+            Knowledge Points
           </span>
 
           <strong>
@@ -91,15 +91,15 @@ export function AddonPreviewPanel({
 
       <div className="addon-preview-meta">
         <span>
-          Kataloge: {preview.catalogs.length}
+          Catalogs: {preview.catalogs.length}
         </span>
 
         <span>
-          Client: {preview.client.version ?? "unbekannt"}
+          Client: {preview.client.version ?? "unknown"}
         </span>
 
         <span>
-          Build: {preview.client.build ?? "unbekannt"}
+          Build: {preview.client.build ?? "unknown"}
         </span>
       </div>
 
@@ -132,7 +132,7 @@ export function AddonPreviewPanel({
 
               {character.professions.length === 0 ? (
                 <p className="addon-character-empty">
-                  Keine Primärberufe im Snapshot.
+                  No primary professions in this snapshot.
                 </p>
               ) : (
                 <div className="addon-profession-list">
@@ -158,7 +158,7 @@ export function AddonPreviewPanel({
                         </div>
 
                         <span>
-                          {profession.investedKnowledge} Wissen
+                          {profession.investedKnowledge} Knowledge
                         </span>
                       </div>
                     )

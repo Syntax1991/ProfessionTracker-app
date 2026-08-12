@@ -79,7 +79,7 @@ export function BattleNetPage() {
         setError(
           loadError instanceof Error
             ? loadError.message
-            : "Battle.net-Status konnte nicht geladen werden."
+            : "Battle.net status could not be loaded."
         );
       }
       finally {
@@ -103,7 +103,7 @@ export function BattleNetPage() {
         setError(
           loadError instanceof Error
             ? loadError.message
-            : "Battle.net-Charaktere konnten nicht geladen werden."
+            : "Battle.net characters could not be loaded."
         );
       }
       finally {
@@ -139,7 +139,7 @@ export function BattleNetPage() {
       setError(
         importError instanceof Error
           ? importError.message
-          : "Charakterimport fehlgeschlagen."
+          : "Character import failed."
       );
     }
     finally {
@@ -149,7 +149,7 @@ export function BattleNetPage() {
 
   const handleDisconnect = async () => {
     const confirmed = window.confirm(
-      "Battle.net-Verbindung wirklich trennen?"
+      "Disconnect Battle.net?"
     );
 
     if (!confirmed) {
@@ -171,7 +171,7 @@ export function BattleNetPage() {
       setError(
         disconnectError instanceof Error
           ? disconnectError.message
-          : "Verbindung konnte nicht getrennt werden."
+          : "The connection could not be disconnected."
       );
     }
     finally {
@@ -189,7 +189,7 @@ export function BattleNetPage() {
   return (
     <>
       <PageHeader
-        description="Lade deine Battle.net-Charaktere, filtere sie und synchronisiere nur die benötigten Crafter."
+        description="Load your Battle.net characters, filter them and sync only the crafters you need."
         eyebrow="INTEGRATION"
         title="Battle.net"
       />
@@ -203,7 +203,7 @@ export function BattleNetPage() {
       {wasConnected &&
         !callbackError && (
         <StatusMessage type="info">
-          Battle.net wurde erfolgreich verbunden. Lade jetzt deine Charakterliste und wähle die benötigten Crafter aus.
+          Battle.net was connected successfully. Load your character list and select the crafters you need.
         </StatusMessage>
       )}
 

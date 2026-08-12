@@ -12,19 +12,19 @@ function getCapabilityTypeLabel(
 ): string {
   switch (type) {
     case "EQUIPMENT_SLOT":
-      return "Equipment-Slot";
+      return "Equipment Slot";
 
     case "EQUIPMENT_FAMILY":
       return "Equipment";
 
     case "PRODUCT_CATEGORY":
-      return "Produkt";
+      return "Product";
 
     case "SERVICE":
       return "Service";
 
     case "RECIPE_GROUP":
-      return "Rezeptgruppe";
+      return "Recipe Group";
 
     default:
       return type;
@@ -38,7 +38,7 @@ export function ProfessionCapabilityList({
     <section className="profession-detail-coverage-section">
       <header>
         <h4>
-          Craft-Fähigkeiten
+          Crafting Capabilities
         </h4>
 
         <span>
@@ -48,9 +48,9 @@ export function ProfessionCapabilityList({
 
       {capabilities.length === 0 ? (
         <div className="profession-detail-empty-list">
-          Noch keine Craft-Fähigkeiten aus
-          den Rezepten dieses Charakters
-          erkannt.
+          No crafting capabilities
+          have been detected from
+          this character&apos;s recipes yet.
         </div>
       ) : (
         <ul>
@@ -91,7 +91,12 @@ export function ProfessionCapabilityList({
                       capability
                         .recipeCount
                     }
-                    {" Rezepte"}
+                    {
+                      capability
+                        .recipeCount === 1
+                        ? " recipe"
+                        : " recipes"
+                    }
                   </span>
 
                   {capability
@@ -102,7 +107,7 @@ export function ProfessionCapabilityList({
                         capability
                           .primaryRecipeCount
                       }
-                      {" primär"}
+                      {" primary"}
                     </strong>
                   )}
                 </div>

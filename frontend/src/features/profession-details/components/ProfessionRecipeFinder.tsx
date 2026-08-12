@@ -100,18 +100,19 @@ export function ProfessionRecipeFinder({
       <div className="profession-detail-section-heading">
         <div>
           <p className="eyebrow">
-            REZEPTE
+            RECIPES
           </p>
 
           <h2>
-            Craft-Katalog
+            Craft Catalog
           </h2>
         </div>
 
         <p>
-          Kompakte Liste links,
-          Details nur für das
-          ausgewählte Rezept rechts.
+          Browse the compact recipe
+          list on the left and inspect
+          the selected recipe on the
+          right.
         </p>
       </div>
 
@@ -129,7 +130,7 @@ export function ProfessionRecipeFinder({
             <div className="profession-recipe-summary">
               <div>
                 <span>
-                  Katalog
+                  Catalog
                 </span>
 
                 <strong>
@@ -142,7 +143,7 @@ export function ProfessionRecipeFinder({
 
               <div>
                 <span>
-                  Craftbar
+                  Craftable
                 </span>
 
                 <strong>
@@ -155,7 +156,7 @@ export function ProfessionRecipeFinder({
 
               <div>
                 <span>
-                  Fehlend
+                  Missing
                 </span>
 
                 <strong>
@@ -168,7 +169,7 @@ export function ProfessionRecipeFinder({
 
               <div>
                 <span>
-                  Daten
+                  Data
                 </span>
 
                 <strong>
@@ -184,7 +185,7 @@ export function ProfessionRecipeFinder({
             <div className="profession-recipe-filters">
               <label>
                 <span>
-                  Suche
+                  Search
                 </span>
 
                 <input
@@ -194,7 +195,7 @@ export function ProfessionRecipeFinder({
                         event.target.value
                       )
                   }
-                  placeholder="Rezept, Gruppe oder Charakter..."
+                  placeholder="Recipe, group or character..."
                   type="search"
                   value={query}
                 />
@@ -215,7 +216,7 @@ export function ProfessionRecipeFinder({
                 />
 
                 <span>
-                  Nur craftbare
+                  Craftable only
                 </span>
               </label>
             </div>
@@ -227,7 +228,12 @@ export function ProfessionRecipeFinder({
             </strong>
 
             <span>
-              {" passende Rezepte"}
+              {
+                filteredRecipes.length ===
+                1
+                  ? " matching recipe"
+                  : " matching recipes"
+              }
             </span>
           </div>
 
@@ -235,8 +241,8 @@ export function ProfessionRecipeFinder({
           0 ? (
             <section className="panel">
               <div className="empty-state">
-                Keine Rezepte passen
-                zu diesem Filter.
+                No recipes match this
+                filter.
               </div>
             </section>
           ) : (
@@ -287,7 +293,7 @@ function matchesFilters(
     query
       .trim()
       .toLocaleLowerCase(
-        "de"
+        "en"
       );
 
   if (!normalizedQuery) {
@@ -315,7 +321,7 @@ function matchesFilters(
     (value) =>
       value
         .toLocaleLowerCase(
-          "de"
+          "en"
         )
         .includes(
           normalizedQuery

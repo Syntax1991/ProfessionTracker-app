@@ -49,7 +49,7 @@ export function ProfessionRecipeDetailPanel({
       <header className="profession-recipe-detail-header">
         <div>
           <p className="eyebrow">
-            REZEPT
+            RECIPE
           </p>
 
           <h3>
@@ -94,7 +94,7 @@ export function ProfessionRecipeDetailPanel({
       <div className="profession-recipe-detail-facts">
         <div>
           <span>
-            Schwierigkeit
+            Difficulty
           </span>
 
           <strong>
@@ -107,7 +107,7 @@ export function ProfessionRecipeDetailPanel({
 
         <div>
           <span>
-            Operation-Daten
+            Operation Data
           </span>
 
           <strong>
@@ -153,8 +153,8 @@ export function ProfessionRecipeDetailPanel({
         {recipe.crafters.length ===
         0 ? (
           <div className="profession-recipe-detail-empty">
-            Kein erfasster Charakter
-            besitzt dieses Rezept.
+            No captured character
+            has learned this recipe.
           </div>
         ) : (
           <div className="profession-recipe-detail-crafter-list">
@@ -206,7 +206,7 @@ export function ProfessionRecipeDetailPanel({
 
                   <div className="profession-recipe-operation-chips">
                     <span>
-                      Basis{" "}
+                      Base{" "}
                       {
                         crafter.operation
                           .baseSkill ??
@@ -225,7 +225,7 @@ export function ProfessionRecipeDetailPanel({
                     </span>
 
                     <span>
-                      Effektiv{" "}
+                      Effective{" "}
                       {
                         getOperationSkill(
                           crafter
@@ -249,7 +249,7 @@ export function ProfessionRecipeDetailPanel({
                       .concentrationCost !==
                       null && (
                       <span>
-                        Konz.{" "}
+                        Conc.{" "}
                         {
                           crafter.operation
                             .concentrationCost
@@ -281,8 +281,8 @@ export function ProfessionRecipeDetailPanel({
                         crafter.operation
                           .status ===
                         "CAPTURED"
-                          ? "Operation erfasst"
-                          : "Operation fehlt"
+                          ? "Operation captured"
+                          : "Operation missing"
                       }
                     </span>
 

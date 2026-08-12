@@ -35,7 +35,7 @@ export function useDashboard():
         setError(
           loadError instanceof Error
             ? loadError.message
-            : "Dashboard konnte nicht geladen werden."
+            : "Dashboard could not be loaded."
         );
       }
       finally {

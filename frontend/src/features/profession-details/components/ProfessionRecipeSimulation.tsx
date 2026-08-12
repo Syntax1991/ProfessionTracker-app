@@ -71,13 +71,13 @@ function getUnavailableLabel(
       return null;
 
     case "INCOMPLETE_REAGENTS":
-      return "Materialdaten unvollständig";
+      return "Material data incomplete";
 
     case "OPERATION_UNAVAILABLE":
-      return "Crafting-Operation nicht verfügbar";
+      return "Crafting operation unavailable";
 
     case "UNKNOWN":
-      return "Materialsimulation unbekannt";
+      return "Material simulation unknown";
   }
 }
 
@@ -103,7 +103,7 @@ export function ProfessionRecipeSimulation({
       <div className="profession-recipe-simulation unavailable">
         <div className="profession-recipe-simulation-header">
           <strong>
-            Materialsimulation
+            Material Simulation
           </strong>
 
           <span>
@@ -119,7 +119,7 @@ export function ProfessionRecipeSimulation({
           {
             simulation.requiredModifiedSlotCount
           }
-          {" Slots erfasst"}
+          {" slots captured"}
         </div>
       </div>
     );
@@ -140,7 +140,7 @@ export function ProfessionRecipeSimulation({
     },
     {
       key: "high-concentration",
-      label: "High + Konz.",
+      label: "High + Conc.",
       result:
         simulation
           .highestQualityWithConcentration
@@ -151,14 +151,14 @@ export function ProfessionRecipeSimulation({
     <div className="profession-recipe-simulation">
       <div className="profession-recipe-simulation-header">
         <strong>
-          Materialsimulation
+          Material Simulation
         </strong>
 
         <span>
           {
             simulation.qualitySlotCount
           }
-          {" Quality-Slots"}
+          {" quality slots"}
         </span>
       </div>
 
@@ -215,7 +215,7 @@ export function ProfessionRecipeSimulation({
 
                 <div>
                   <dt>
-                    Qualität
+                    Quality
                   </dt>
 
                   <dd>
@@ -229,7 +229,7 @@ export function ProfessionRecipeSimulation({
 
                 <div>
                   <dt>
-                    Konz.
+                    Conc.
                   </dt>
 
                   <dd>

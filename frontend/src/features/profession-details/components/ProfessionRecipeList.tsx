@@ -31,7 +31,7 @@ function getPrimaryGroup(
     primary?.name ??
     recipe.capabilities[0]
       ?.name ??
-    "Ohne Gruppe"
+    "No Group"
   );
 }
 
@@ -44,15 +44,15 @@ export function ProfessionRecipeList({
     <div className="profession-recipe-list-panel panel">
       <div className="profession-recipe-list-header">
         <span>
-          Rezept
+          Recipe
         </span>
 
         <span>
-          Gruppe
+          Group
         </span>
 
         <span>
-          Diff.
+          Difficulty
         </span>
 
         <span>

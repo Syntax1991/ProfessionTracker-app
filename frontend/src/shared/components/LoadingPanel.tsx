@@ -3,7 +3,7 @@ type LoadingPanelProps = {
 };
 
 export function LoadingPanel({
-  label = "Daten werden geladen…"
+  label = "Loading data…"
 }: LoadingPanelProps) {
   return (
     <div className="loading-panel">

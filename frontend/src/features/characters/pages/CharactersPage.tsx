@@ -54,7 +54,7 @@ export function CharactersPage() {
     character: Character
   ) => {
     const confirmed = window.confirm(
-      `${character.name} wirklich löschen?`
+      `${character.name} delete?`
     );
 
     if (!confirmed) {
@@ -74,16 +74,16 @@ export function CharactersPage() {
   return (
     <>
       <PageHeader
-        description="Verwalte deine Crafter und ihre beiden Primärberufe."
-        eyebrow="CHARAKTERFLOTTE"
-        title="Charaktere"
+        description="Manage your crafters and their two primary professions."
+        eyebrow="CRAFTER ROSTER"
+        title="Characters"
       />
 
       {(error || professionsError) && (
         <StatusMessage type="error">
           {error ??
             professionsError ??
-            "Unbekannter Fehler"}
+            "Unknown error"}
         </StatusMessage>
       )}
 
@@ -93,14 +93,14 @@ export function CharactersPage() {
             <div>
               <p className="eyebrow">
                 {editingCharacter
-                  ? "BEARBEITEN"
-                  : "NEUER CRAFTER"}
+                  ? "EDIT"
+                  : "NEW CRAFTER"}
               </p>
 
               <h2>
                 {editingCharacter
                   ? editingCharacter.name
-                  : "Charakter hinzufügen"}
+                  : "Add Character"}
               </h2>
             </div>
           </div>
@@ -127,11 +127,11 @@ export function CharactersPage() {
           <div className="panel-header">
             <div>
               <p className="eyebrow">
-                ÜBERSICHT
+                OVERVIEW
               </p>
 
               <h2>
-                {characters.length} Charaktere
+                {characters.length} Characters
               </h2>
             </div>
           </div>

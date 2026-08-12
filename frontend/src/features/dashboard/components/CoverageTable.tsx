@@ -12,9 +12,9 @@ export function CoverageTable({
       <table>
         <thead>
           <tr>
-            <th>Beruf</th>
-            <th>Kategorie</th>
-            <th>Charaktere</th>
+            <th>Profession</th>
+            <th>Category</th>
+            <th>Characters</th>
             <th>Status</th>
           </tr>
         </thead>
@@ -31,8 +31,8 @@ export function CoverageTable({
               <td>
                 {profession.category ===
                 "GATHERING"
-                  ? "Sammeln"
-                  : "Herstellung"}
+                  ? "Gathering"
+                  : "Crafting"}
               </td>
 
               <td>
@@ -50,8 +50,8 @@ export function CoverageTable({
                 >
                   {profession.assignmentCount >
                   0
-                    ? "Abgedeckt"
-                    : "Fehlt"}
+                    ? "Covered"
+                    : "Missing"}
                 </span>
               </td>
             </tr>

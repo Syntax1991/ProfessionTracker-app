@@ -12,11 +12,11 @@ export function BattleNetImportResultCard({
       <div className="panel-header">
         <div>
           <p className="eyebrow">
-            SYNCHRONISIERUNG
+            SYNC
           </p>
 
           <h2>
-            Import abgeschlossen
+            Import complete
           </h2>
         </div>
       </div>
@@ -24,7 +24,7 @@ export function BattleNetImportResultCard({
       <div className="import-result-content">
         <div className="import-result-grid">
           <div>
-            <span>Ausgewählt</span>
+            <span>Selected</span>
 
             <strong>
               {result.totalCharacters}
@@ -32,7 +32,7 @@ export function BattleNetImportResultCard({
           </div>
 
           <div>
-            <span>Synchronisiert</span>
+            <span>Synced</span>
 
             <strong>
               {result.importedCharacters}
@@ -40,7 +40,7 @@ export function BattleNetImportResultCard({
           </div>
 
           <div>
-            <span>Fehler</span>
+            <span>Failed</span>
 
             <strong>
               {
@@ -55,7 +55,7 @@ export function BattleNetImportResultCard({
           0 && (
           <div className="failed-imports">
             <h3>
-              Nicht importierte Charaktere
+              Not imported characters
             </h3>
 
             <ul>

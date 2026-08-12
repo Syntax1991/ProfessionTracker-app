@@ -107,7 +107,7 @@ export function useAddonImport():
       clearLoadedFile();
 
       setError(
-        "Die SavedVariables-Datei ist größer als 25 MB."
+        "The SavedVariables file is larger than 25 MB."
       );
 
       return;
@@ -122,7 +122,7 @@ export function useAddonImport():
         0
       ) {
         throw new Error(
-          "Die ausgewählte Datei ist leer."
+          "The selected file is empty."
         );
       }
 
@@ -136,7 +136,7 @@ export function useAddonImport():
       setError(
         fileError instanceof Error
           ? fileError.message
-          : "Die Datei konnte nicht gelesen werden."
+          : "The file could not be read."
       );
     }
   };
@@ -167,7 +167,7 @@ export function useAddonImport():
         setError(
           previewError instanceof Error
             ? previewError.message
-            : "Addon-Daten konnten nicht geprüft werden."
+            : "Addon data could not be validated."
         );
       }
       finally {
@@ -203,7 +203,7 @@ export function useAddonImport():
         setError(
           importError instanceof Error
             ? importError.message
-            : "Addon-Daten konnten nicht importiert werden."
+            : "Addon data could not be imported."
         );
       }
       finally {

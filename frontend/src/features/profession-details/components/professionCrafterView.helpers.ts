@@ -5,6 +5,9 @@ import type {
   ProfessionRecipeCatalogItem,
   ProfessionRecipeCraftStatus
 } from "../types/professionRecipe.types";
+import {
+  getProfessionRecipeGroupName
+} from "../utils/professionRecipePresentation";
 import type {
   ProfessionCrafterRecipeEntry
 } from "./ProfessionCrafterRecipeTable";
@@ -16,38 +19,6 @@ export type ProfessionCrafterSummary = {
     ProfessionCrafterRecipeEntry[];
   safeCount: number;
 };
-
-export function getCrafterRecipeGroupName(
-  recipe:
-    ProfessionRecipeCatalogItem
-): string {
-  const primary =
-    recipe.capabilities.find(
-      (capability) =>
-        capability.isPrimary
-    );
-
-  if (primary) {
-    return primary.name;
-  }
-
-  const category =
-    recipe.capabilities.find(
-      (capability) =>
-        capability.type ===
-          "PRODUCT_CATEGORY" ||
-        capability.type ===
-          "EQUIPMENT_FAMILY" ||
-        capability.type ===
-          "RECIPE_GROUP"
-    );
-
-  return (
-    category?.name ??
-    recipe.capabilities[0]?.name ??
-    "Other"
-  );
-}
 
 export function createCrafterEntries(
   recipes:
@@ -74,7 +45,7 @@ export function createCrafterEntries(
       recipe,
       crafter,
       group:
-        getCrafterRecipeGroupName(
+        getProfessionRecipeGroupName(
           recipe
         )
     });
@@ -84,11 +55,11 @@ export function createCrafterEntries(
     (left, right) =>
       left.group.localeCompare(
         right.group,
-        "de"
+        "en"
       ) ||
       left.recipe.name.localeCompare(
         right.recipe.name,
-        "de"
+        "en"
       )
   );
 }
@@ -148,7 +119,7 @@ export function getCrafterGroups(
     (left, right) =>
       left.localeCompare(
         right,
-        "de"
+        "en"
       )
   );
 }
@@ -162,7 +133,7 @@ export function matchesCrafterRecipeQuery(
     query
       .trim()
       .toLocaleLowerCase(
-        "de"
+        "en"
       );
 
   if (!normalized) {
@@ -176,7 +147,7 @@ export function matchesCrafterRecipeQuery(
     (value) =>
       value
         .toLocaleLowerCase(
-          "de"
+          "en"
         )
         .includes(
           normalized

@@ -64,6 +64,56 @@ local function getReagentSchema(recipeID)
     )
 end
 
+local function getOutputItemInfo(
+    reagentSchema
+)
+    local outputItemID =
+        reagentSchema
+        and reagentSchema.outputItemID
+        or nil
+
+    if not outputItemID then
+        return nil,
+            nil
+    end
+
+    local getter = nil
+
+    if C_Item
+        and C_Item.GetItemInfoInstant
+    then
+        getter =
+            C_Item.GetItemInfoInstant
+    elseif GetItemInfoInstant then
+        getter =
+            GetItemInfoInstant
+    end
+
+    if not getter then
+        return outputItemID,
+            nil
+    end
+
+    local success,
+        resolvedItemID,
+        _,
+        _,
+        itemEquipLoc =
+        pcall(
+            getter,
+            outputItemID
+        )
+
+    if not success then
+        return outputItemID,
+            nil
+    end
+
+    return resolvedItemID
+        or outputItemID,
+        itemEquipLoc
+end
+
 function PT.CreateRecipeCatalogEntry(
     recipeID,
     context
@@ -134,6 +184,12 @@ function PT.CreateRecipeCatalogEntry(
             resolvedRecipeID
         )
 
+    local outputItemID,
+        outputItemEquipLoc =
+        getOutputItemInfo(
+            reagentSchema
+        )
+
     local operationEligible =
         classification.hasCraftingOperationInfo
         or operationMetrics ~= nil
@@ -166,6 +222,12 @@ function PT.CreateRecipeCatalogEntry(
             parentCategoryInfo
             and parentCategoryInfo.name
             or nil,
+
+        outputItemId =
+            outputItemID,
+
+        outputItemEquipLoc =
+            outputItemEquipLoc,
 
         skillLineAbilityId =
             recipeInfo.skillLineAbilityID,

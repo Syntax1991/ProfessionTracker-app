@@ -37,11 +37,11 @@ function getReadinessLabel(
           0
       ) {
         return (
-          `Grundskill reicht · +${crafter.baselineSkillSurplus} Reserve`
+          `Base skill sufficient · +${crafter.baselineSkillSurplus} surplus`
         );
       }
 
-      return "Grundskill reicht";
+      return "Base skill sufficient";
 
     case "RECIPE_BONUS_REQUIRED":
       if (
@@ -49,14 +49,14 @@ function getReadinessLabel(
         null
       ) {
         return (
-          `${crafter.baselineSkillGap} Skill vor Rezeptboni offen`
+          `${crafter.baselineSkillGap} skill missing before recipe bonuses`
         );
       }
 
-      return "Rezeptboni erforderlich";
+      return "Recipe bonuses required";
 
     case "UNKNOWN":
-      return "Basischeck offen";
+      return "Baseline check pending";
   }
 }
 
@@ -104,22 +104,26 @@ export function ProfessionRecipeCard({
         >
           {recipe.crafters.length >
           0
-            ? `${recipe.crafters.length} Crafter`
-            : "Kein Crafter"}
+            ? `${recipe.crafters.length} ${
+                recipe.crafters.length === 1
+                  ? "crafter"
+                  : "crafters"
+              }`
+            : "No crafter"}
         </span>
       </header>
 
       <div className="profession-recipe-card-body">
         <section>
           <h4>
-            Gruppen
+            Groups
           </h4>
 
           {recipe.capabilities.length ===
           0 ? (
             <p className="profession-recipe-empty">
-              Noch keiner Craft-Gruppe
-              zugeordnet.
+              Not assigned to a
+              crafting group yet.
             </p>
           ) : (
             <div className="profession-recipe-tags">
@@ -142,38 +146,38 @@ export function ProfessionRecipeCard({
 
         <section>
           <h4>
-            Grundschwierigkeit
+            Base Difficulty
           </h4>
 
           <p className="profession-recipe-difficulty">
             {recipe.baseDifficulty ===
             null
-              ? "Noch nicht erfasst"
+              ? "Not captured yet"
               : recipe.baseDifficulty}
           </p>
         </section>
       </div>
 
       <div className="profession-recipe-baseline-note">
-        Basischeck: Vergleicht nur
-        effektiven Berufsskill und
-        Grundschwierigkeit. Das ist noch
-        kein finaler Safe-Craft-Status.
+        Baseline check: Compares only
+        effective profession skill and
+        base difficulty. This is not a
+        final safe-craft status.
       </div>
 
       <section className="profession-recipe-crafters">
         <header>
           <h4>
-            Wer kann diesen Craft?
+            Who can craft this?
           </h4>
         </header>
 
         {recipe.crafters.length ===
         0 ? (
           <div className="profession-recipe-empty">
-            Aktuell besitzt keiner deiner
-            erfassten Charaktere dieses
-            Rezept.
+            None of your captured
+            characters has learned
+            this recipe.
           </div>
         ) : (
           <ul>
@@ -215,7 +219,7 @@ export function ProfessionRecipeCard({
 
                     <div className="profession-recipe-crafter-stats">
                       <span>
-                        Basis
+                        Base
                         {" "}
                         {crafter.skill}
                       </span>
@@ -231,7 +235,7 @@ export function ProfessionRecipeCard({
                       </span>
 
                       <span>
-                        Effektiv
+                        Effective
                         {" "}
                         {
                           crafter.effectiveSkill

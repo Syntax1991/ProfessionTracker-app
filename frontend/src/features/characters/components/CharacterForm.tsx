@@ -165,7 +165,7 @@ export function CharacterForm({
         </label>
 
         <label>
-          <span>Klasse</span>
+          <span>Class</span>
           <input
             minLength={2}
             onChange={(event) =>
@@ -174,7 +174,7 @@ export function CharacterForm({
                 className: event.target.value
               })
             }
-            placeholder="z. B. Todesritter"
+            placeholder="e.g. Death Knight"
             required
             value={form.className}
           />
@@ -199,11 +199,11 @@ export function CharacterForm({
       </div>
 
       <fieldset>
-        <legend>Primärberufe</legend>
+        <legend>Primary Professions</legend>
 
         <p className="field-hint">
-          Es können maximal zwei Berufe
-          ausgewählt werden.
+          You can select up to two professions
+          .
         </p>
 
         <div className="profession-selector">
@@ -251,7 +251,7 @@ export function CharacterForm({
             onClick={onCancel}
             type="button"
           >
-            Abbrechen
+            Cancel
           </button>
         )}
 
@@ -261,10 +261,10 @@ export function CharacterForm({
           type="submit"
         >
           {isSubmitting
-            ? "Speichern…"
+            ? "Saving…"
             : character
-              ? "Charakter aktualisieren"
-              : "Charakter anlegen"}
+              ? "Update Character"
+              : "Create Character"}
         </button>
       </div>
     </form>

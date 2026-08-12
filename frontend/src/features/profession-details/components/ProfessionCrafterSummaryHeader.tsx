@@ -61,7 +61,7 @@ export function ProfessionCrafterSummaryHeader({
       <div className="profession-crafter-header-stats">
         <div>
           <span>
-            Rezepte
+            Recipes
           </span>
 
           <strong>
@@ -86,7 +86,7 @@ export function ProfessionCrafterSummaryHeader({
 
         <div>
           <span>
-            Konzentration
+            Concentration
           </span>
 
           <strong>
@@ -101,7 +101,7 @@ export function ProfessionCrafterSummaryHeader({
 
         <div>
           <span>
-            Nicht safe
+            Not Safe
           </span>
 
           <strong>
@@ -121,7 +121,7 @@ export function ProfessionCrafterSummaryHeader({
           `/characters/${coverage.character.id}`
         }
       >
-        Charakterdetails
+        Character Details
       </Link>
     </section>
   );

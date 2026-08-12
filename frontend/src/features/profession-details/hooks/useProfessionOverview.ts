@@ -48,7 +48,7 @@ export function useProfessionOverview():
           setError(
             loadError instanceof Error
               ? loadError.message
-              : "Berufsübersicht konnte nicht geladen werden."
+              : "Profession overview could not be loaded."
           );
         }
       }

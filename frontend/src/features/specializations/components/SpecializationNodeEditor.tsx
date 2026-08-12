@@ -67,7 +67,7 @@ export function SpecializationNodeEditor({
           )}
 
           <label className="specialization-rank">
-            <span>Rang</span>
+            <span>Rank</span>
 
             <input
               disabled={!selected}

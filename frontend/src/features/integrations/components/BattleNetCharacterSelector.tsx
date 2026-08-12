@@ -43,14 +43,14 @@ export function BattleNetCharacterSelector({
       <div className="panel-header">
         <div>
           <p className="eyebrow">
-            CHARAKTERAUSWAHL
+            CHARACTER SELECTION
           </p>
 
           <h2>
             {selection.selectedCount}
             {" von "}
             {visibleCount}
-            {" sichtbaren ausgewählt"}
+            {" visible selected"}
           </h2>
         </div>
 
@@ -70,8 +70,8 @@ export function BattleNetCharacterSelector({
           type="button"
         >
           {isImporting
-            ? "Synchronisierung läuft…"
-            : `${selection.selectedCount} sichtbare Charaktere synchronisieren`}
+            ? "Syncing…"
+            : `${selection.selectedCount} visible characters`}
         </button>
       </div>
 
@@ -113,7 +113,7 @@ export function BattleNetCharacterSelector({
         <div className="selection-toolbar">
           <span>
             {visibleCount}
-            {" sichtbar"}
+            {" visible"}
 
             {selection
               .hiddenSelectedCount >
@@ -124,7 +124,7 @@ export function BattleNetCharacterSelector({
                   selection
                     .hiddenSelectedCount
                 }
-                {" außerhalb des Filters werden nicht synchronisiert"}
+                {" outside the filter will not be synced"}
               </>
             )}
           </span>
@@ -137,7 +137,7 @@ export function BattleNetCharacterSelector({
               }
               type="button"
             >
-              Sichtbare auswählen
+              Select visible
             </button>
 
             <button
@@ -147,7 +147,7 @@ export function BattleNetCharacterSelector({
               }
               type="button"
             >
-              Sichtbare abwählen
+              Deselect visible
             </button>
 
             <button
@@ -157,7 +157,7 @@ export function BattleNetCharacterSelector({
               }
               type="button"
             >
-              Auswahl leeren
+              Clear selection
             </button>
           </div>
         </div>

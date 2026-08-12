@@ -47,14 +47,14 @@ export function ProfessionDetailWorkspace({
   }> = [
     {
       id: "overview",
-      label: "Übersicht",
+      label: "Overview",
       count:
         detail.summary
           .coveredCapabilityCount
     },
     {
       id: "recipes",
-      label: "Rezepte",
+      label: "Recipes",
       count:
         detail.summary
           .catalogRecipeCount
@@ -80,7 +80,7 @@ export function ProfessionDetailWorkspace({
       <section className="profession-detail-summary-grid">
         <article className="panel profession-detail-summary-card">
           <span>
-            Charaktere
+            Characters
           </span>
 
           <strong>
@@ -95,13 +95,13 @@ export function ProfessionDetailWorkspace({
               detail.summary
                 .trackedCharacterCount
             }
-            {" erfasst"}
+            {" captured"}
           </small>
         </article>
 
         <article className="panel profession-detail-summary-card">
           <span>
-            Fähigkeiten
+            Capabilities
           </span>
 
           <strong>
@@ -117,13 +117,13 @@ export function ProfessionDetailWorkspace({
           </strong>
 
           <small>
-            accountweit
+            account-wide
           </small>
         </article>
 
         <article className="panel profession-detail-summary-card">
           <span>
-            Rezepte
+            Recipes
           </span>
 
           <strong>
@@ -138,7 +138,7 @@ export function ProfessionDetailWorkspace({
               detail.summary
                 .catalogRecipeCount
             }
-            {" im Katalog"}
+            {" in catalog"}
           </small>
         </article>
 
@@ -155,13 +155,13 @@ export function ProfessionDetailWorkspace({
           </strong>
 
           <small>
-            abgedeckt
+            covered
           </small>
         </article>
       </section>
 
       <nav
-        aria-label="Berufsdetail"
+        aria-label="Professionsdetail"
         className="panel profession-detail-tabs"
         role="tablist"
       >

@@ -32,12 +32,12 @@ export function CharacterSpecializationsPage() {
     return (
       <>
         <PageHeader
-          eyebrow="SPEZIALISIERUNGEN"
-          title="Berufsspezialisierungen"
+          eyebrow="SPECIALIZATIONS"
+          title="Profession Specializations"
         />
 
         <StatusMessage type="error">
-          Die Charakter-ID fehlt.
+          The character ID is missing.
         </StatusMessage>
       </>
     );
@@ -50,8 +50,8 @@ export function CharacterSpecializationsPage() {
     return (
       <>
         <PageHeader
-          eyebrow="SPEZIALISIERUNGEN"
-          title="Berufsspezialisierungen"
+          eyebrow="SPECIALIZATIONS"
+          title="Profession Specializations"
         />
 
         {error ? (
@@ -73,13 +73,13 @@ export function CharacterSpecializationsPage() {
             className="button button-secondary"
             to="/characters"
           >
-            Zurück zu Charakteren
+            Back to characters
           </Link>
         }
         description={
           `${overview.character.className} · ${overview.character.realm} · Level ${overview.character.level}`
         }
-        eyebrow="SPEZIALISIERUNGEN"
+        eyebrow="SPECIALIZATIONS"
         title={
           overview.character.name
         }
@@ -94,7 +94,7 @@ export function CharacterSpecializationsPage() {
       {overview.professions.length === 0 ? (
         <section className="panel">
           <div className="empty-state">
-            Dieser Charakter besitzt noch keine hinterlegten Primärberufe.
+            This character does not have any primary professions yet.
           </div>
         </section>
       ) : (

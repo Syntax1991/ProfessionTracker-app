@@ -15,7 +15,7 @@ export function normalizeBattleNetFilterValue(
   return value
     .trim()
     .toLocaleLowerCase(
-      "de-DE"
+      "en-GB"
     );
 }
 
@@ -55,7 +55,7 @@ export function createBattleNetFilterOptions(
     (left, right) =>
       left.localeCompare(
         right,
-        "de-DE"
+        "en-GB"
       )
   );
 }

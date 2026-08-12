@@ -58,8 +58,8 @@ export function ProfessionCoverageList({
 
                   <small>
                     {entry.unlocked
-                      ? "Freigeschaltet"
-                      : "Nicht freigeschaltet"}
+                      ? "Unlocked"
+                      : "Not unlocked"}
                   </small>
                 </div>
 

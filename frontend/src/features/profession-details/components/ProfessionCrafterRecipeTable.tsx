@@ -3,11 +3,14 @@ import type {
   ProfessionRecipeCrafter
 } from "../types/professionRecipe.types";
 import {
+  getProfessionRecipeMaterialRequirementLabel
+} from "../utils/professionRecipeRecommendation";
+import {
+  getProfessionRecipeProductLabel
+} from "../utils/professionRecipePresentation";
+import {
   getProfessionRecipeCraftStatusClassName
 } from "../utils/professionRecipeStatus";
-import {
-  getProfessionRecipeMaterialRequirementLabel
-} from "./ProfessionRecipeRecommendation";
 
 export type ProfessionCrafterRecipeEntry = {
   recipe:
@@ -28,13 +31,13 @@ function getStatusLabel(
       return "SAFE";
 
     case "CONCENTRATION":
-      return "KONZ.";
+      return "CONC.";
 
     case "NOT_SAFE":
-      return "NICHT SAFE";
+      return "NOT SAFE";
 
     case "UNKNOWN":
-      return "UNBEKANNT";
+      return "UNKNOWN";
   }
 }
 
@@ -111,17 +114,17 @@ function groupEntries(
       (
         [
           name,
-          groupEntries
+          groupedEntries
         ]
       ) => ({
         name,
         entries:
-          groupEntries.sort(
+          groupedEntries.sort(
             (left, right) =>
               left.recipe.name
                 .localeCompare(
                   right.recipe.name,
-                  "de"
+                  "en"
                 )
           )
       })
@@ -130,7 +133,7 @@ function groupEntries(
       (left, right) =>
         left.name.localeCompare(
           right.name,
-          "de"
+          "en"
         )
     );
 }
@@ -145,8 +148,8 @@ export function ProfessionCrafterRecipeTable({
     return (
       <section className="panel">
         <div className="empty-state">
-          Keine Rezepte passen
-          zu diesem Filter.
+          No recipes match this
+          filter.
         </div>
       </section>
     );
@@ -179,8 +182,8 @@ export function ProfessionCrafterRecipeTable({
                   {
                     group.entries
                       .length === 1
-                      ? " Rezept"
-                      : " Rezepte"
+                      ? " recipe"
+                      : " recipes"
                   }
                 </span>
               </div>
@@ -188,7 +191,11 @@ export function ProfessionCrafterRecipeTable({
 
             <div className="profession-crafter-recipe-table-header">
               <span>
-                Rezept
+                Recipe
+              </span>
+
+              <span>
+                Type
               </span>
 
               <span>
@@ -196,11 +203,11 @@ export function ProfessionCrafterRecipeTable({
               </span>
 
               <span>
-                Safe-Mats
+                Safe Materials
               </span>
 
               <span>
-                Ergebnis
+                Result
               </span>
             </div>
 
@@ -221,6 +228,14 @@ export function ProfessionCrafterRecipeTable({
                         }
                       </strong>
                     </div>
+
+                    <span className="profession-crafter-product-type">
+                      {
+                        getProfessionRecipeProductLabel(
+                          entry.recipe
+                        )
+                      }
+                    </span>
 
                     <span
                       className={

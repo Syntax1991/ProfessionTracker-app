@@ -1,116 +1,10 @@
 import type {
-  ProfessionRecipeCrafterRecommendation,
-  ProfessionRecipeReagentSelection
+  ProfessionRecipeCrafterRecommendation
 } from "../types/professionRecipe.types";
-
-export function getProfessionRecipeRecommendationLabel(
-  recommendation:
-    ProfessionRecipeCrafterRecommendation
-): string {
-  switch (recommendation.kind) {
-    case "LOW_MATS":
-      return "Low Mats reichen";
-
-    case "MINIMUM_MATS":
-      return "Niedrigste ausreichende Mats";
-
-    case "HIGH_MATS":
-      return "High Mats";
-
-    case "HIGH_MATS_CONCENTRATION":
-      return recommendation
-        .concentrationCost === null
-        ? "High Mats + Konzentration"
-        : `High Mats + ${recommendation.concentrationCost} Konz.`;
-
-    case "NOT_REACHABLE":
-      return "Mit High Mats nicht erreichbar";
-
-    case "UNKNOWN":
-      return "Noch keine Empfehlung";
-  }
-}
-
-export function getProfessionRecipeMaterialMixLabel(
-  selections:
-    ProfessionRecipeReagentSelection[]
-): string | null {
-  const qualityTotals =
-    new Map<
-      number,
-      number
-    >();
-
-  for (
-    const selection of
-    selections
-  ) {
-    if (
-      selection.quality === null ||
-      selection.quantity <= 0
-    ) {
-      continue;
-    }
-
-    qualityTotals.set(
-      selection.quality,
-      (
-        qualityTotals.get(
-          selection.quality
-        ) ??
-        0
-      ) +
-        selection.quantity
-    );
-  }
-
-  const labels =
-    Array.from(
-      qualityTotals.entries()
-    )
-      .sort(
-        (
-          [leftQuality],
-          [rightQuality]
-        ) =>
-          leftQuality -
-          rightQuality
-      )
-      .map(
-        (
-          [
-            quality,
-            quantity
-          ]
-        ) =>
-          `${quantity}× Q${quality}`
-      );
-
-  return labels.length > 0
-    ? labels.join(" · ")
-    : null;
-}
-
-export function getProfessionRecipeMaterialRequirementLabel(
-  recommendation:
-    ProfessionRecipeCrafterRecommendation
-): string {
-  if (
-    recommendation.kind ===
-    "MINIMUM_MATS"
-  ) {
-    return (
-      getProfessionRecipeMaterialMixLabel(
-        recommendation.selections
-      ) ??
-      "Niedrigste ausreichende Mats"
-    );
-  }
-
-  return getProfessionRecipeRecommendationLabel(
-    recommendation
-  );
-}
+import {
+  getProfessionRecipeMaterialMixLabel,
+  getProfessionRecipeRecommendationLabel
+} from "../utils/professionRecipeRecommendation";
 
 export function ProfessionRecipeRecommendation({
   recommendation
@@ -136,7 +30,7 @@ export function ProfessionRecipeRecommendation({
   return (
     <div className="profession-recipe-recommendation">
       <span>
-        Empfehlung
+        Recommendation
       </span>
 
       <strong>

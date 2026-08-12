@@ -81,13 +81,13 @@ export function ProfessionCrafterWorkspace({
           </p>
 
           <h2>
-            Was kann wer craften?
+            Who can craft what?
           </h2>
         </div>
 
         <p>
-          Rezepte, Safe-Status und
-          benötigte Materialqualität.
+          Recipes, craft safety and
+          required material quality.
         </p>
       </div>
 
@@ -105,8 +105,8 @@ export function ProfessionCrafterWorkspace({
           0 ? (
             <section className="panel">
               <div className="empty-state">
-                Diesem Beruf ist noch
-                kein Crafter zugewiesen.
+                This profession currently has
+                no assigned crafter.
               </div>
             </section>
           ) : (
@@ -166,7 +166,7 @@ export function ProfessionCrafterWorkspace({
                               summary.entries
                                 .length
                             }
-                            {" Rezepte · "}
+                            {" Recipes · "}
                             {
                               summary.safeCount
                             }

@@ -18,8 +18,8 @@ export function ProfessionGrid({
             <span className="category-badge">
               {profession.category ===
               "GATHERING"
-                ? "Sammelberuf"
-                : "Herstellungsberuf"}
+                ? "Gathering profession"
+                : "Crafting profession"}
             </span>
 
             <h3>{profession.name}</h3>
@@ -30,7 +30,7 @@ export function ProfessionGrid({
           </strong>
 
           <small>
-            zugewiesene Charaktere
+            assigned characters
           </small>
         </article>
       ))}

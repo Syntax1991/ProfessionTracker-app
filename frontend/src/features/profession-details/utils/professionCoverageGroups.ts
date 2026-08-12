@@ -174,11 +174,11 @@ function sortGroupCharacters(
         ) =>
           left.name.localeCompare(
             right.name,
-            "de"
+            "en"
           ) ||
           left.realm.localeCompare(
             right.realm,
-            "de"
+            "en"
           )
       )
   };

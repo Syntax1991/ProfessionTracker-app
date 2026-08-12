@@ -138,7 +138,7 @@ export function useCharacterSpecializations(
           setError(
             loadError instanceof Error
               ? loadError.message
-              : "Spezialisierungen konnten nicht geladen werden."
+              : "Specializations could not be loaded."
           );
         }
       }
@@ -241,7 +241,7 @@ export function useCharacterSpecializations(
       setError(
         saveError instanceof Error
           ? saveError.message
-          : "Spezialisierungen konnten nicht gespeichert werden."
+          : "Specializations could not be saved."
       );
     }
     finally {
