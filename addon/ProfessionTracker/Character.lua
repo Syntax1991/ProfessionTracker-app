@@ -103,14 +103,6 @@ function PT.RefreshCharacter(
         )
         or {}
 
-    existingCharacter.specializations =
-        existingCharacter.specializations
-        or {}
-
-    existingCharacter.recipes =
-        existingCharacter.recipes
-        or {}
-
     existingCharacter.lastUpdatedAt =
         time()
 
@@ -122,6 +114,13 @@ function PT.RefreshCharacter(
         characterKey
     ] =
         existingCharacter
+
+    if PT.PruneCharacterRecipeOperationsForProfessions then
+        PT.PruneCharacterRecipeOperationsForProfessions(
+            characterKey,
+            existingCharacter.professions
+        )
+    end
 
     database.lastUpdatedAt =
         time()

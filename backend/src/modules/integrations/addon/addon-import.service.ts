@@ -11,7 +11,7 @@ const MIN_SUPPORTED_ADDON_SCHEMA_VERSION =
   4;
 
 const MAX_SUPPORTED_ADDON_SCHEMA_VERSION =
-  8;
+  9;
 
 function isSupportedSchemaVersion(
   schemaVersion: number

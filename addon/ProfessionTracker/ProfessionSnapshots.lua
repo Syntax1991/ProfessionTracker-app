@@ -46,8 +46,7 @@ function PT.CreateProfessionSnapshot(
             skillModifier
             or 0,
 
-        expansions = {},
-        recipes = {}
+        expansions = {}
     }
 end
 
@@ -71,37 +70,6 @@ function PT.IndexExistingProfessions(
     return bySkillLineId
 end
 
-local function createLegacyExpansion(
-    existingProfession
-)
-    if not existingProfession
-        or not existingProfession.childSkillLineId
-    then
-        return nil
-    end
-
-    return {
-        skillLineId =
-            existingProfession.childSkillLineId,
-
-        configId =
-            existingProfession.specializationConfigId,
-
-        hasSpecialization =
-            existingProfession.hasSpecialization,
-
-        knowledge =
-            existingProfession.knowledge,
-
-        specializations =
-            existingProfession.specializations
-            or {},
-
-        capturedAt =
-            existingProfession.specializationCapturedAt
-    }
-end
-
 local function compactExpansion(
     expansion
 )
@@ -114,6 +82,73 @@ local function compactExpansion(
     return expansion
 end
 
+local function copyTrackedExpansions(
+    expansions
+)
+    local result = {}
+
+    for key, expansion in pairs(
+        expansions
+        or {}
+    ) do
+        if PT.IsTrackedProfessionExpansion(
+            expansion
+        ) then
+            local compacted =
+                compactExpansion(
+                    expansion
+                )
+
+            if compacted then
+                local resolvedKey =
+                    tostring(
+                        compacted.skillLineId
+                        or key
+                    )
+
+                result[
+                    resolvedKey
+                ] =
+                    compacted
+            end
+        end
+    end
+
+    return result
+end
+
+local function resolveActiveExpansion(
+    profession,
+    existingProfession
+)
+    local existingActive =
+        existingProfession
+        and existingProfession
+            .activeExpansionSkillLineId
+
+    if existingActive then
+        local expansion =
+            profession.expansions[
+                tostring(
+                    existingActive
+                )
+            ]
+
+        if expansion then
+            return existingActive
+        end
+    end
+
+    for key, expansion in pairs(
+        profession.expansions
+    ) do
+        return expansion.skillLineId
+            or tonumber(key)
+    end
+
+    return nil
+end
+
 function PT.PreserveProfessionCapturedData(
     profession,
     existingProfession
@@ -122,47 +157,16 @@ function PT.PreserveProfessionCapturedData(
         return
     end
 
-    profession.recipes =
-        existingProfession.recipes
-        or {}
-
-    if PT.CompactStoredExpansions then
-        profession.expansions =
-            PT.CompactStoredExpansions(
-                existingProfession.expansions
-            )
-    else
-        profession.expansions =
+    profession.expansions =
+        copyTrackedExpansions(
             existingProfession.expansions
-            or {}
-    end
-
-    local legacyExpansion =
-        createLegacyExpansion(
-            existingProfession
         )
 
-    if legacyExpansion then
-        local legacyKey =
-            tostring(
-                legacyExpansion.skillLineId
-            )
-
-        if not profession.expansions[
-            legacyKey
-        ] then
-            profession.expansions[
-                legacyKey
-            ] =
-                compactExpansion(
-                    legacyExpansion
-                )
-        end
-    end
-
     profession.activeExpansionSkillLineId =
-        existingProfession.activeExpansionSkillLineId
-        or existingProfession.childSkillLineId
+        resolveActiveExpansion(
+            profession,
+            existingProfession
+        )
 end
 
 local function namesMatch(
@@ -251,7 +255,11 @@ function PT.ApplyOpenProfessionSpecializationData(
     local specializationData =
         PT.CollectOpenProfessionSpecializations()
 
-    if not specializationData then
+    if not specializationData
+        or not PT.IsTrackedProfessionExpansion(
+            specializationData
+        )
+    then
         return
     end
 

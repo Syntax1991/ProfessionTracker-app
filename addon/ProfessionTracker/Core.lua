@@ -1,8 +1,9 @@
 local addonName, PT = ...
 
 PT.ADDON_NAME = addonName
-PT.ADDON_VERSION = "0.7.0"
-PT.SCHEMA_VERSION = 8
+PT.ADDON_VERSION = "0.7.1"
+PT.SCHEMA_VERSION = 9
+PT.STORAGE_SCOPE_VERSION = 1
 
 local regionNames = {
     [1] = "US",
@@ -94,37 +95,73 @@ function PT.GetClientInfo()
     }
 end
 
+local function initializeDatabaseTables(
+    database
+)
+    database.characters =
+        database.characters
+        or {}
+
+    database.professionCatalog =
+        database.professionCatalog
+        or {}
+
+    database.recipeCatalog =
+        database.recipeCatalog
+        or {}
+
+    database.characterRecipeOperations =
+        database.characterRecipeOperations
+        or {}
+end
+
+local function compactDatabaseIfNeeded(
+    database
+)
+    if database.storageScopeVersion
+        == PT.STORAGE_SCOPE_VERSION
+    then
+        return
+    end
+
+    if not PT.CompactCurrentAddonState then
+        return
+    end
+
+    PT.CompactCurrentAddonState(
+        database
+    )
+
+    database.storageScopeVersion =
+        PT.STORAGE_SCOPE_VERSION
+end
+
 function PT.EnsureDatabase()
     ProfessionTrackerDB =
         ProfessionTrackerDB
         or {}
 
-    ProfessionTrackerDB.schemaVersion =
+    local database =
+        ProfessionTrackerDB
+
+    initializeDatabaseTables(
+        database
+    )
+
+    compactDatabaseIfNeeded(
+        database
+    )
+
+    database.schemaVersion =
         PT.SCHEMA_VERSION
 
-    ProfessionTrackerDB.addonVersion =
+    database.addonVersion =
         PT.ADDON_VERSION
 
-    ProfessionTrackerDB.characters =
-        ProfessionTrackerDB.characters
-        or {}
-
-    ProfessionTrackerDB.professionCatalog =
-        ProfessionTrackerDB.professionCatalog
-        or {}
-
-    ProfessionTrackerDB.recipeCatalog =
-        ProfessionTrackerDB.recipeCatalog
-        or {}
-
-    ProfessionTrackerDB.characterRecipeOperations =
-        ProfessionTrackerDB.characterRecipeOperations
-        or {}
-
-    ProfessionTrackerDB.client =
+    database.client =
         PT.GetClientInfo()
 
-    return ProfessionTrackerDB
+    return database
 end
 
 function PT.GetStoredCharacterCount()

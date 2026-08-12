@@ -23,24 +23,9 @@ end
 function PT.IsMidnightProfessionExpansion(
     expansion
 )
-    if type(expansion) ~= "table" then
-        return false
-    end
-
-    local expansionName =
-        expansion.expansionName
-        or expansion.displayName
-
-    if type(expansionName) ~= "string" then
-        return false
-    end
-
-    return string.find(
-        string.lower(expansionName),
-        "midnight",
-        1,
-        true
-    ) ~= nil
+    return PT.IsTrackedProfessionExpansion(
+        expansion
+    )
 end
 
 function PT.FindMidnightProfessionExpansion(
@@ -64,7 +49,7 @@ function PT.FindMidnightProfessionExpansion(
                 activeSkillLineID
             ]
 
-        if PT.IsMidnightProfessionExpansion(
+        if PT.IsTrackedProfessionExpansion(
             activeExpansion
         ) then
             return activeExpansion
@@ -74,7 +59,7 @@ function PT.FindMidnightProfessionExpansion(
     for _, expansion in pairs(
         profession.expansions
     ) do
-        if PT.IsMidnightProfessionExpansion(
+        if PT.IsTrackedProfessionExpansion(
             expansion
         ) then
             return expansion

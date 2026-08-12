@@ -1,25 +1,5 @@
 local _, PT = ...
 
-local function isCurrentExpansion(
-    expansionName
-)
-    if not expansionName then
-        return false
-    end
-
-    local normalized =
-        PT.NormalizeKeyPart(
-            expansionName
-        )
-
-    return string.find(
-        normalized,
-        "midnight",
-        1,
-        true
-    ) ~= nil
-end
-
 local function getContext(
     skillLineId
 )
@@ -83,6 +63,12 @@ local function collectCandidateData(
     data.capturedAt =
         time()
 
+    if not PT.IsTrackedProfessionExpansion(
+        data
+    ) then
+        return nil
+    end
+
     return data
 end
 
@@ -140,7 +126,8 @@ local function applyCandidateData(
     data
 )
     profession.expansions =
-        profession.expansions or {}
+        profession.expansions
+        or {}
 
     local expansionKey =
         tostring(
@@ -154,19 +141,8 @@ local function applyCandidateData(
             data
         )
 
-    if isCurrentExpansion(
-        data.expansionName
-    ) then
-        profession.activeExpansionSkillLineId =
-            data.skillLineId
-
-        return
-    end
-
-    if not profession.activeExpansionSkillLineId then
-        profession.activeExpansionSkillLineId =
-            data.skillLineId
-    end
+    profession.activeExpansionSkillLineId =
+        data.skillLineId
 end
 
 local function syncProfession(
@@ -212,7 +188,8 @@ function PT.ApplyAutomaticProfessionSpecializations(
     local updatedCount = 0
 
     for _, profession in ipairs(
-        professions or {}
+        professions
+        or {}
     ) do
         updatedCount =
             updatedCount

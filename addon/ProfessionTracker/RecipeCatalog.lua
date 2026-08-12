@@ -125,6 +125,12 @@ local function storeRecipeCatalog(
     collection,
     capturedAt
 )
+    if not PT.IsTrackedProfessionContext(
+        context
+    ) then
+        return
+    end
+
     local database =
         PT.EnsureDatabase()
 
@@ -172,6 +178,9 @@ function PT.CreateOpenProfessionRecipeSnapshot(
     if not context
         or not context.skillLineId
         or context.skillLineId == 0
+        or not PT.IsTrackedProfessionContext(
+            context
+        )
     then
         return nil
     end

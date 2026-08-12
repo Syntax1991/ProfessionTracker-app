@@ -222,6 +222,9 @@ function PT.StoreProfessionCatalog(
 )
     if not specializationData
         or not specializationData.skillLineId
+        or not PT.IsTrackedProfessionExpansion(
+            specializationData
+        )
     then
         return
     end

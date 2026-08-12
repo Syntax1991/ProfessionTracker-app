@@ -37,14 +37,23 @@ local function addCandidate(
     local resolvedSkillLineId =
         tonumber(skillLineId)
 
+    metadata =
+        metadata
+        or {}
+
     if not resolvedSkillLineId
         or resolvedSkillLineId == 0
+        or not PT.IsTrackedProfessionExpansion(
+            metadata
+        )
     then
         return
     end
 
     local candidate =
-        candidates[resolvedSkillLineId]
+        candidates[
+            resolvedSkillLineId
+        ]
 
     if not candidate then
         candidate = {
@@ -52,11 +61,11 @@ local function addCandidate(
                 resolvedSkillLineId
         }
 
-        candidates[resolvedSkillLineId] =
+        candidates[
+            resolvedSkillLineId
+        ] =
             candidate
     end
-
-    metadata = metadata or {}
 
     candidate.displayName =
         metadata.displayName
@@ -80,11 +89,13 @@ local function collectExpansionCandidates(
     profession
 )
     for key, expansion in pairs(
-        profession.expansions or {}
+        profession.expansions
+        or {}
     ) do
         addCandidate(
             candidates,
-            expansion.skillLineId or key,
+            expansion.skillLineId
+                or key,
             {
                 displayName =
                     expansion.displayName,
@@ -113,10 +124,12 @@ local function collectStoredCandidates(
     )
 
     for _, character in pairs(
-        database.characters or {}
+        database.characters
+        or {}
     ) do
         for _, storedProfession in ipairs(
-            character.professions or {}
+            character.professions
+            or {}
         ) do
             if professionsMatch(
                 profession,
@@ -137,7 +150,8 @@ local function collectCatalogCandidates(
     database
 )
     for key, catalog in pairs(
-        database.professionCatalog or {}
+        database.professionCatalog
+        or {}
     ) do
         local matchesId =
             catalog.parentSkillLineId
@@ -154,7 +168,8 @@ local function collectCatalogCandidates(
         if matchesId or matchesName then
             addCandidate(
                 candidates,
-                catalog.skillLineId or key,
+                catalog.skillLineId
+                    or key,
                 catalog
             )
         end
