@@ -18,6 +18,7 @@
     "inspect:stored-character-recipe-operations": "node scripts/inspect-stored-character-recipe-operations.mjs",
     "inspect:profession-recipe-operation-api": "node scripts/inspect-profession-recipe-operation-api.mjs",
     "inspect:recipe-reagents": "node scripts/inspect-recipe-reagent-schematics.mjs",
+    "inspect:recipe-quality-scenarios": "node scripts/inspect-recipe-quality-scenarios.mjs",
     "dev:restart": "node scripts/dev-manager.mjs restart",
     "dev:stop": "node scripts/dev-manager.mjs stop"
   },
