@@ -159,6 +159,18 @@ local function printCaptureStatus()
     PT.PrintStatus()
 end
 
+local function runBackgroundProbe()
+    if not PT.RunBackgroundProfessionProbe then
+        PT.Print(
+            "Background-Probe ist nicht verfügbar."
+        )
+
+        return
+    end
+
+    PT.RunBackgroundProfessionProbe()
+end
+
 local function handleSlashCommand(input)
     local command =
         trimCommand(
@@ -175,6 +187,11 @@ local function handleSlashCommand(input)
         return
     end
 
+    if command == "probe" then
+        runBackgroundProbe()
+        return
+    end
+
     if command == "sync" then
         clearPendingRefresh()
 
@@ -188,7 +205,7 @@ local function handleSlashCommand(input)
     end
 
     PT.Print(
-        "Befehle: /st status, /st sync"
+        "Befehle: /st status, /st sync, /st probe"
     )
 end
 
