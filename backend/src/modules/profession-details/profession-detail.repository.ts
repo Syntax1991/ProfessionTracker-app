@@ -73,7 +73,9 @@ export class ProfessionDetailRepository {
           },
 
           select: {
-            id: true
+            id: true,
+            source: true,
+            lastSyncedAt: true
           }
         },
 

@@ -1,5 +1,11 @@
 import type { ProfessionDetailRepository } from "./profession-detail.repository.js";
-import type { ProfessionOverviewItem } from "./profession-detail.types.js";
+import type {
+  ProfessionCaptureStatus,
+  ProfessionOverviewItem
+} from "./profession-detail.types.js";
+import {
+  TRACKED_PROFESSION_DATA_SOURCE
+} from "./profession-expansion.constants.js";
 
 type OverviewRecord =
   Awaited<
@@ -14,6 +20,59 @@ type OverviewNodeProgress =
   ][number][
     "nodeProgress"
   ][number];
+
+function getLastCapturedAt(
+  profession: OverviewRecord
+): string | null {
+  const capturedDates =
+    profession.recipes
+      .filter(
+        (recipe) =>
+          recipe.source ===
+            TRACKED_PROFESSION_DATA_SOURCE &&
+          recipe.lastSyncedAt !==
+            null
+      )
+      .map(
+        (recipe) =>
+          recipe.lastSyncedAt as Date
+      );
+
+  if (
+    capturedDates.length ===
+    0
+  ) {
+    return null;
+  }
+
+  const latestTimestamp =
+    Math.max(
+      ...capturedDates.map(
+        (date) =>
+          date.getTime()
+      )
+    );
+
+  return new Date(
+    latestTimestamp
+  ).toISOString();
+}
+
+function getCaptureStatus(
+  category: string,
+  lastCapturedAt: string | null
+): ProfessionCaptureStatus {
+  if (
+    category ===
+    "GATHERING"
+  ) {
+    return "NOT_REQUIRED";
+  }
+
+  return lastCapturedAt
+    ? "CAPTURED"
+    : "NOT_CAPTURED";
+}
 
 export function mapProfessionOverview(
   records: OverviewRecord[]
@@ -50,6 +109,11 @@ export function mapProfessionOverview(
           0
         );
 
+      const lastCapturedAt =
+        getLastCapturedAt(
+          profession
+        );
+
       return {
         id:
           profession.id,
@@ -80,7 +144,15 @@ export function mapProfessionOverview(
         capabilityCount:
           profession
             .capabilities
-            .length
+            .length,
+
+        captureStatus:
+          getCaptureStatus(
+            profession.category,
+            lastCapturedAt
+          ),
+
+        lastCapturedAt
       };
     }
   );

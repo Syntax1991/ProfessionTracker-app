@@ -8,6 +8,11 @@ export type ProfessionOverviewItem = {
   activeNodeCount: number;
   catalogRecipeCount: number;
   capabilityCount: number;
+  captureStatus:
+    | "CAPTURED"
+    | "NOT_CAPTURED"
+    | "NOT_REQUIRED";
+  lastCapturedAt: string | null;
 };
 
 export type ProfessionOverview = {

@@ -16,7 +16,7 @@
 }
 
 .profession-overview-card {
-  min-height: 160px;
+  min-height: 218px;
   display: flex;
   flex-direction: column;
   padding: 18px;
@@ -100,7 +100,6 @@
   display: flex;
   flex-wrap: wrap;
   gap: 7px;
-  margin-top: auto;
   padding-top: 14px;
 }
 
@@ -111,6 +110,63 @@
   background:
     var(--primary-soft);
   font-size: 0.61rem;
+}
+
+.profession-overview-capture {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin-top: auto;
+  padding-top: 14px;
+  border-top:
+    1px solid var(--border);
+}
+
+.profession-overview-capture
+  > div {
+  min-width: 0;
+}
+
+.profession-overview-capture strong {
+  display: block;
+  font-size: 0.67rem;
+  font-weight: 750;
+}
+
+.profession-overview-capture small {
+  display: block;
+  margin-top: 3px;
+  color: var(--text-muted);
+  font-size: 0.59rem;
+  line-height: 1.35;
+}
+
+.profession-capture-badge {
+  flex: 0 0 auto;
+  padding: 4px 7px;
+  border-radius: 999px;
+  font-size: 0.58rem;
+  font-weight: 850;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.profession-capture-badge.captured {
+  color: #bce8ce;
+  background:
+    rgba(48, 142, 91, 0.18);
+}
+
+.profession-capture-badge.not-captured {
+  color: #f2c0ae;
+  background:
+    rgba(180, 82, 48, 0.2);
+}
+
+.profession-capture-badge.not-required {
+  color: var(--text-secondary);
+  background:
+    rgba(128, 128, 148, 0.15);
 }
 
 @media (max-width: 1150px) {

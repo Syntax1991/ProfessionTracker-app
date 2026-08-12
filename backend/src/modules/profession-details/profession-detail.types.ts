@@ -51,6 +51,11 @@ export type ProfessionCharacterCoverage = {
   capabilities: ProfessionCapabilityCoverage[];
 };
 
+export type ProfessionCaptureStatus =
+  | "CAPTURED"
+  | "NOT_CAPTURED"
+  | "NOT_REQUIRED";
+
 export type ProfessionOverviewItem = {
   id: string;
   key: string;
@@ -61,6 +66,8 @@ export type ProfessionOverviewItem = {
   activeNodeCount: number;
   catalogRecipeCount: number;
   capabilityCount: number;
+  captureStatus: ProfessionCaptureStatus;
+  lastCapturedAt: string | null;
 };
 
 export type ProfessionDetailView = {
