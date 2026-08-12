@@ -8,11 +8,11 @@ import {
   ProfessionCapabilityMatrix
 } from "./ProfessionCapabilityMatrix";
 import {
-  ProfessionCharacterCard
-} from "./ProfessionCharacterCard";
-import {
   ProfessionCoverageMatrix
 } from "./ProfessionCoverageMatrix";
+import {
+  ProfessionCrafterWorkspace
+} from "./ProfessionCrafterWorkspace";
 import {
   ProfessionRecipeFinder
 } from "./ProfessionRecipeFinder";
@@ -221,64 +221,20 @@ export function ProfessionDetailWorkspace({
         )}
 
         {activeTab ===
-          "slots" && (
-          <ProfessionCoverageMatrix
+          "crafters" && (
+          <ProfessionCrafterWorkspace
             detail={detail}
+            professionId={
+              professionId
+            }
           />
         )}
 
         {activeTab ===
-          "crafters" && (
-          <section className="profession-detail-character-section profession-detail-character-tab">
-            <div className="profession-detail-section-heading">
-              <div>
-                <p className="eyebrow">
-                  CRAFTER
-                </p>
-
-                <h2>
-                  Charaktere
-                </h2>
-              </div>
-
-              <p>
-                {
-                  detail.summary
-                    .missingCharacterCount
-                }
-                {
-                  " Charaktere ohne vollständige Craft-Daten."
-                }
-              </p>
-            </div>
-
-            {detail.characters.length ===
-            0 ? (
-              <section className="panel">
-                <div className="empty-state">
-                  Diesem Beruf ist noch
-                  kein Charakter
-                  zugewiesen.
-                </div>
-              </section>
-            ) : (
-              <div className="profession-character-list">
-                {detail.characters.map(
-                  (coverage) => (
-                    <ProfessionCharacterCard
-                      coverage={
-                        coverage
-                      }
-                      key={
-                        coverage
-                          .characterProfessionId
-                      }
-                    />
-                  )
-                )}
-              </div>
-            )}
-          </section>
+          "slots" && (
+          <ProfessionCoverageMatrix
+            detail={detail}
+          />
         )}
       </div>
     </>

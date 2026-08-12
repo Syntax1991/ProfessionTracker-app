@@ -1,0 +1,112 @@
+.profession-crafter-recipe-groups {
+  display: grid;
+  gap: 12px;
+}
+
+.profession-crafter-recipe-group {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.profession-crafter-recipe-group-header {
+  padding: 11px 13px;
+  border-bottom:
+    1px solid var(--border);
+}
+
+.profession-crafter-recipe-group-header
+  > div {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.profession-crafter-recipe-group-header h3 {
+  margin: 0;
+  font-size: 0.76rem;
+}
+
+.profession-crafter-recipe-group-header span {
+  color: var(--text-muted);
+  font-size: 0.56rem;
+}
+
+.profession-crafter-recipe-table-header,
+.profession-crafter-recipe-row {
+  display: grid;
+  grid-template-columns:
+    minmax(240px, 1.6fr)
+    115px
+    minmax(210px, 1fr)
+    minmax(130px, 0.7fr);
+  gap: 12px;
+  align-items: center;
+}
+
+.profession-crafter-recipe-table-header {
+  min-height: 32px;
+  padding: 7px 13px;
+  border-bottom:
+    1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 0.55rem;
+  font-weight: 750;
+  text-transform: uppercase;
+}
+
+.profession-crafter-recipe-row {
+  min-height: 48px;
+  padding: 8px 13px;
+  border-bottom:
+    1px solid var(--border);
+}
+
+.profession-crafter-recipe-row:last-child {
+  border-bottom: 0;
+}
+
+.profession-crafter-recipe-row:hover {
+  background:
+    var(--surface-hover);
+}
+
+.profession-crafter-recipe-name {
+  min-width: 0;
+}
+
+.profession-crafter-recipe-name strong {
+  display: block;
+  overflow: hidden;
+  font-size: 0.68rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profession-crafter-materials {
+  color: #d8cbf6;
+  font-size: 0.63rem;
+  font-weight: 700;
+}
+
+.profession-crafter-result {
+  color: var(--text-secondary);
+  font-size: 0.61rem;
+}
+
+@media (max-width: 820px) {
+  .profession-crafter-recipe-table-header {
+    display: none;
+  }
+
+  .profession-crafter-recipe-row {
+    grid-template-columns:
+      minmax(0, 1fr)
+      auto;
+    gap: 7px 12px;
+  }
+
+  .profession-crafter-materials,
+  .profession-crafter-result {
+    grid-column: 1 / -1;
+  }
+}
