@@ -52,11 +52,40 @@ export type ProfessionRecipeReagentSimulationStatus =
   | "OPERATION_UNAVAILABLE"
   | "UNKNOWN";
 
+export type ProfessionRecipeQualityScenarioStatus =
+  | "CAPTURED"
+  | "PARTIAL"
+  | "NO_QUALITY_SLOTS"
+  | "TOO_MANY_COMBINATIONS"
+  | "INCOMPLETE_REAGENTS"
+  | "OPERATION_UNAVAILABLE"
+  | "UNKNOWN";
+
 export type ProfessionRecipeSimulationResult = {
   craftStatus:
     ProfessionRecipeCraftStatus;
   operation:
     ProfessionRecipeOperation;
+};
+
+export type ProfessionRecipeReagentSelection = {
+  slotIndex: number;
+  dataSlotIndex: number;
+  candidateIndex: number;
+  itemId: number | null;
+  currencyId: number | null;
+  quality: number | null;
+  quantity: number;
+};
+
+export type ProfessionRecipeQualityScenario = {
+  scenarioIndex: number;
+  qualityScore: number;
+  qualitySignature: string | null;
+  selections:
+    ProfessionRecipeReagentSelection[];
+  result:
+    ProfessionRecipeSimulationResult;
 };
 
 export type ProfessionRecipeReagentSimulation = {
@@ -73,10 +102,18 @@ export type ProfessionRecipeReagentSimulation = {
     ProfessionRecipeSimulationResult;
   highestQualityWithConcentration:
     ProfessionRecipeSimulationResult;
+  qualityScenarioStatus:
+    ProfessionRecipeQualityScenarioStatus;
+  qualityScenarioLimit: number;
+  qualityScenarioCombinationCount: number;
+  qualityScenarioCapturedCount: number;
+  qualityScenarios:
+    ProfessionRecipeQualityScenario[];
 };
 
 export type ProfessionRecipeRecommendationKind =
   | "LOW_MATS"
+  | "MINIMUM_MATS"
   | "HIGH_MATS"
   | "HIGH_MATS_CONCENTRATION"
   | "NOT_REACHABLE"
@@ -90,6 +127,8 @@ export type ProfessionRecipeCrafterRecommendation = {
   effectiveSkill: number | null;
   craftingQuality: number | null;
   concentrationCost: number | null;
+  selections:
+    ProfessionRecipeReagentSelection[];
 };
 
 export type ProfessionRecipeOperationCoverage = {

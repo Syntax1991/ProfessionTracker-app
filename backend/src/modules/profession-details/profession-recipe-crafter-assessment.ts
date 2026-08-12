@@ -1,6 +1,8 @@
 import type {
   ProfessionRecipeCrafterRecommendation,
   ProfessionRecipeCraftStatus,
+  ProfessionRecipeQualityScenario,
+  ProfessionRecipeReagentSelection,
   ProfessionRecipeReagentSimulation,
   ProfessionRecipeSimulationResult
 } from "./profession-recipe.types.js";
@@ -19,7 +21,9 @@ function createRecommendation(
     ProfessionRecipeCrafterRecommendation["kind"],
   result: ProfessionRecipeSimulationResult,
   concentrationCost:
-    number | null = null
+    number | null = null,
+  selections:
+    ProfessionRecipeReagentSelection[] = []
 ): ProfessionRecipeCrafterRecommendation {
   return {
     kind,
@@ -29,7 +33,8 @@ function createRecommendation(
       result.operation.effectiveSkill,
     craftingQuality:
       result.operation.craftingQuality,
-    concentrationCost
+    concentrationCost,
+    selections
   };
 }
 
@@ -40,8 +45,97 @@ function createUnknownRecommendation():
     craftStatus: "UNKNOWN",
     effectiveSkill: null,
     craftingQuality: null,
-    concentrationCost: null
+    concentrationCost: null,
+    selections: []
   };
+}
+
+function compareQualityScenarios(
+  left: ProfessionRecipeQualityScenario,
+  right: ProfessionRecipeQualityScenario
+): number {
+  return (
+    left.qualityScore -
+      right.qualityScore ||
+    (
+      left.qualitySignature ??
+      ""
+    ).localeCompare(
+      right.qualitySignature ??
+      ""
+    ) ||
+    left.scenarioIndex -
+      right.scenarioIndex
+  );
+}
+
+function getCapturedQualityScenarios(
+  simulation:
+    ProfessionRecipeReagentSimulation
+): ProfessionRecipeQualityScenario[] {
+  if (
+    simulation.qualityScenarioStatus !==
+      "CAPTURED" &&
+    simulation.qualityScenarioStatus !==
+      "PARTIAL"
+  ) {
+    return [];
+  }
+
+  return simulation.qualityScenarios
+    .filter(
+      (scenario) =>
+        isCaptured(
+          scenario.result
+        )
+    )
+    .sort(
+      compareQualityScenarios
+    );
+}
+
+function getMinimumSafeQualityScenario(
+  simulation:
+    ProfessionRecipeReagentSimulation
+): ProfessionRecipeQualityScenario | null {
+  return (
+    getCapturedQualityScenarios(
+      simulation
+    ).find(
+      (scenario) =>
+        scenario.result.craftStatus ===
+        "SAFE"
+    ) ??
+    null
+  );
+}
+
+function getMaximumQualityScore(
+  simulation:
+    ProfessionRecipeReagentSimulation
+): number | null {
+  const scenarios =
+    getCapturedQualityScenarios(
+      simulation
+    );
+
+  const [
+    firstScenario,
+    ...remainingScenarios
+  ] = scenarios;
+
+  if (!firstScenario) {
+    return null;
+  }
+
+  return remainingScenarios.reduce(
+    (maximum, scenario) =>
+      Math.max(
+        maximum,
+        scenario.qualityScore
+      ),
+    firstScenario.qualityScore
+  );
 }
 
 export function createProfessionRecipeCrafterRecommendation(
@@ -68,6 +162,30 @@ export function createProfessionRecipeCrafterRecommendation(
     );
   }
 
+  const minimumScenario =
+    getMinimumSafeQualityScenario(
+      simulation
+    );
+
+  const maximumQualityScore =
+    getMaximumQualityScore(
+      simulation
+    );
+
+  if (
+    minimumScenario &&
+    maximumQualityScore !== null &&
+    minimumScenario.qualityScore <
+      maximumQualityScore
+  ) {
+    return createRecommendation(
+      "MINIMUM_MATS",
+      minimumScenario.result,
+      null,
+      minimumScenario.selections
+    );
+  }
+
   const high =
     simulation.highestQuality;
 
@@ -78,6 +196,15 @@ export function createProfessionRecipeCrafterRecommendation(
     return createRecommendation(
       "HIGH_MATS",
       high
+    );
+  }
+
+  if (minimumScenario) {
+    return createRecommendation(
+      "MINIMUM_MATS",
+      minimumScenario.result,
+      null,
+      minimumScenario.selections
     );
   }
 
@@ -122,7 +249,8 @@ export function createProfessionRecipeCrafterRecommendation(
         high.operation.effectiveSkill,
       craftingQuality:
         high.operation.craftingQuality,
-      concentrationCost: null
+      concentrationCost: null,
+      selections: []
     };
   }
 
@@ -142,6 +270,7 @@ export function calculateProfessionRecipeCrafterCraftStatus(
 
   switch (recommendation.kind) {
     case "LOW_MATS":
+    case "MINIMUM_MATS":
     case "HIGH_MATS":
       return "SAFE";
 

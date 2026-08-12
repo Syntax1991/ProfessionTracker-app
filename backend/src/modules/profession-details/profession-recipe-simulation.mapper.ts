@@ -1,6 +1,9 @@
 import {
   calculateProfessionRecipeCraftStatus
 } from "./profession-recipe-craft-status.js";
+import {
+  mapProfessionRecipeQualityScenarioCapture
+} from "./profession-recipe-quality-scenario.mapper.js";
 import type {
   ProfessionRecipeOperation,
   ProfessionRecipeReagentSimulation,
@@ -14,21 +17,22 @@ type JsonRecord =
 function asRecord(
   value: unknown
 ): JsonRecord | null {
-  return (
-    typeof value === "object" &&
-    value !== null &&
-    !Array.isArray(value)
-  )
-    ? value as JsonRecord
-    : null;
+  if (
+    typeof value !== "object" ||
+    value === null ||
+    Array.isArray(value)
+  ) {
+    return null;
+  }
+
+  return value as JsonRecord;
 }
 
 function numberValue(
   record: JsonRecord,
   key: string
 ): number | null {
-  const value =
-    record[key];
+  const value = record[key];
 
   return (
     typeof value === "number" &&
@@ -43,10 +47,7 @@ function integerValue(
   key: string
 ): number | null {
   const value =
-    numberValue(
-      record,
-      key
-    );
+    numberValue(record, key);
 
   return (
     value !== null &&
@@ -61,10 +62,7 @@ function nonNegativeInteger(
   key: string
 ): number {
   const value =
-    integerValue(
-      record,
-      key
-    );
+    integerValue(record, key);
 
   return (
     value !== null &&
@@ -89,117 +87,6 @@ function simulationStatus(
   }
 }
 
-function mapSimulationOperation(
-  value: unknown
-): ProfessionRecipeOperation {
-  const metrics =
-    asRecord(
-      value
-    );
-
-  const captured =
-    metrics !== null &&
-    Object.keys(
-      metrics
-    ).length > 0;
-
-  if (!metrics) {
-    return createMissingOperation();
-  }
-
-  const baseSkill =
-    integerValue(
-      metrics,
-      "baseSkill"
-    );
-
-  const bonusSkill =
-    integerValue(
-      metrics,
-      "bonusSkill"
-    );
-
-  return {
-    status:
-      captured
-        ? "CAPTURED"
-        : "MISSING",
-
-    baseSkill,
-
-    bonusSkill,
-
-    effectiveSkill:
-      baseSkill !== null &&
-      bonusSkill !== null
-        ? baseSkill +
-          bonusSkill
-        : null,
-
-    craftingQuality:
-      integerValue(
-        metrics,
-        "craftingQuality"
-      ),
-
-    craftingQualityId:
-      integerValue(
-        metrics,
-        "craftingQualityID"
-      ),
-
-    guaranteedCraftingQualityId:
-      integerValue(
-        metrics,
-        "guaranteedCraftingQualityID"
-      ),
-
-    lowerSkillThreshold:
-      integerValue(
-        metrics,
-        "lowerSkillThreshold"
-      ),
-
-    upperSkillThreshold:
-      integerValue(
-        metrics,
-        "upperSkillTreshold"
-      ) ??
-      integerValue(
-        metrics,
-        "upperSkillThreshold"
-      ),
-
-    concentrationCost:
-      integerValue(
-        metrics,
-        "concentrationCost"
-      ),
-
-    concentrationCurrencyId:
-      integerValue(
-        metrics,
-        "concentrationCurrencyID"
-      ),
-
-    ingenuityRefund:
-      integerValue(
-        metrics,
-        "ingenuityRefund"
-      ),
-
-    quality:
-      numberValue(
-        metrics,
-        "quality"
-      ),
-
-    capturedAt: null,
-    captureVersion: null,
-    scopeVersion: null
-  };
-}
-
 function createMissingOperation():
   ProfessionRecipeOperation {
   return {
@@ -222,14 +109,98 @@ function createMissingOperation():
   };
 }
 
+function mapSimulationOperation(
+  value: unknown
+): ProfessionRecipeOperation {
+  const metrics =
+    asRecord(value);
+
+  if (!metrics) {
+    return createMissingOperation();
+  }
+
+  const captured =
+    Object.keys(metrics).length > 0;
+
+  const baseSkill =
+    integerValue(metrics, "baseSkill");
+
+  const bonusSkill =
+    integerValue(metrics, "bonusSkill");
+
+  return {
+    status:
+      captured
+        ? "CAPTURED"
+        : "MISSING",
+    baseSkill,
+    bonusSkill,
+    effectiveSkill:
+      baseSkill !== null &&
+      bonusSkill !== null
+        ? baseSkill + bonusSkill
+        : null,
+    craftingQuality:
+      integerValue(
+        metrics,
+        "craftingQuality"
+      ),
+    craftingQualityId:
+      integerValue(
+        metrics,
+        "craftingQualityID"
+      ),
+    guaranteedCraftingQualityId:
+      integerValue(
+        metrics,
+        "guaranteedCraftingQualityID"
+      ),
+    lowerSkillThreshold:
+      integerValue(
+        metrics,
+        "lowerSkillThreshold"
+      ),
+    upperSkillThreshold:
+      integerValue(
+        metrics,
+        "upperSkillTreshold"
+      ) ??
+      integerValue(
+        metrics,
+        "upperSkillThreshold"
+      ),
+    concentrationCost:
+      integerValue(
+        metrics,
+        "concentrationCost"
+      ),
+    concentrationCurrencyId:
+      integerValue(
+        metrics,
+        "concentrationCurrencyID"
+      ),
+    ingenuityRefund:
+      integerValue(
+        metrics,
+        "ingenuityRefund"
+      ),
+    quality:
+      numberValue(
+        metrics,
+        "quality"
+      ),
+    capturedAt: null,
+    captureVersion: null,
+    scopeVersion: null
+  };
+}
+
 function mapSimulationResult(
   baseDifficulty: number | null,
   value: unknown
 ): ProfessionRecipeSimulationResult {
   const operation =
-    mapSimulationOperation(
-      value
-    );
+    mapSimulationOperation(value);
 
   return {
     craftStatus:
@@ -237,7 +208,6 @@ function mapSimulationResult(
         baseDifficulty,
         operation
       ),
-
     operation
   };
 }
@@ -253,18 +223,13 @@ export function mapProfessionRecipeReagentSimulation(
   let rawValue: unknown;
 
   try {
-    rawValue =
-      JSON.parse(
-        json
-      );
+    rawValue = JSON.parse(json);
   } catch {
     return null;
   }
 
   const raw =
-    asRecord(
-      rawValue
-    );
+    asRecord(rawValue);
 
   if (!raw) {
     return null;
@@ -283,52 +248,52 @@ export function mapProfessionRecipeReagentSimulation(
     return null;
   }
 
+  const qualityScenarioCapture =
+    mapProfessionRecipeQualityScenarioCapture(
+      raw,
+      (value) =>
+        mapSimulationResult(
+          baseDifficulty,
+          value
+        )
+    );
+
   return {
     status:
-      simulationStatus(
-        raw.status
-      ),
-
+      simulationStatus(raw.status),
     captureVersion,
-
     requiredModifiedSlotCount:
       nonNegativeInteger(
         raw,
         "requiredModifiedSlotCount"
       ),
-
     simulatedSlotCount:
       nonNegativeInteger(
         raw,
         "simulatedSlotCount"
       ),
-
     qualitySlotCount:
       nonNegativeInteger(
         raw,
         "qualitySlotCount"
       ),
-
     concentrationCaptured:
-      raw.concentrationCaptured ===
-      true,
-
+      raw.concentrationCaptured === true,
     lowestQuality:
       mapSimulationResult(
         baseDifficulty,
         raw.lowestQualityOperation
       ),
-
     highestQuality:
       mapSimulationResult(
         baseDifficulty,
         raw.highestQualityOperation
       ),
-
     highestQualityWithConcentration:
       mapSimulationResult(
         baseDifficulty,
         raw.highestQualityConcentrationOperation
-      )
+      ),
+    ...qualityScenarioCapture
   };
 }
