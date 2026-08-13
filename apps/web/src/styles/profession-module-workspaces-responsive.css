@@ -1,0 +1,67 @@
+@media (max-width: 1180px) {
+  .profession-module-scope,
+  .profession-character-scope {
+    grid-template-columns:
+      minmax(200px, 1fr)
+      minmax(220px, 1fr);
+  }
+
+  .profession-module-scope-stats {
+    justify-content: flex-start;
+  }
+
+  .profession-knowledge-row {
+    grid-template-columns:
+      auto
+      minmax(150px, 1fr)
+      minmax(170px, 1.2fr)
+      auto;
+  }
+
+  .profession-module-row-link {
+    grid-column: 2 / -1;
+    justify-self: start;
+  }
+}
+
+@media (max-width: 760px) {
+  .profession-module-scope,
+  .profession-character-scope {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .profession-module-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .profession-knowledge-row {
+    grid-template-columns:
+      auto
+      minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .profession-knowledge-progress,
+  .profession-knowledge-stats,
+  .profession-module-row-link {
+    grid-column: 2;
+  }
+
+  .profession-knowledge-stats {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 460px) {
+  .profession-module-scope-stats {
+    width: 100%;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .profession-module-scope-copy {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

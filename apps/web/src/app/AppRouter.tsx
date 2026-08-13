@@ -8,6 +8,10 @@ import { DashboardPage } from "../../../../modules/my-syntrack/web/dashboard/pag
 import { AddonImportPage } from "../../../../modules/data-platform/web/integrations/pages/AddonImportPage";
 import { BattleNetPage } from "../../../../modules/data-platform/web/integrations/pages/BattleNetPage";
 import { ProfessionDetailPage } from "../../../../modules/professions/web/details/pages/ProfessionDetailPage";
+import { ProfessionCrafterFinderPage } from "../../../../modules/professions/web/pages/ProfessionCrafterFinderPage";
+import { ProfessionKnowledgePage } from "../../../../modules/professions/web/pages/ProfessionKnowledgePage";
+import { ProfessionRecipeWorkspacePage } from "../../../../modules/professions/web/pages/ProfessionRecipeWorkspacePage";
+import { ProfessionSpecializationsPage } from "../../../../modules/professions/web/pages/ProfessionSpecializationsPage";
 import { ProfessionsPage } from "../../../../modules/professions/web/pages/ProfessionsPage";
 import { CharacterSpecializationsPage } from "../../../../modules/professions/web/specializations/pages/CharacterSpecializationsPage";
 import { AppLayout } from "../shared/layouts/AppLayout";
@@ -48,6 +52,55 @@ export function AppRouter() {
           path="professions"
           element={
             <ProfessionsPage />
+          }
+        />
+
+        <Route
+          path="professions/crafters"
+          element={
+            <ProfessionCrafterFinderPage />
+          }
+        />
+
+        <Route
+          path="professions/recipes"
+          element={
+            <ProfessionRecipeWorkspacePage mode="catalog" />
+          }
+        />
+
+        <Route
+          path="professions/knowledge"
+          element={
+            <ProfessionKnowledgePage />
+          }
+        />
+
+        <Route
+          path="professions/specializations"
+          element={
+            <ProfessionSpecializationsPage />
+          }
+        />
+
+        <Route
+          path="professions/material-quality"
+          element={
+            <ProfessionRecipeWorkspacePage mode="material-quality" />
+          }
+        />
+
+        <Route
+          path="professions/concentration"
+          element={
+            <ProfessionRecipeWorkspacePage mode="concentration" />
+          }
+        />
+
+        <Route
+          path="professions/recommendations"
+          element={
+            <ProfessionRecipeWorkspacePage mode="recommendations" />
           }
         />
 

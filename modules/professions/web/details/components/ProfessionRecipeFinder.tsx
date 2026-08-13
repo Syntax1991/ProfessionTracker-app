@@ -11,9 +11,14 @@ import {
 import {
   useProfessionRecipes
 } from "../hooks/useProfessionRecipes";
+import {
+  getRecipeFinderCopy,
+  matchesRecipeFilters,
+  matchesRecipeFinderMode
+} from "../utils/professionRecipeFinder.config";
 import type {
-  ProfessionRecipeCatalogItem
-} from "../types/professionRecipe.types";
+  ProfessionRecipeFinderMode
+} from "../utils/professionRecipeFinder.config";
 import {
   ProfessionRecipeDetailPanel
 } from "./ProfessionRecipeDetailPanel";
@@ -23,10 +28,12 @@ import {
 
 type ProfessionRecipeFinderProps = {
   professionId: string;
+  mode?: ProfessionRecipeFinderMode;
 };
 
 export function ProfessionRecipeFinder({
-  professionId
+  professionId,
+  mode = "catalog"
 }: ProfessionRecipeFinderProps) {
   const {
     catalog,
@@ -63,16 +70,76 @@ export function ProfessionRecipeFinder({
       null
     );
 
+  const copy =
+    getRecipeFinderCopy(mode);
+
+  const scopedRecipes =
+    useMemo(
+      () =>
+        catalog?.items.filter(
+          (recipe) =>
+            matchesRecipeFinderMode(
+              recipe,
+              mode
+            )
+        ) ?? [],
+      [
+        catalog,
+        mode
+      ]
+    );
+
+  const scopedSummary =
+    useMemo(
+      () => {
+        const craftableCount =
+          scopedRecipes.filter(
+            (recipe) =>
+              recipe.crafters.length > 0
+          ).length;
+
+        const operationTotals =
+          scopedRecipes.reduce(
+            (totals, recipe) => ({
+              captured:
+                totals.captured +
+                recipe.operationCoverage
+                  .capturedCrafterCount,
+              total:
+                totals.total +
+                recipe.operationCoverage
+                  .totalCrafterCount
+            }),
+            {
+              captured: 0,
+              total: 0
+            }
+          );
+
+        return {
+          craftableCount,
+          missingCount:
+            scopedRecipes.length -
+            craftableCount,
+          operationCoveragePercent:
+            operationTotals.total > 0
+              ? Math.round(
+                  operationTotals.captured /
+                    operationTotals.total *
+                    100
+                )
+              : 0
+        };
+      },
+      [scopedRecipes]
+    );
+
   const filteredRecipes =
     useMemo(
       () => {
-        if (!catalog) {
-          return [];
-        }
-
-        return catalog.items.filter(
+        return scopedRecipes.filter(
           (recipe) =>
-            matchesFilters(
+            matchesRecipeFilters(
               recipe,
               query,
               onlyCraftable
@@ -80,7 +147,7 @@ export function ProfessionRecipeFinder({
         );
       },
       [
-        catalog,
+        scopedRecipes,
         query,
         onlyCraftable
       ]
@@ -100,19 +167,16 @@ export function ProfessionRecipeFinder({
       <div className="profession-detail-section-heading">
         <div>
           <p className="eyebrow">
-            RECIPES
+            {copy.eyebrow}
           </p>
 
           <h2>
-            Craft Catalog
+            {copy.title}
           </h2>
         </div>
 
         <p>
-          Browse the compact recipe
-          list on the left and inspect
-          the selected recipe on the
-          right.
+          {copy.description}
         </p>
       </div>
 
@@ -130,14 +194,11 @@ export function ProfessionRecipeFinder({
             <div className="profession-recipe-summary">
               <div>
                 <span>
-                  Catalog
+                  {copy.metricLabel}
                 </span>
 
                 <strong>
-                  {
-                    catalog.summary
-                      .catalogRecipeCount
-                  }
+                  {scopedRecipes.length}
                 </strong>
               </div>
 
@@ -147,10 +208,7 @@ export function ProfessionRecipeFinder({
                 </span>
 
                 <strong>
-                  {
-                    catalog.summary
-                      .craftableRecipeCount
-                  }
+                  {scopedSummary.craftableCount}
                 </strong>
               </div>
 
@@ -160,10 +218,7 @@ export function ProfessionRecipeFinder({
                 </span>
 
                 <strong>
-                  {
-                    catalog.summary
-                      .missingRecipeCount
-                  }
+                  {scopedSummary.missingCount}
                 </strong>
               </div>
 
@@ -174,7 +229,7 @@ export function ProfessionRecipeFinder({
 
                 <strong>
                   {
-                    catalog.summary
+                    scopedSummary
                       .operationCoveragePercent
                   }
                   {"%"}
@@ -241,8 +296,7 @@ export function ProfessionRecipeFinder({
           0 ? (
             <section className="panel">
               <div className="empty-state">
-                No recipes match this
-                filter.
+                {copy.emptyMessage}
               </div>
             </section>
           ) : (
@@ -272,59 +326,5 @@ export function ProfessionRecipeFinder({
         </>
       ) : null}
     </section>
-  );
-}
-
-function matchesFilters(
-  recipe:
-    ProfessionRecipeCatalogItem,
-  query: string,
-  onlyCraftable: boolean
-): boolean {
-  if (
-    onlyCraftable &&
-    recipe.crafters.length ===
-      0
-  ) {
-    return false;
-  }
-
-  const normalizedQuery =
-    query
-      .trim()
-      .toLocaleLowerCase(
-        "en"
-      );
-
-  if (!normalizedQuery) {
-    return true;
-  }
-
-  const searchableValues = [
-    recipe.name,
-    recipe.expansion,
-    ...recipe.capabilities.map(
-      (capability) =>
-        capability.name
-    ),
-    ...recipe.crafters.map(
-      (crafter) =>
-        crafter.name
-    ),
-    ...recipe.crafters.map(
-      (crafter) =>
-        crafter.realm
-    )
-  ];
-
-  return searchableValues.some(
-    (value) =>
-      value
-        .toLocaleLowerCase(
-          "en"
-        )
-        .includes(
-          normalizedQuery
-        )
   );
 }

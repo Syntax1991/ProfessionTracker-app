@@ -14,6 +14,8 @@ import "./styles/battlenet-top-action.css";
 import "./styles/character-detail-summary.css";
 import "./styles/character-detail-coverage.css";
 import "./styles/profession-overview.css";
+import "./styles/profession-module-workspaces.css";
+import "./styles/profession-module-workspaces-responsive.css";
 import "./styles/profession-character-details.css";
 import "./styles/profession-detail-coverage.css";
 import "./styles/profession-detail-tabs.css";

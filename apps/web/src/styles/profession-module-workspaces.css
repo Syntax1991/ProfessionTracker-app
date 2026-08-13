@@ -1,0 +1,298 @@
+.profession-module-scope,
+.profession-character-scope {
+  display: grid;
+  align-items: center;
+  gap: 20px;
+  margin-top: 26px;
+  padding: 18px 20px;
+}
+
+.profession-module-scope {
+  grid-template-columns:
+    minmax(210px, 0.75fr)
+    minmax(220px, 1fr)
+    auto;
+}
+
+.profession-character-scope {
+  grid-template-columns:
+    minmax(220px, 0.8fr)
+    auto
+    minmax(180px, 1fr)
+    auto;
+}
+
+.profession-module-select {
+  min-width: 0;
+  display: grid;
+  gap: 7px;
+}
+
+.profession-module-select > span {
+  color: var(--text-muted);
+  font-size: 0.61rem;
+  font-weight: 760;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.profession-module-select select {
+  width: 100%;
+  min-height: 42px;
+  padding: 9px 34px 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  color: var(--text);
+  background: var(--surface-elevated);
+  font-size: 0.75rem;
+  font-weight: 690;
+}
+
+.profession-module-scope-copy,
+.profession-character-scope-copy {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.profession-module-scope-copy > div,
+.profession-character-scope-copy {
+  min-width: 0;
+}
+
+.profession-module-scope-copy strong,
+.profession-module-scope-copy span,
+.profession-character-scope-copy strong,
+.profession-character-scope-copy span {
+  display: block;
+}
+
+.profession-module-scope-copy strong,
+.profession-character-scope-copy strong {
+  overflow: hidden;
+  color: var(--text);
+  font-size: 0.8rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profession-module-scope-copy div > span,
+.profession-character-scope-copy > span {
+  margin-top: 4px;
+  color: var(--text-muted);
+  font-size: 0.64rem;
+}
+
+.profession-module-capture {
+  flex: 0 0 auto;
+  padding: 4px 7px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text-muted);
+  background: rgb(255 255 255 / 2%);
+  font-size: 0.53rem;
+  font-weight: 760;
+  text-transform: uppercase;
+}
+
+.profession-module-capture.captured {
+  color: #9ee2c1;
+  border-color: rgb(71 213 151 / 20%);
+  background: rgb(71 213 151 / 7%);
+}
+
+.profession-module-scope-stats {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+.profession-module-scope-stats.compact {
+  gap: 18px;
+}
+
+.profession-module-scope-stats > div {
+  display: grid;
+  gap: 3px;
+}
+
+.profession-module-scope-stats dt {
+  color: var(--text-muted);
+  font-size: 0.56rem;
+  font-weight: 650;
+}
+
+.profession-module-scope-stats dd {
+  color: var(--text);
+  font-size: 0.9rem;
+  font-weight: 780;
+}
+
+.profession-crafter-workspace,
+.profession-recipe-finder-section,
+.profession-specialization-workspace {
+  margin-top: 22px;
+}
+
+.profession-specialization-workspace {
+  display: grid;
+  gap: 16px;
+}
+
+.profession-module-summary-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.profession-module-summary-grid > article {
+  display: grid;
+  gap: 7px;
+  padding: 18px 20px;
+}
+
+.profession-module-summary-grid span,
+.profession-module-summary-grid small {
+  color: var(--text-muted);
+  font-size: 0.61rem;
+}
+
+.profession-module-summary-grid strong {
+  color: var(--text);
+  font-size: 1.45rem;
+  letter-spacing: -0.03em;
+}
+
+.profession-knowledge-workspace {
+  display: grid;
+  gap: 16px;
+  margin-top: 22px;
+}
+
+.profession-knowledge-panel {
+  overflow: hidden;
+}
+
+.profession-module-result-count {
+  color: var(--text-muted);
+  font-size: 0.64rem;
+}
+
+.profession-knowledge-list {
+  display: grid;
+}
+
+.profession-knowledge-row {
+  display: grid;
+  grid-template-columns:
+    auto
+    minmax(145px, 0.8fr)
+    minmax(170px, 1.2fr)
+    auto
+    auto;
+  align-items: center;
+  gap: 18px;
+  padding: 14px 20px;
+  border-top: 1px solid var(--border);
+}
+
+.profession-module-avatar {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid rgb(155 116 230 / 18%);
+  border-radius: 10px;
+  color: #d8c7f7;
+  background: rgb(126 82 208 / 10%);
+  font-size: 0.65rem;
+  font-weight: 820;
+}
+
+.profession-module-avatar.large {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  font-size: 0.7rem;
+}
+
+.profession-knowledge-identity,
+.profession-knowledge-progress {
+  min-width: 0;
+  display: grid;
+  gap: 5px;
+}
+
+.profession-knowledge-identity strong {
+  overflow: hidden;
+  color: var(--text);
+  font-size: 0.73rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profession-knowledge-identity span,
+.profession-knowledge-progress > span:first-child {
+  color: var(--text-muted);
+  font-size: 0.6rem;
+}
+
+.profession-knowledge-progress > span:last-child {
+  height: 4px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 5%);
+}
+
+.profession-knowledge-progress i {
+  height: 100%;
+  display: block;
+  border-radius: inherit;
+  background: #8c65d8;
+}
+
+.profession-knowledge-stats {
+  display: flex;
+  gap: 16px;
+}
+
+.profession-knowledge-stats > div {
+  min-width: 48px;
+  display: grid;
+  gap: 3px;
+  text-align: center;
+}
+
+.profession-knowledge-stats dt {
+  color: var(--text-muted);
+  font-size: 0.52rem;
+}
+
+.profession-knowledge-stats dd {
+  color: var(--text-secondary);
+  font-size: 0.69rem;
+  font-weight: 750;
+}
+
+.profession-module-row-link {
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-secondary);
+  background: rgb(255 255 255 / 2%);
+  font-size: 0.6rem;
+  font-weight: 700;
+}
+
+.profession-module-row-link:hover {
+  color: var(--text);
+  border-color: #4a405f;
+  background: var(--primary-soft);
+}

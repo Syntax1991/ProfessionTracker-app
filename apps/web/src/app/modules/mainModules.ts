@@ -188,35 +188,43 @@ export const mainModules:
         {
           label: "Overview",
           path: "/professions",
-          status: "available"
+          status: "available",
+          end: true
         },
         {
           label: "Crafter Finder",
-          status: "planned"
+          path: "/professions/crafters",
+          status: "available"
         },
         {
           label: "Recipes",
-          status: "planned"
+          path: "/professions/recipes",
+          status: "available"
         },
         {
           label: "Knowledge",
-          status: "planned"
+          path: "/professions/knowledge",
+          status: "available"
         },
         {
           label: "Specializations",
-          status: "planned"
+          path: "/professions/specializations",
+          status: "available"
         },
         {
           label: "Material Quality",
-          status: "planned"
+          path: "/professions/material-quality",
+          status: "available"
         },
         {
           label: "Concentration",
-          status: "planned"
+          path: "/professions/concentration",
+          status: "available"
         },
         {
           label: "Craft Recommendations",
-          status: "planned"
+          path: "/professions/recommendations",
+          status: "available"
         }
       ]
     },
