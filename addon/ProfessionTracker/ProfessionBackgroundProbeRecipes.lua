@@ -25,6 +25,35 @@ local function getRecipeInfo(
     return recipeInfo
 end
 
+local function getAbilityRecipeInfo(
+    skillLineAbilityID
+)
+    if not skillLineAbilityID
+        or skillLineAbilityID == 0
+        or not C_TradeSkillUI
+        or not C_TradeSkillUI
+            .GetRecipeInfoForSkillLineAbility
+    then
+        return nil
+    end
+
+    local success,
+        recipeInfo =
+        pcall(
+            C_TradeSkillUI
+                .GetRecipeInfoForSkillLineAbility,
+            skillLineAbilityID
+        )
+
+    if not success
+        or type(recipeInfo) ~= "table"
+    then
+        return nil
+    end
+
+    return recipeInfo
+end
+
 function PT.GetBackgroundProbeRecipeCatalog(
     skillLineID
 )
@@ -118,14 +147,44 @@ function PT.BackgroundProbeLearnedSetsMatch(
     return true
 end
 
+local function addLearnedRecipe(
+    result,
+    field,
+    recipeID,
+    recipeInfo
+)
+    if recipeInfo
+        and recipeInfo.learned == true
+    then
+        result[field] =
+            result[field] + 1
+
+        local idField =
+            field == "directLearned"
+            and "directLearnedRecipeIDs"
+            or "abilityLearnedRecipeIDs"
+
+        table.insert(
+            result[idField],
+            recipeID
+        )
+    end
+end
+
 function PT.ProbeBackgroundRecipeInfo(
     catalog
 )
     local result = {
         total = 0,
+
         resolved = 0,
-        learned = 0,
-        learnedRecipeIDs = {}
+        directLearned = 0,
+        directLearnedRecipeIDs = {},
+
+        abilityEligible = 0,
+        abilityResolved = 0,
+        abilityLearned = 0,
+        abilityLearnedRecipeIDs = {}
     }
 
     for _, recipe in ipairs(
@@ -140,22 +199,46 @@ function PT.ProbeBackgroundRecipeInfo(
             result.total =
                 result.total + 1
 
-            local recipeInfo =
+            local directInfo =
                 getRecipeInfo(
                     recipeID
                 )
 
-            if recipeInfo then
+            if directInfo then
                 result.resolved =
                     result.resolved + 1
 
-                if recipeInfo.learned == true then
-                    result.learned =
-                        result.learned + 1
+                addLearnedRecipe(
+                    result,
+                    "directLearned",
+                    recipeID,
+                    directInfo
+                )
+            end
 
-                    table.insert(
-                        result.learnedRecipeIDs,
-                        recipeID
+            local abilityID =
+                recipe.skillLineAbilityId
+
+            if abilityID
+                and abilityID ~= 0
+            then
+                result.abilityEligible =
+                    result.abilityEligible + 1
+
+                local abilityInfo =
+                    getAbilityRecipeInfo(
+                        abilityID
+                    )
+
+                if abilityInfo then
+                    result.abilityResolved =
+                        result.abilityResolved + 1
+
+                    addLearnedRecipe(
+                        result,
+                        "abilityLearned",
+                        recipeID,
+                        abilityInfo
                     )
                 end
             end
@@ -163,8 +246,19 @@ function PT.ProbeBackgroundRecipeInfo(
     end
 
     table.sort(
-        result.learnedRecipeIDs
+        result.directLearnedRecipeIDs
     )
+
+    table.sort(
+        result.abilityLearnedRecipeIDs
+    )
+
+    -- Keep the original fields for the existing headless probe.
+    result.learned =
+        result.directLearned
+
+    result.learnedRecipeIDs =
+        result.directLearnedRecipeIDs
 
     return result
 end

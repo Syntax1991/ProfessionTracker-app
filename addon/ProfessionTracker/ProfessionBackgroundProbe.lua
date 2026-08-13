@@ -1,5 +1,24 @@
 local _, PT = ...
 
+local function selectLearnedRecipeIDs(
+    recipeProbe
+)
+    local abilityComplete =
+        recipeProbe.abilityEligible > 0
+        and recipeProbe.abilityResolved
+            == recipeProbe.abilityEligible
+
+    if abilityComplete then
+        return recipeProbe
+                .abilityLearnedRecipeIDs,
+            "ABILITY"
+    end
+
+    return recipeProbe
+            .directLearnedRecipeIDs,
+        "DIRECT"
+end
+
 local function createProfessionResult(
     profession
 )
@@ -55,10 +74,16 @@ local function createProfessionResult(
             expansion
         )
 
+    local learnedRecipeIDs,
+        learnedSource =
+        selectLearnedRecipeIDs(
+            recipeProbe
+        )
+
     local operationProbe =
         PT.ProbeBackgroundOperations(
             catalog,
-            recipeProbe.learnedRecipeIDs
+            learnedRecipeIDs
         )
 
     result.state =
@@ -70,8 +95,23 @@ local function createProfessionResult(
     result.recipeResolved =
         recipeProbe.resolved
 
+    result.directLearned =
+        recipeProbe.directLearned
+
+    result.abilityEligible =
+        recipeProbe.abilityEligible
+
+    result.abilityResolved =
+        recipeProbe.abilityResolved
+
+    result.abilityLearned =
+        recipeProbe.abilityLearned
+
+    result.learnedSource =
+        learnedSource
+
     result.learnedDetected =
-        recipeProbe.learned
+        #learnedRecipeIDs
 
     result.learnedStored =
         storedRecipeIDs
@@ -81,7 +121,7 @@ local function createProfessionResult(
     result.learnedSetsMatch =
         PT.BackgroundProbeLearnedSetsMatch(
             storedRecipeIDs,
-            recipeProbe.learnedRecipeIDs
+            learnedRecipeIDs
         )
 
     result.operationAttempted =
@@ -143,7 +183,7 @@ function PT.RunBackgroundProfessionProbe()
 
         if openContext then
             PT.Print(
-                "Background-Probe abgebrochen: Bitte zuerst das Profession-Fenster schließen."
+                "Context-Free-Probe abgebrochen: Bitte reloggen und vorher keinen Beruf öffnen."
             )
 
             return nil
@@ -157,7 +197,7 @@ function PT.RunBackgroundProfessionProbe()
         or type(character.professions) ~= "table"
     then
         PT.Print(
-            "Background-Probe: Für den aktuellen Charakter wurde noch kein Snapshot gefunden."
+            "Context-Free-Probe: Kein Snapshot für den aktuellen Charakter gefunden."
         )
 
         return nil
@@ -166,7 +206,7 @@ function PT.RunBackgroundProfessionProbe()
     local results = {}
 
     PT.Print(
-        "Background-Probe gestartet · Profession-Fenster ist geschlossen."
+        "Context-Free-Probe gestartet · kein TradeSkill-Kontext geladen."
     )
 
     for _, profession in ipairs(
@@ -193,7 +233,7 @@ function PT.RunBackgroundProfessionProbe()
 
     if #results == 0 then
         PT.Print(
-            "Background-Probe: Keine unterstützte Crafting-Profession gefunden."
+            "Context-Free-Probe: Keine unterstützte Crafting-Profession gefunden."
         )
 
         return results

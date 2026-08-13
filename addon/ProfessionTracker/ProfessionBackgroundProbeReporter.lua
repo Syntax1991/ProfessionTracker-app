@@ -31,11 +31,17 @@ function PT.PrintBackgroundProbeProfessionResult(
 
     PT.Print(
         string.format(
-            "%s · RecipeInfo %d/%d · learned %d/%s %s · operations %d/%d · simulations %d/%d",
+            "%s · RecipeInfo %d/%d directLearned=%d · Ability %d/%d learned=%d/%s %s · source=%s · operations %d/%d · simulations %d/%d",
             result.professionName,
             result.recipeResolved
                 or 0,
             result.recipeTotal
+                or 0,
+            result.directLearned
+                or 0,
+            result.abilityResolved
+                or 0,
+            result.abilityEligible
                 or 0,
             result.learnedDetected
                 or 0,
@@ -47,6 +53,8 @@ function PT.PrintBackgroundProbeProfessionResult(
             formatMatch(
                 result.learnedSetsMatch
             ),
+            result.learnedSource
+                or "NONE",
             result.operationResolved
                 or 0,
             result.operationAttempted
@@ -63,9 +71,9 @@ local function collectSummary(
     results
 )
     local summary = {
-        hasRecipeProbe = false,
-        allRecipeReadsComplete = true,
-        allLearnedSetsMatch = true,
+        hasProbe = false,
+        abilityComplete = true,
+        learnedReady = true,
         operationAttempted = 0,
         operationResolved = 0,
         simulationAttempted = 0,
@@ -75,20 +83,32 @@ local function collectSummary(
     for _, result in ipairs(
         results
     ) do
-        if result.state == "PROBED" then
-            summary.hasRecipeProbe = true
+        if result.state ~= "PROBED" then
+            summary.abilityComplete =
+                false
 
-            if result.recipeResolved
-                ~= result.recipeTotal
+            summary.learnedReady =
+                false
+        else
+            summary.hasProbe = true
+
+            if result.learnedSource ~= "ABILITY"
+                or result.abilityEligible <= 0
+                or result.abilityResolved
+                    ~= result.abilityEligible
             then
-                summary.allRecipeReadsComplete =
+                summary.abilityComplete =
                     false
             end
 
             if result.learnedSetsMatch
                 ~= true
+                or (
+                    result.learnedDetected
+                    or 0
+                ) <= 0
             then
-                summary.allLearnedSetsMatch =
+                summary.learnedReady =
                     false
             end
 
@@ -119,16 +139,18 @@ local function collectSummary(
                     result.simulationResolved
                     or 0
                 )
-        else
-            summary.allRecipeReadsComplete =
-                false
-
-            summary.allLearnedSetsMatch =
-                false
         end
     end
 
     return summary
+end
+
+local function readyLabel(
+    value
+)
+    return value
+        and "READY"
+        or "NOT_READY"
 end
 
 function PT.PrintBackgroundProbeSummary(
@@ -139,33 +161,56 @@ function PT.PrintBackgroundProbeSummary(
             results
         )
 
-    local recipeReady =
-        summary.hasRecipeProbe
-        and summary.allRecipeReadsComplete
-        and summary.allLearnedSetsMatch
+    local recipesReady =
+        summary.hasProbe
+        and summary.abilityComplete
+        and summary.learnedReady
+
+    local operationsReady =
+        summary.operationAttempted > 0
+        and summary.operationResolved
+            == summary.operationAttempted
+
+    local simulationsReady =
+        summary.simulationAttempted > 0
+        and summary.simulationResolved
+            == summary.simulationAttempted
+
+    local contextFreeReady =
+        recipesReady
+        and operationsReady
+        and simulationsReady
 
     PT.Print(
         string.format(
-            "Background-Probe Ergebnis · Recipes=%s · Operations=%d/%d · Simulations=%d/%d",
-            recipeReady
-                and "READY"
-                or "NOT_READY",
+            "Context-Free-Probe Ergebnis · Recipes=%s · Operations=%s %d/%d · Simulations=%s %d/%d",
+            readyLabel(
+                recipesReady
+            ),
+            readyLabel(
+                operationsReady
+            ),
             summary.operationResolved,
             summary.operationAttempted,
+            readyLabel(
+                simulationsReady
+            ),
             summary.simulationResolved,
             summary.simulationAttempted
         )
     )
 
-    if recipeReady then
+    if contextFreeReady then
         PT.Print(
-            "Recipe-Background-Sync kann auf Basis des gespeicherten Katalogs umgesetzt werden."
+            "Context-Free-Capture ist technisch bereit: kein OpenTradeSkill und kein Profession-Fenster erforderlich."
         )
 
-        return
+        return true
     end
 
     PT.Print(
-        "Recipe-Background-Sync wird noch nicht aktiviert; bestehende Captures bleiben unverändert."
+        "Context-Free-Capture wird noch nicht aktiviert."
     )
+
+    return false
 end

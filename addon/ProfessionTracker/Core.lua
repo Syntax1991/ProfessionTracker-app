@@ -1,7 +1,7 @@
 local addonName, PT = ...
 
 PT.ADDON_NAME = addonName
-PT.ADDON_VERSION = "0.7.4"
+PT.ADDON_VERSION = "0.7.5"
 PT.SCHEMA_VERSION = 10
 PT.STORAGE_SCOPE_VERSION = 1
 
