@@ -5,6 +5,7 @@ import "./styles/tokens.css";
 import "./styles/base.css";
 import "./styles/layout.css";
 import "./styles/components.css";
+import "./styles/module-navigation.css";
 import "./styles/integration.css";
 import "./styles/addon-integration.css";
 import "./styles/battlenet-characters.css";

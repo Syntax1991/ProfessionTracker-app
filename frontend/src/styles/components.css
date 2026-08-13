@@ -39,11 +39,6 @@
   font-size: 0.75rem;
 }
 
-.main-navigation {
-  display: grid;
-  gap: 6px;
-}
-
 .navigation-item {
   display: flex;
   align-items: center;

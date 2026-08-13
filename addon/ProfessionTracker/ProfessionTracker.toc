@@ -4,7 +4,7 @@
 ## Author: Syntax1991
 ## Version: 0.8.2
 ## SavedVariables: ProfessionTrackerDB
-## X-Website: https://github.com/Syntax1991/ProfessionTracker-app
+## X-Website: https://github.com/Syntax1991/SynTrack
 
 Core.lua
 ProfessionScope.lua
