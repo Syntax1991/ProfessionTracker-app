@@ -2,6 +2,22 @@ local _, PT = ...
 
 local CAPTURE_VERSION = 2
 
+local function resolveReagentSchema(
+    reagentSchema
+)
+    if type(reagentSchema) ~= "string" then
+        return reagentSchema
+    end
+
+    if not PT.DecodeCompactRecipeReagentSchema then
+        return nil
+    end
+
+    return PT.DecodeCompactRecipeReagentSchema(
+        reagentSchema
+    )
+end
+
 local function captureQualityScenario(
     recipeID,
     scenario
@@ -107,6 +123,15 @@ function PT.GetRecipeReagentSimulationSnapshot(
         or not PT.GetRecipeOperationSnapshot
         or not PT.BuildRecipeReagentSimulationPlan
     then
+        return nil
+    end
+
+    reagentSchema =
+        resolveReagentSchema(
+            reagentSchema
+        )
+
+    if type(reagentSchema) ~= "table" then
         return nil
     end
 

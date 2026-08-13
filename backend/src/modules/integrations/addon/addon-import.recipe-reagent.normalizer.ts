@@ -3,6 +3,9 @@ import {
   asTable,
   numericValues
 } from "./addon-import.lua-utils.js";
+import {
+  decodeRecipeReagentSchemaValue
+} from "./addon-import.recipe-reagent-codec.js";
 import type {
   AddonRecipeReagentCandidate,
   AddonRecipeReagentSchema,
@@ -216,7 +219,7 @@ export function normalizeRecipeReagentSchema(
     LuaValue | undefined
 ): AddonRecipeReagentSchema | null {
   const schema =
-    asTable(
+    decodeRecipeReagentSchemaValue(
       value
     );
 

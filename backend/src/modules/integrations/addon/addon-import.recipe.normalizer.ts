@@ -9,6 +9,9 @@ import {
   normalizeOperationMetrics
 } from "./addon-import.operation-metrics.normalizer.js";
 import {
+  decodeRecipeReagentSchemaValue
+} from "./addon-import.recipe-reagent-codec.js";
+import {
   normalizeRecipeReagentSchema
 } from "./addon-import.recipe-reagent.normalizer.js";
 import type {
@@ -53,7 +56,7 @@ function serializeReagentSchema(
   value: LuaValue | undefined
 ): string | null {
   const schema =
-    asTable(
+    decodeRecipeReagentSchemaValue(
       value
     );
 
