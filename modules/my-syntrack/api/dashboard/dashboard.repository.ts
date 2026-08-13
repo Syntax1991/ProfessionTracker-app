@@ -1,10 +1,6 @@
 import { prisma } from "../../../../apps/api/src/infrastructure/database/prismaClient.js";
 
 export class DashboardRepository {
-  countCharacters() {
-    return prisma.character.count();
-  }
-
   countCraftingReadyCharacters(
     minimumLevel: number
   ) {
@@ -15,12 +11,6 @@ export class DashboardRepository {
         }
       }
     });
-  }
-
-  countProfessionAssignments() {
-    return prisma
-      .characterProfession
-      .count();
   }
 
   findProfessionCoverage() {
@@ -35,6 +25,44 @@ export class DashboardRepository {
       orderBy: {
         order: "asc"
       }
+    });
+  }
+
+  findCharacterOverview() {
+    return prisma.character.findMany({
+      select: {
+        id: true,
+        name: true,
+        realm: true,
+        region: true,
+        className: true,
+        level: true,
+        source: true,
+        lastSyncedAt: true,
+        professions: {
+          select: {
+            id: true,
+            skill: true,
+            knowledgePoints: true,
+            profession: {
+              select: {
+                id: true,
+                key: true,
+                name: true,
+                category: true
+              }
+            }
+          }
+        }
+      },
+      orderBy: [
+        {
+          level: "desc"
+        },
+        {
+          name: "asc"
+        }
+      ]
     });
   }
 }

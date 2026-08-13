@@ -13,6 +13,7 @@ import "./styles/battlenet-characters.css";
 import "./styles/battlenet-top-action.css";
 import "./styles/character-detail-summary.css";
 import "./styles/character-detail-coverage.css";
+import "./styles/my-syntrack-dashboard.css";
 import "./styles/profession-overview.css";
 import "./styles/profession-module-workspaces.css";
 import "./styles/profession-module-workspaces-responsive.css";

@@ -9,24 +9,20 @@ export class DashboardService {
 
   async getSummary() {
     const [
-      characterCount,
       craftingReadyCharacterCount,
-      professionAssignmentCount,
-      professions
+      professions,
+      characters
     ] = await Promise.all([
-      this.repository
-        .countCharacters(),
-
       this.repository
         .countCraftingReadyCharacters(
           env.CRAFTING_MIN_LEVEL
         ),
 
       this.repository
-        .countProfessionAssignments(),
+        .findProfessionCoverage(),
 
       this.repository
-        .findProfessionCoverage()
+        .findCharacterOverview()
     ]);
 
     const professionCoverage =
@@ -44,10 +40,39 @@ export class DashboardService {
         })
       );
 
+    const characterOverview =
+      characters.map(
+        (character) => ({
+          ...character,
+          lastSyncedAt:
+            character.lastSyncedAt
+              ?.toISOString() ?? null,
+          professions:
+            [...character.professions]
+              .sort((left, right) =>
+                left.profession.name.localeCompare(
+                  right.profession.name
+                )
+              )
+        })
+      );
+
     return {
-      characterCount,
+      characterCount:
+        characterOverview.length,
       craftingReadyCharacterCount,
-      professionAssignmentCount,
+      syncedCharacterCount:
+        characterOverview.filter(
+          (character) =>
+            character.lastSyncedAt !== null
+        ).length,
+      realmCount:
+        new Set(
+          characterOverview.map(
+            (character) =>
+              `${character.region}:${character.realm}`
+          )
+        ).size,
       coveredProfessionCount:
         professionCoverage.filter(
           (profession) =>
@@ -58,7 +83,8 @@ export class DashboardService {
         professionCoverage.length,
       minimumCraftingLevel:
         env.CRAFTING_MIN_LEVEL,
-      professionCoverage
+      professionCoverage,
+      characters: characterOverview
     };
   }
 }

@@ -2,8 +2,10 @@ import { Link } from "react-router-dom";
 import { LoadingPanel } from "../../../../../apps/web/src/shared/components/LoadingPanel";
 import { PageHeader } from "../../../../../apps/web/src/shared/components/PageHeader";
 import { StatusMessage } from "../../../../../apps/web/src/shared/components/StatusMessage";
-import { CoverageTable } from "../components/CoverageTable";
+import { CharacterOverview } from "../components/CharacterOverview";
+import { DashboardPriorities } from "../components/DashboardPriorities";
 import { DashboardStats } from "../components/DashboardStats";
+import { UpcomingWorkspaces } from "../components/UpcomingWorkspaces";
 import { useDashboard } from "../hooks/useDashboard";
 
 export function DashboardPage() {
@@ -17,16 +19,25 @@ export function DashboardPage() {
     <>
       <PageHeader
         actions={
-          <Link
-            className="button button-primary"
-            to="/characters"
-          >
-            Add Character
-          </Link>
+          <>
+            <Link
+              className="button button-secondary"
+              to="/battlenet"
+            >
+              Sync data
+            </Link>
+
+            <Link
+              className="button button-primary"
+              to="/characters"
+            >
+              Manage characters
+            </Link>
+          </>
         }
-        description="Plan your crafter roster and identify missing profession coverage."
-        eyebrow="CRAFTING COMMAND CENTER"
-        title="Overview"
+        description="Your personal home for characters, readiness and the work that matters before reset."
+        eyebrow="PERSONAL COMMAND CENTER"
+        title="My SynTrack"
       />
 
       {error && (
@@ -43,32 +54,20 @@ export function DashboardPage() {
             summary={summary}
           />
 
-          <section className="panel">
-            <div className="panel-header">
-              <div>
-                <p className="eyebrow">
-                  COVERAGE MATRIX
-                </p>
-
-                <h2>
-                  Profession Coverage
-                </h2>
-              </div>
-
-              <Link
-                className="button button-secondary"
-                to="/professions"
-              >
-                Open Details
-              </Link>
-            </div>
-
-            <CoverageTable
-              coverage={
-                summary.professionCoverage
+          <div className="my-dashboard-grid">
+            <CharacterOverview
+              characters={summary.characters}
+              minimumCraftingLevel={
+                summary.minimumCraftingLevel
               }
             />
-          </section>
+
+            <DashboardPriorities
+              summary={summary}
+            />
+          </div>
+
+          <UpcomingWorkspaces />
         </>
       )}
     </>

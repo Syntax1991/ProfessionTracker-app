@@ -20,12 +20,15 @@ export function DashboardStats({
   return (
     <section className="stats-grid">
       <article className="stat-card">
-        <span>Characters</span>
+        <span>Tracked Characters</span>
         <strong>
           {summary.characterCount}
         </strong>
         <small>
-          entire crafter roster
+          across {summary.realmCount}{" "}
+          {summary.realmCount === 1
+            ? "realm"
+            : "realms"}
         </small>
       </article>
 
@@ -38,21 +41,19 @@ export function DashboardStats({
           }
         </strong>
         <small>
-          ab Level{" "}
+          level{" "}
           {summary.minimumCraftingLevel}
+          {" and above"}
         </small>
       </article>
 
       <article className="stat-card">
-        <span>Profession Slots</span>
+        <span>Synced</span>
         <strong>
-          {
-            summary
-              .professionAssignmentCount
-          }
+          {summary.syncedCharacterCount}
         </strong>
         <small>
-          current assignments
+          characters with live data
         </small>
       </article>
 
@@ -63,9 +64,9 @@ export function DashboardStats({
         </strong>
         <small>
           {summary.coveredProfessionCount}
-          {" von "}
+          {" of "}
           {summary.totalProfessionCount}
-          {" Professionsn"}
+          {" professions covered"}
         </small>
       </article>
     </section>
