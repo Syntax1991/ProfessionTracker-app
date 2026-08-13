@@ -1,29 +1,3 @@
-.sidebar-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content:
-    space-between;
-  gap: 12px;
-  padding:
-    4px 8px 30px;
-}
-
-.sidebar-header .brand {
-  min-width: 0;
-  padding: 0;
-}
-
-.brand-copy {
-  min-width: 0;
-}
-
-.brand-copy strong,
-.brand-copy span {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .battle-net-top-action {
   flex: 0 0 auto;
 }
@@ -158,21 +132,5 @@
 
   50% {
     opacity: 1;
-  }
-}
-
-@media (max-width: 900px) {
-  .sidebar-header {
-    padding-right: 4px;
-  }
-}
-
-@media (max-width: 420px) {
-  .sidebar-header {
-    align-items: center;
-  }
-
-  .brand-copy {
-    max-width: 170px;
   }
 }

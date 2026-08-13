@@ -6,7 +6,7 @@ import "./styles/base.css";
 import "./styles/layout.css";
 import "./styles/components.css";
 import "./styles/module-navigation.css";
-import "./styles/roadmap-menu.css";
+import "./styles/module-navigation-responsive.css";
 import "./styles/integration.css";
 import "./styles/addon-integration.css";
 import "./styles/battlenet-characters.css";

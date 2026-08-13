@@ -1,58 +1,103 @@
 import {
   useEffect,
-  useRef
+  useState
 } from "react";
 import {
   NavLink,
   useLocation
 } from "react-router-dom";
 import {
-  getAvailableModuleItems,
-  getPlannedModuleItemCount,
   mainModules
+} from "../../app/modules/mainModules";
+import type {
+  MainModuleDefinition
 } from "../../app/modules/mainModules";
 import { BattleNetTopAction } from "../../../../../modules/data-platform/web/integrations/components/BattleNetTopAction";
 import { isModuleCurrent } from "./appNavigation.helpers";
-import { ModuleIcon } from "./ModuleIcon";
+import { SidebarModuleGroup } from "./SidebarModuleGroup";
+
+type ModuleId =
+  MainModuleDefinition["id"];
 
 export function AppNavigation() {
   const { pathname } =
     useLocation();
 
-  const roadmapMenuRef =
-    useRef<HTMLDetailsElement>(
-      null
-    );
+  const currentModule =
+    mainModules.find(
+      (module) =>
+        module.status === "active" &&
+        isModuleCurrent(
+          module,
+          pathname
+        )
+    ) ?? mainModules[0];
+
+  const [
+    expandedModuleIds,
+    setExpandedModuleIds
+  ] = useState<Set<ModuleId>>(
+    () =>
+      new Set<ModuleId>([
+        currentModule.id
+      ])
+  );
+
+  const [
+    mobileOpen,
+    setMobileOpen
+  ] = useState(false);
 
   useEffect(
     () => {
-      function closeRoadmapMenu(
-        event: PointerEvent
-      ) {
-        const menu =
-          roadmapMenuRef.current;
+      setExpandedModuleIds(
+        (previous) => {
+          if (
+            previous.has(
+              currentModule.id
+            )
+          ) {
+            return previous;
+          }
 
-        if (
-          !menu ||
-          menu.contains(
-            event.target as Node
-          )
-        ) {
-          return;
+          const next =
+            new Set(previous);
+
+          next.add(
+            currentModule.id
+          );
+
+          return next;
         }
+      );
 
-        menu.open = false;
+      setMobileOpen(false);
+    },
+    [
+      currentModule.id,
+      pathname
+    ]
+  );
+
+  useEffect(
+    () => {
+      function closeOnEscape(
+        event: KeyboardEvent
+      ) {
+        if (event.key === "Escape") {
+          setMobileOpen(false);
+        }
       }
 
       document.addEventListener(
-        "pointerdown",
-        closeRoadmapMenu
+        "keydown",
+        closeOnEscape
       );
 
       return () => {
         document.removeEventListener(
-          "pointerdown",
-          closeRoadmapMenu
+          "keydown",
+          closeOnEscape
         );
       };
     },
@@ -71,211 +116,183 @@ export function AppNavigation() {
         module.status === "planned"
     );
 
-  const currentModule =
-    activeModules.find(
-      (module) =>
-        isModuleCurrent(
-          module,
-          pathname
-        )
-    ) ?? activeModules[0];
+  function toggleModule(
+    moduleId: ModuleId
+  ) {
+    setExpandedModuleIds(
+      (previous) => {
+        const next =
+          new Set(previous);
 
-  const currentItems =
-    currentModule
-      ? getAvailableModuleItems(
-          currentModule
-        )
-      : [];
+        if (next.has(moduleId)) {
+          next.delete(moduleId);
+        }
+        else {
+          next.add(moduleId);
+        }
+
+        return next;
+      }
+    );
+  }
+
+  function renderModuleGroup(
+    module: MainModuleDefinition
+  ) {
+    return (
+      <SidebarModuleGroup
+        current={
+          currentModule.id ===
+          module.id
+        }
+        expanded={
+          expandedModuleIds.has(
+            module.id
+          )
+        }
+        key={module.id}
+        module={module}
+        onNavigate={() =>
+          setMobileOpen(false)
+        }
+        onToggle={() =>
+          toggleModule(module.id)
+        }
+      />
+    );
+  }
 
   return (
-    <header className="app-navigation">
-      <div className="app-navigation-main">
+    <>
+      <header className="mobile-topbar">
+        <button
+          aria-controls="app-sidebar"
+          aria-expanded={mobileOpen}
+          aria-label="Open navigation"
+          className="mobile-menu-button"
+          onClick={() =>
+            setMobileOpen(true)
+          }
+          type="button"
+        >
+          <span />
+          <span />
+          <span />
+        </button>
+
         <NavLink
-          aria-label="SynTrack home"
-          className="app-brand"
+          className="mobile-brand"
           to="/"
         >
           <span className="brand-mark">
             ST
           </span>
 
-          <span className="brand-copy">
-            <strong>
-              SynTrack
-            </strong>
-
-            <small>
-              Guild Platform
-            </small>
-          </span>
+          <strong>SynTrack</strong>
         </NavLink>
 
-        <nav
-          aria-label="Main modules"
-          className="main-module-tabs"
-        >
-          {activeModules.map(
-            (module) => {
-              const landingPath =
-                getAvailableModuleItems(
-                  module
-                )[0]?.path;
+        <BattleNetTopAction />
+      </header>
 
-              const current =
-                isModuleCurrent(
-                  module,
-                  pathname
-                );
+      <button
+        aria-label="Close navigation"
+        className={
+          mobileOpen
+            ? "sidebar-backdrop visible"
+            : "sidebar-backdrop"
+        }
+        onClick={() =>
+          setMobileOpen(false)
+        }
+        type="button"
+      />
 
-              if (!landingPath) {
-                return null;
-              }
-
-              return (
-                <NavLink
-                  aria-current={
-                    current
-                      ? "page"
-                      : undefined
-                  }
-                  className={
-                    current
-                      ? "main-module-tab active"
-                      : "main-module-tab"
-                  }
-                  key={module.id}
-                  to={landingPath}
-                >
-                  <ModuleIcon
-                    moduleId={module.id}
-                  />
-
-                  <span>
-                    {module.label}
-                  </span>
-                </NavLink>
-              );
+      <aside
+        aria-label="SynTrack navigation"
+        className={
+          mobileOpen
+            ? "app-sidebar mobile-open"
+            : "app-sidebar"
+        }
+        id="app-sidebar"
+      >
+        <div className="sidebar-header">
+          <NavLink
+            aria-label="SynTrack home"
+            className="sidebar-brand"
+            onClick={() =>
+              setMobileOpen(false)
             }
-          )}
+            to="/"
+          >
+            <span className="brand-mark">
+              ST
+            </span>
+
+            <span className="sidebar-brand-copy">
+              <strong>SynTrack</strong>
+              <small>Guild Platform</small>
+            </span>
+          </NavLink>
+
+          <div className="sidebar-header-actions">
+            <BattleNetTopAction />
+
+            <button
+              aria-label="Close navigation"
+              className="sidebar-close-button"
+              onClick={() =>
+                setMobileOpen(false)
+              }
+              type="button"
+            >
+              <span />
+              <span />
+            </button>
+          </div>
+        </div>
+
+        <nav className="sidebar-navigation">
+          <section className="sidebar-section">
+            <div className="sidebar-section-heading">
+              <span>Workspace</span>
+              <small>
+                {activeModules.length} live
+              </small>
+            </div>
+
+            <div className="sidebar-module-list">
+              {activeModules.map(
+                renderModuleGroup
+              )}
+            </div>
+          </section>
+
+          <section className="sidebar-section">
+            <div className="sidebar-section-heading">
+              <span>Roadmap</span>
+              <small>
+                {plannedModules.length} planned
+              </small>
+            </div>
+
+            <div className="sidebar-module-list">
+              {plannedModules.map(
+                renderModuleGroup
+              )}
+            </div>
+          </section>
         </nav>
 
-        <div className="app-navigation-actions">
-          <details
-            className="roadmap-menu"
-            ref={roadmapMenuRef}
-          >
-            <summary>
-              <span>
-                Roadmap
-              </span>
+        <footer className="app-sidebar-footer">
+          <span className="online-dot" />
 
-              <span className="roadmap-count">
-                {plannedModules.length}
-              </span>
-
-              <span
-                aria-hidden="true"
-                className="roadmap-chevron"
-              >
-                ▾
-              </span>
-            </summary>
-
-            <div className="roadmap-popover">
-              <div className="roadmap-popover-header">
-                <strong>
-                  Platform roadmap
-                </strong>
-
-                <span>
-                  Defined, but not available yet
-                </span>
-              </div>
-
-              <div className="roadmap-module-list">
-                {plannedModules.map(
-                  (module) => (
-                    <div
-                      className="roadmap-module-row"
-                      key={module.id}
-                    >
-                      <span className="roadmap-module-icon">
-                        <ModuleIcon
-                          moduleId={module.id}
-                        />
-                      </span>
-
-                      <span className="roadmap-module-copy">
-                        <strong>
-                          {module.label}
-                        </strong>
-
-                        <small>
-                          {module.description}
-                        </small>
-                      </span>
-
-                      <span className="roadmap-capability-count">
-                        {getPlannedModuleItemCount(
-                          module
-                        )}
-                      </span>
-                    </div>
-                  )
-                )}
-              </div>
-            </div>
-          </details>
-
-          <BattleNetTopAction />
-        </div>
-      </div>
-
-      {currentModule ? (
-        <div className="module-context-bar">
-          <div className="module-context-identity">
-            <ModuleIcon
-              moduleId={currentModule.id}
-            />
-
-            <strong>
-              {currentModule.label}
-            </strong>
-          </div>
-
-          <nav
-            aria-label={`${currentModule.label} pages`}
-            className="module-page-tabs"
-          >
-            {currentItems.map(
-              (item) => (
-                <NavLink
-                  className={({
-                    isActive
-                  }) =>
-                    isActive
-                      ? "module-page-tab active"
-                      : "module-page-tab"
-                  }
-                  end={
-                    item.end ??
-                    false
-                  }
-                  key={item.path}
-                  to={item.path ?? "/"}
-                >
-                  {item.label}
-                </NavLink>
-              )
-            )}
-          </nav>
-
-          <span className="module-context-status">
-            <span />
-            Live
+          <span>
+            <strong>Platform online</strong>
+            <small>Foundation build</small>
           </span>
-        </div>
-      ) : null}
-    </header>
+        </footer>
+      </aside>
+    </>
   );
 }

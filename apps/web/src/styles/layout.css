@@ -1,9 +1,14 @@
 .app-shell {
   min-height: 100vh;
+  display: grid;
+  grid-template-columns:
+    272px
+    minmax(0, 1fr);
 }
 
 .main-content {
   min-width: 0;
+  grid-column: 2;
   padding: 34px 40px 60px;
 }
 
@@ -64,6 +69,10 @@
 }
 
 @media (max-width: 900px) {
+  .app-shell {
+    display: block;
+  }
+
   .main-content {
     padding: 28px 20px 48px;
   }
