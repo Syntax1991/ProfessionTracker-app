@@ -47,12 +47,6 @@ export function SidebarModuleGroup({
           {module.label}
         </span>
 
-        {module.status === "planned" ? (
-          <span className="sidebar-module-badge">
-            Soon
-          </span>
-        ) : null}
-
         <span
           aria-hidden="true"
           className="sidebar-module-chevron"
@@ -92,7 +86,6 @@ export function SidebarModuleGroup({
                     onClick={onNavigate}
                     to={item.path}
                   >
-                    <span className="sidebar-subitem-dot" />
                     <span>{item.label}</span>
                   </NavLink>
                 );
@@ -104,9 +97,7 @@ export function SidebarModuleGroup({
                   className="sidebar-subitem planned"
                   key={item.label}
                 >
-                  <span className="sidebar-subitem-dot" />
                   <span>{item.label}</span>
-                  <small>Soon</small>
                 </span>
               );
             }

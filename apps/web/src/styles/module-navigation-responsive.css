@@ -9,9 +9,9 @@
     align-items: center;
     gap: 10px;
     padding: 10px 14px;
-    border-bottom: 1px solid var(--border);
-    background: rgb(12 14 20 / 92%);
-    box-shadow: 0 8px 26px rgb(0 0 0 / 20%);
+    border-bottom: 1px solid #242b37;
+    background: rgb(17 21 29 / 94%);
+    box-shadow: 0 6px 22px rgb(0 0 0 / 16%);
     backdrop-filter: blur(18px);
   }
 
@@ -55,7 +55,7 @@
 
   .app-sidebar {
     position: fixed;
-    width: min(286px, calc(100vw - 44px));
+    width: min(268px, calc(100vw - 52px));
     max-width: 100%;
     transform: translateX(-105%);
     transition: transform 220ms ease;
