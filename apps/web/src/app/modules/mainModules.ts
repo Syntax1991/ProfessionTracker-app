@@ -61,7 +61,8 @@ export const mainModules:
         },
         {
           label: "Raid Tasks",
-          status: "planned"
+          path: "/raid-tasks",
+          status: "available"
         },
         {
           label: "Gear / Enchants / Gems",

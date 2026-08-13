@@ -24,6 +24,7 @@ model Character {
   professions       CharacterProfession[]
   weeklyCompletions WeeklyChecklistCompletion[]
   weeklyMythicRuns  WeeklyMythicPlusRun[]
+  personalRaidTasks PersonalRaidTask[]
 
   @@unique([name, realm, region])
   @@index([battleNetId, region])
@@ -73,6 +74,25 @@ model WeeklyMythicPlusRun {
 
   @@index([characterId, periodKey])
   @@index([periodKey, keyLevel])
+}
+
+model PersonalRaidTask {
+  id          String    @id @default(cuid())
+  characterId String
+  title       String
+  description String?
+  category    String    @default("PREPARATION")
+  priority    String    @default("NORMAL")
+  raidName    String?
+  dueAt       DateTime?
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  character Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+
+  @@index([characterId, completedAt])
+  @@index([dueAt])
 }
 
 model Profession {

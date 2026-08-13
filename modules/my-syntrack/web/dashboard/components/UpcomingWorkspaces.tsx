@@ -16,6 +16,13 @@ const workspaces = [
     path: "/vault-mythic-plus"
   },
   {
+    title: "Raid Tasks",
+    description:
+      "Keep personal preparation and raid-night deadlines focused.",
+    status: "Available",
+    path: "/raid-tasks"
+  },
+  {
     title: "Gear Readiness",
     description:
       "Surface missing enchants, gems and upgrade opportunities.",

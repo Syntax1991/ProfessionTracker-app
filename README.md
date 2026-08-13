@@ -31,6 +31,9 @@ The existing production code currently covers parts of:
 - My SynTrack
   - Dashboard
   - Characters
+  - Weekly Checklist
+  - Vault / Mythic+
+  - Raid Tasks
 - Professions
   - Profession overview
   - Profession details

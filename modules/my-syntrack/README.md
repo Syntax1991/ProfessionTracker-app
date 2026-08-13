@@ -22,6 +22,7 @@ Personal workspace and projections for the logged-in player.
 - character roster management
 - reset-aware weekly checklist with per-character progress
 - Mythic+ run log and derived Great Vault dungeon slots
+- personal raid preparation tasks with priorities and deadlines
 
 My SynTrack may compose data from other modules, but does not duplicate
 their business rules.

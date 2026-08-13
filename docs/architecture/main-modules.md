@@ -294,17 +294,24 @@ For example:
 
 ## Current My SynTrack implementation
 
-Character and dashboard features are grouped beneath My SynTrack.
+Personal character and weekly-readiness features are grouped beneath
+My SynTrack.
 
 Web:
 
 - `modules/my-syntrack/web/characters`
 - `modules/my-syntrack/web/dashboard`
+- `modules/my-syntrack/web/weekly-checklist`
+- `modules/my-syntrack/web/vault-mythic-plus`
+- `modules/my-syntrack/web/raid-tasks`
 
 API:
 
 - `modules/my-syntrack/api/characters`
 - `modules/my-syntrack/api/dashboard`
+- `modules/my-syntrack/api/weekly-checklist`
+- `modules/my-syntrack/api/vault-mythic-plus`
+- `modules/my-syntrack/api/raid-tasks`
 
 ## Web structure
 
