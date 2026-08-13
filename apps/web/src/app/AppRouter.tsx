@@ -5,6 +5,7 @@ import {
 } from "react-router-dom";
 import { CharactersPage } from "../../../../modules/my-syntrack/web/characters/pages/CharactersPage";
 import { DashboardPage } from "../../../../modules/my-syntrack/web/dashboard/pages/DashboardPage";
+import { GearReadinessPage } from "../../../../modules/my-syntrack/web/gear-readiness/pages/GearReadinessPage";
 import { RaidTasksPage } from "../../../../modules/my-syntrack/web/raid-tasks/pages/RaidTasksPage";
 import { WeeklyChecklistPage } from "../../../../modules/my-syntrack/web/weekly-checklist/pages/WeeklyChecklistPage";
 import { VaultMythicPlusPage } from "../../../../modules/my-syntrack/web/vault-mythic-plus/pages/VaultMythicPlusPage";
@@ -69,6 +70,13 @@ export function AppRouter() {
           path="raid-tasks"
           element={
             <RaidTasksPage />
+          }
+        />
+
+        <Route
+          path="gear-readiness"
+          element={
+            <GearReadinessPage />
           }
         />
 

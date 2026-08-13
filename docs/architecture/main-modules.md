@@ -304,6 +304,7 @@ Web:
 - `modules/my-syntrack/web/weekly-checklist`
 - `modules/my-syntrack/web/vault-mythic-plus`
 - `modules/my-syntrack/web/raid-tasks`
+- `modules/my-syntrack/web/gear-readiness`
 
 API:
 
@@ -312,6 +313,7 @@ API:
 - `modules/my-syntrack/api/weekly-checklist`
 - `modules/my-syntrack/api/vault-mythic-plus`
 - `modules/my-syntrack/api/raid-tasks`
+- `modules/my-syntrack/api/gear-readiness`
 
 ## Web structure
 

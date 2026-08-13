@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { characterRouter } from "../../../../modules/my-syntrack/api/characters/character.routes.js";
 import { dashboardRouter } from "../../../../modules/my-syntrack/api/dashboard/dashboard.routes.js";
+import { gearReadinessRouter } from "../../../../modules/my-syntrack/api/gear-readiness/gear-readiness.routes.js";
 import { raidTaskRouter } from "../../../../modules/my-syntrack/api/raid-tasks/raid-task.routes.js";
 import { weeklyChecklistRouter } from "../../../../modules/my-syntrack/api/weekly-checklist/weekly-checklist.routes.js";
 import { vaultMythicPlusRouter } from "../../../../modules/my-syntrack/api/vault-mythic-plus/vault-mythic-plus.routes.js";
@@ -51,6 +52,11 @@ apiRouter.use(
 apiRouter.use(
   "/raid-tasks",
   raidTaskRouter
+);
+
+apiRouter.use(
+  "/gear-readiness",
+  gearReadinessRouter
 );
 
 apiRouter.use(

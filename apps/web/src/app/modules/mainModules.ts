@@ -66,7 +66,8 @@ export const mainModules:
         },
         {
           label: "Gear / Enchants / Gems",
-          status: "planned"
+          path: "/gear-readiness",
+          status: "available"
         },
         {
           label: "Professions",

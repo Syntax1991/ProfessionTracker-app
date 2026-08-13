@@ -26,8 +26,8 @@ const workspaces = [
     title: "Gear Readiness",
     description:
       "Surface missing enchants, gems and upgrade opportunities.",
-    status: "Planned",
-    path: null
+    status: "Available",
+    path: "/gear-readiness"
   }
 ];
 

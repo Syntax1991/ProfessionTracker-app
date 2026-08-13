@@ -34,6 +34,7 @@ The existing production code currently covers parts of:
   - Weekly Checklist
   - Vault / Mythic+
   - Raid Tasks
+  - Gear / Enchants / Gems
 - Professions
   - Profession overview
   - Profession details

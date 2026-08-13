@@ -25,6 +25,7 @@ model Character {
   weeklyCompletions WeeklyChecklistCompletion[]
   weeklyMythicRuns  WeeklyMythicPlusRun[]
   personalRaidTasks PersonalRaidTask[]
+  gearSlots         CharacterGearSlot[]
 
   @@unique([name, realm, region])
   @@index([battleNetId, region])
@@ -93,6 +94,29 @@ model PersonalRaidTask {
 
   @@index([characterId, completedAt])
   @@index([dueAt])
+}
+
+model CharacterGearSlot {
+  id            String    @id @default(cuid())
+  characterId   String
+  slotKey       String
+  itemName      String
+  itemLevel     Int?
+  enchantStatus String    @default("NOT_APPLICABLE")
+  enchantName   String?
+  socketCount   Int       @default(0)
+  gemCount      Int       @default(0)
+  notes         String?
+  source        String    @default("MANUAL")
+  lastSyncedAt  DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  character Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+
+  @@unique([characterId, slotKey])
+  @@index([slotKey])
+  @@index([source])
 }
 
 model Profession {
