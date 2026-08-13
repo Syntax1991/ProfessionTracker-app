@@ -3,7 +3,15 @@ local _, PT = ...
 local LOGIN_DELAY_SECONDS = 6
 
 local reminderScheduled = false
-local reminderShown = false
+local reminderDismissed = false
+
+local function text(
+    key
+)
+    return PT.GetProfessionCaptureLocaleText(
+        key
+    )
+end
 
 local function joinNames(
     names
@@ -50,53 +58,6 @@ local function collectReminderGroups()
         outdated
 end
 
-local function createMixedContent(
-    missing,
-    outdated,
-    refreshDays
-)
-    return "SynTrack · Profession-Daten aktualisieren",
-        string.format(
-            "Öffne diese Berufe einmal:\nFehlende Daten: %s\nÄlter als %d Tage: %s",
-            joinNames(
-                missing
-            ),
-            refreshDays,
-            joinNames(
-                outdated
-            )
-        ),
-        "SynTrack erfasst die Daten beim Öffnen automatisch."
-end
-
-local function createMissingContent(
-    missing
-)
-    return "SynTrack · Profession-Daten fehlen",
-        string.format(
-            "Öffne %s einmal, damit SynTrack die aktuellen Crafting-Daten erfassen kann.",
-            joinNames(
-                missing
-            )
-        ),
-        "Danach ist kein weiterer Schritt im Addon nötig."
-end
-
-local function createOutdatedContent(
-    outdated,
-    refreshDays
-)
-    return "SynTrack · Profession-Daten aktualisieren",
-        string.format(
-            "Öffne %s einmal. Der letzte Crafting-Capture ist älter als %d Tage.",
-            joinNames(
-                outdated
-            ),
-            refreshDays
-        ),
-        "Der vorhandene Snapshot bleibt weiterhin nutzbar."
-end
-
 local function createReminderContent(
     missing,
     outdated
@@ -108,30 +69,68 @@ local function createReminderContent(
     if #missing > 0
         and #outdated > 0
     then
-        return createMixedContent(
-            missing,
-            outdated,
-            refreshDays
-        )
+        return text(
+            "TITLE_REFRESH"
+        ),
+            string.format(
+                text(
+                    "BODY_MIXED"
+                ),
+                joinNames(
+                    missing
+                ),
+                refreshDays,
+                joinNames(
+                    outdated
+                )
+            ),
+            text(
+                "FOOTER"
+            )
     end
 
     if #missing > 0 then
-        return createMissingContent(
-            missing
-        )
+        return text(
+            "TITLE_MISSING"
+        ),
+            string.format(
+                text(
+                    "BODY_MISSING"
+                ),
+                joinNames(
+                    missing
+                )
+            ),
+            text(
+                "FOOTER"
+            )
     end
 
-    return createOutdatedContent(
-        outdated,
-        refreshDays
-    )
+    return text(
+        "TITLE_REFRESH"
+    ),
+        string.format(
+            text(
+                "BODY_OUTDATED"
+            ),
+            refreshDays,
+            joinNames(
+                outdated
+            )
+        ),
+        text(
+            "FOOTER"
+        )
 end
 
-function PT.ShowProfessionCaptureReminder()
-    if reminderShown then
-        return false
-    end
+function PT.DismissProfessionCaptureReminder()
+    reminderDismissed =
+        true
 
+    PT.HideProfessionCaptureReminder()
+end
+
+function PT.RefreshProfessionCaptureReminder()
     local missing,
         outdated =
         collectReminderGroups()
@@ -139,6 +138,12 @@ function PT.ShowProfessionCaptureReminder()
     if #missing == 0
         and #outdated == 0
     then
+        PT.HideProfessionCaptureReminder()
+
+        return false
+    end
+
+    if reminderDismissed then
         return false
     end
 
@@ -150,8 +155,6 @@ function PT.ShowProfessionCaptureReminder()
             outdated
         )
 
-    reminderShown = true
-
     PT.DisplayProfessionCaptureReminder(
         title,
         body,
@@ -159,6 +162,10 @@ function PT.ShowProfessionCaptureReminder()
     )
 
     return true
+end
+
+function PT.ShowProfessionCaptureReminder()
+    return PT.RefreshProfessionCaptureReminder()
 end
 
 local eventFrame =

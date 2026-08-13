@@ -146,35 +146,39 @@ function PT.OnCharacterRecipeOperationsCaptured(
             capture
         )
 
-    if announcedCaptureSignatures[
-        captureKey
-    ] == signature
-    then
-        return
-    end
+    local alreadyAnnounced =
+        announcedCaptureSignatures[
+            captureKey
+        ] == signature
 
     announcedCaptureSignatures[
         captureKey
     ] =
         signature
 
-    local professionName =
-        capture.displayName
-        or capture.parentProfessionName
-        or "Profession"
+    if not alreadyAnnounced then
+        local professionName =
+            capture.displayName
+            or capture.parentProfessionName
+            or "Profession"
 
-    PT.Print(
-        string.format(
-            "%s erfasst · %d/%d Operation-Daten · %d ohne Operation-Modell · %d gelernt",
-            professionName,
-            capture.operationRecipeCount
-                or 0,
-            capture.operationEligibleCount
-                or 0,
-            capture.operationExcludedCount
-                or 0,
-            capture.learnedRecipeCount
-                or 0
+        PT.Print(
+            string.format(
+                "%s erfasst · %d/%d Operation-Daten · %d ohne Operation-Modell · %d gelernt",
+                professionName,
+                capture.operationRecipeCount
+                    or 0,
+                capture.operationEligibleCount
+                    or 0,
+                capture.operationExcludedCount
+                    or 0,
+                capture.learnedRecipeCount
+                    or 0
+            )
         )
-    )
+    end
+
+    if PT.RefreshProfessionCaptureReminder then
+        PT.RefreshProfessionCaptureReminder()
+    end
 end

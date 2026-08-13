@@ -1,19 +1,6 @@
 local _, PT = ...
 
-local DISPLAY_SECONDS = 10
-
 local reminderFrame = nil
-local dismissTimer = nil
-
-local function cancelDismissTimer()
-    if dismissTimer
-        and dismissTimer.Cancel
-    then
-        dismissTimer:Cancel()
-    end
-
-    dismissTimer = nil
-end
 
 local function createText(
     frame,
@@ -24,6 +11,17 @@ local function createText(
         "OVERLAY",
         template
     )
+end
+
+local function handleManualClose(
+    frame
+)
+    if PT.DismissProfessionCaptureReminder then
+        PT.DismissProfessionCaptureReminder()
+        return
+    end
+
+    frame:Hide()
 end
 
 local function createReminderFrame()
@@ -214,9 +212,13 @@ local function createReminderFrame()
         -4
     )
 
-    frame:SetScript(
-        "OnHide",
-        cancelDismissTimer
+    closeButton:SetScript(
+        "OnClick",
+        function()
+            handleManualClose(
+                frame
+            )
+        end
     )
 
     frame:Hide()
@@ -231,28 +233,6 @@ local function getReminderFrame()
     end
 
     return reminderFrame
-end
-
-local function scheduleDismiss(
-    frame
-)
-    cancelDismissTimer()
-
-    if not C_Timer
-        or not C_Timer.NewTimer
-    then
-        return
-    end
-
-    dismissTimer =
-        C_Timer.NewTimer(
-            DISPLAY_SECONDS,
-            function()
-                if frame:IsShown() then
-                    frame:Hide()
-                end
-            end
-        )
 end
 
 function PT.DisplayProfessionCaptureReminder(
@@ -276,10 +256,6 @@ function PT.DisplayProfessionCaptureReminder(
     )
 
     frame:Show()
-
-    scheduleDismiss(
-        frame
-    )
 end
 
 function PT.HideProfessionCaptureReminder()
