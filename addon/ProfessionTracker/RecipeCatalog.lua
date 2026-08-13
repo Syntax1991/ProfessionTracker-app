@@ -139,9 +139,7 @@ local function storeRecipeCatalog(
             context.skillLineId
         )
 
-    database.recipeCatalog[
-        catalogKey
-    ] = {
+    local catalog = {
         scopeVersion =
             PT.RECIPE_SCOPE_VERSION
             or 1,
@@ -158,18 +156,26 @@ local function storeRecipeCatalog(
         sourceRecipeCount =
             collection.sourceRecipeCount,
 
-        excludedRecipeCount =
-            collection.excludedRecipeCount,
-
-        excludedByReason =
-            collection.excludedByReason,
-
         recipes =
             collection.recipes,
 
         capturedAt =
             capturedAt
     }
+
+    if PT.CreateCompactRecipeCatalog then
+        catalog =
+            PT.CreateCompactRecipeCatalog(
+                catalog
+            )
+    end
+
+    if catalog then
+        database.recipeCatalog[
+            catalogKey
+        ] =
+            catalog
+    end
 end
 
 function PT.CreateOpenProfessionRecipeSnapshot(

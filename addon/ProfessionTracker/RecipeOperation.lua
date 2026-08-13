@@ -11,13 +11,9 @@ local function isScalarValue(
         or valueType == "boolean"
 end
 
-function PT.CopyRecipeOperationMetrics(
+local function fallbackCopyOperationMetrics(
     operationInfo
 )
-    if type(operationInfo) ~= "table" then
-        return nil
-    end
-
     local metrics = {}
 
     for key, value in pairs(
@@ -38,6 +34,24 @@ function PT.CopyRecipeOperationMetrics(
     end
 
     return metrics
+end
+
+function PT.CopyRecipeOperationMetrics(
+    operationInfo
+)
+    if type(operationInfo) ~= "table" then
+        return nil
+    end
+
+    if PT.CreateCompactRecipeOperationMetrics then
+        return PT.CreateCompactRecipeOperationMetrics(
+            operationInfo
+        )
+    end
+
+    return fallbackCopyOperationMetrics(
+        operationInfo
+    )
 end
 
 function PT.GetRecipeOperationSnapshot(

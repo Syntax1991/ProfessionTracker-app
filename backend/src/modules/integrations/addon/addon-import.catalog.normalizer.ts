@@ -96,10 +96,31 @@ function normalizeNode(
     entries[0] ??
     null;
 
+  const directName =
+    asString(
+      node.name
+    );
+
+  const directDescription =
+    asString(
+      node.description
+    );
+
+  const directKnowledgeEntryId =
+    asNumber(
+      node.knowledgeEntryId
+    );
+
+  const directKnowledgeMaxRank =
+    asNumber(
+      node.knowledgeMaxRank
+    );
+
   /*
-   * maxRank remains the full WoW node
-   * maximum. knowledgeMaxRank is the
-   * actual type-7 Knowledge-entry maximum.
+   * Storage scope 2 flattens the display and
+   * Knowledge entry onto the node. Legacy
+   * entry arrays remain supported for older
+   * SavedVariables uploads.
    */
   const maxRank =
     asNumber(
@@ -116,12 +137,14 @@ function normalizeNode(
     externalNodeId,
 
     name:
+      directName ??
       asString(
         displayEntry?.name
       ) ??
       `Node ${externalNodeId}`,
 
     description:
+      directDescription ??
       asString(
         displayEntry?.description
       ),
@@ -129,11 +152,13 @@ function normalizeNode(
     maxRank,
 
     knowledgeEntryId:
+      directKnowledgeEntryId ??
       asNumber(
         knowledgeEntry?.entryId
       ),
 
     knowledgeMaxRank:
+      directKnowledgeMaxRank ??
       asNumber(
         knowledgeEntry?.maxRanks
       ),

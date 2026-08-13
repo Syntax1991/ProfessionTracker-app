@@ -1,7 +1,8 @@
 local _, PT = ...
 
 local function copyTrackedMap(
-    source
+    source,
+    transform
 )
     local result = {}
 
@@ -12,8 +13,20 @@ local function copyTrackedMap(
         if PT.IsTrackedProfessionExpansion(
             value
         ) then
-            result[key] =
+            local storedValue =
                 value
+
+            if type(transform) == "function" then
+                storedValue =
+                    transform(
+                        value
+                    )
+            end
+
+            if storedValue then
+                result[key] =
+                    storedValue
+            end
         end
     end
 
@@ -120,6 +133,46 @@ local function compactCharacters(
     end
 end
 
+local function compactProfessionCatalog(
+    value
+)
+    if PT.CreateCompactProfessionCatalog then
+        return PT.CreateCompactProfessionCatalog(
+            value
+        )
+    end
+
+    return value
+end
+
+local function compactRecipeCatalog(
+    value
+)
+    if PT.CreateCompactRecipeCatalog then
+        return PT.CreateCompactRecipeCatalog(
+            value
+        )
+    end
+
+    return value
+end
+
+local function compactStaticCatalogs(
+    database
+)
+    database.professionCatalog =
+        copyTrackedMap(
+            database.professionCatalog,
+            compactProfessionCatalog
+        )
+
+    database.recipeCatalog =
+        copyTrackedMap(
+            database.recipeCatalog,
+            compactRecipeCatalog
+        )
+end
+
 local function compactCharacterRecipeOperations(
     database
 )
@@ -144,6 +197,12 @@ local function compactCharacterRecipeOperations(
 
     database.characterRecipeOperations =
         compacted
+
+    if PT.CompactCharacterRecipeOperationStorage then
+        PT.CompactCharacterRecipeOperationStorage(
+            database
+        )
+    end
 end
 
 function PT.CompactCurrentAddonState(
@@ -153,15 +212,9 @@ function PT.CompactCurrentAddonState(
         return
     end
 
-    database.professionCatalog =
-        copyTrackedMap(
-            database.professionCatalog
-        )
-
-    database.recipeCatalog =
-        copyTrackedMap(
-            database.recipeCatalog
-        )
+    compactStaticCatalogs(
+        database
+    )
 
     compactCharacters(
         database
