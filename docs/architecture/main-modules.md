@@ -125,6 +125,28 @@ Guild organization and persistent guild state.
 - loot decisions
 - recruitment application lifecycle
 
+### Existing implementation
+
+Web:
+
+- `modules/guild/web/roster`
+
+API:
+
+- `modules/guild/api/roster`
+- `modules/guild/api/roster-import`
+
+Module-owned addon:
+
+- `modules/guild/addons/SynTrack_Guild`
+
+Guild members can be managed manually through the Roster API or
+synced from the `SynTrack_Guild` WoW addon. The addon keeps its own
+`SynTrack_GuildDB` SavedVariables and registers with `SynTrack_Core`
+only for status visibility; roster data is transported through the
+dedicated roster-import endpoints, reusing Data Platform's generic
+Lua SavedVariables parser.
+
 ## 3. Raid
 
 ### Responsibility

@@ -1,4 +1,6 @@
 import { Router } from "express";
+import { guildRosterRouter } from "../../../../modules/guild/api/roster/roster.routes.js";
+import { guildRosterImportRouter } from "../../../../modules/guild/api/roster-import/roster-import.routes.js";
 import { characterRouter } from "../../../../modules/my-syntrack/api/characters/character.routes.js";
 import { dashboardRouter } from "../../../../modules/my-syntrack/api/dashboard/dashboard.routes.js";
 import { gearReadinessRouter } from "../../../../modules/my-syntrack/api/gear-readiness/gear-readiness.routes.js";
@@ -77,6 +79,16 @@ apiRouter.use(
 apiRouter.use(
   "/profession-details",
   professionDetailRouter
+);
+
+apiRouter.use(
+  "/guild/roster",
+  guildRosterRouter
+);
+
+apiRouter.use(
+  "/guild/roster-import",
+  guildRosterImportRouter
 );
 
 apiRouter.use(

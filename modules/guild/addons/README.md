@@ -9,5 +9,11 @@ Each addon uses its own technical directory:
 modules/guild/addons/<AddonName>
 ```
 
-This directory is intentionally present before the first addon is
-implemented so every main module has the same predictable structure.
+## Current addon
+
+- `modules/guild/addons/SynTrack_Guild` — captures the guild roster
+  (name, class, level, rank, notes) and registers itself with
+  `SynTrack_Core`.
+
+Future Teams and Attendance capabilities may extend this addon or add
+their own technical directory here without mixing source files.

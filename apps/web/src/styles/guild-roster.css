@@ -1,0 +1,53 @@
+.guild-roster-layout {
+  display: grid;
+  grid-template-columns:
+    minmax(320px, 0.7fr)
+    minmax(580px, 1.3fr);
+  gap: 20px;
+  align-items: start;
+  margin-top: 26px;
+}
+
+.guild-roster-layout .panel {
+  margin-top: 0;
+}
+
+.rank-badge {
+  padding: 5px 8px;
+  border-radius: 999px;
+  color: #d1c1f4;
+  background: var(--primary-soft);
+  font-size: 0.7rem;
+  white-space: nowrap;
+}
+
+.source-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 8px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 750;
+}
+
+.source-badge.manual {
+  color: var(--text-muted);
+  background: var(--surface-hover);
+}
+
+.source-badge.addon {
+  color: #a9edcd;
+  background: var(--success-soft);
+}
+
+.guild-note {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+@media (max-width: 1180px) {
+  .guild-roster-layout {
+    grid-template-columns: 1fr;
+  }
+}

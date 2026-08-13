@@ -7,7 +7,8 @@ import { LuaTableValueParser } from "./lua-table-value.parser.js";
 const supportedVariableNames =
   new Set([
     "ProfessionTrackerDB",
-    "SynTrackCoreDB"
+    "SynTrackCoreDB",
+    "SynTrack_GuildDB"
   ]);
 
 export class LuaSavedVariablesParser {

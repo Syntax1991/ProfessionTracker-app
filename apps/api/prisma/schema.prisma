@@ -301,6 +301,27 @@ model CharacterCraftRecipe {
   @@index([operationCaptureVersion])
 }
 
+model GuildMember {
+  id           String    @id @default(cuid())
+  name         String
+  realm        String
+  region       String    @default("eu")
+  className    String
+  level        Int       @default(80)
+  rank         String
+  rankIndex    Int       @default(0)
+  note         String?
+  officerNote  String?
+  source       String    @default("MANUAL")
+  lastSyncedAt DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@unique([name, realm, region])
+  @@index([rankIndex])
+  @@index([source])
+}
+
 model BattleNetConnection {
   id          String   @id
   battleTag   String?

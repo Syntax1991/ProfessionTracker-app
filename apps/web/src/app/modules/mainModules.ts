@@ -80,7 +80,7 @@ export const mainModules:
       label: "Guild",
       description:
         "Guild organization, roster and progress.",
-      status: "planned",
+      status: "active",
       items: [
         {
           label: "Dashboard",
@@ -88,7 +88,8 @@ export const mainModules:
         },
         {
           label: "Roster",
-          status: "planned"
+          path: "/guild/roster",
+          status: "available"
         },
         {
           label: "Teams",

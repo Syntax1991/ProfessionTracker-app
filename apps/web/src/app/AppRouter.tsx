@@ -3,6 +3,7 @@ import {
   Route,
   Routes
 } from "react-router-dom";
+import { RosterPage } from "../../../../modules/guild/web/roster/pages/RosterPage";
 import { CharactersPage } from "../../../../modules/my-syntrack/web/characters/pages/CharactersPage";
 import { DashboardPage } from "../../../../modules/my-syntrack/web/dashboard/pages/DashboardPage";
 import { GearReadinessPage } from "../../../../modules/my-syntrack/web/gear-readiness/pages/GearReadinessPage";
@@ -140,6 +141,13 @@ export function AppRouter() {
           path="professions/:professionId"
           element={
             <ProfessionDetailPage />
+          }
+        />
+
+        <Route
+          path="guild/roster"
+          element={
+            <RosterPage />
           }
         />
 
