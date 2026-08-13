@@ -1,0 +1,40 @@
+import type { MainModuleDefinition } from "../moduleTypes";
+
+export const raidModule: MainModuleDefinition =
+  {
+    id: "raid",
+    label: "Raid",
+    description:
+      "Planning, assignments and raid analysis.",
+    status: "planned",
+    items: [
+      {
+        label: "Raid Planner",
+        status: "planned"
+      },
+      {
+        label: "Boss Rosters",
+        status: "planned"
+      },
+      {
+        label: "Assignments",
+        status: "planned"
+      },
+      {
+        label: "Cooldowns",
+        status: "planned"
+      },
+      {
+        label: "Raid Notes",
+        status: "planned"
+      },
+      {
+        label: "Attendance",
+        status: "planned"
+      },
+      {
+        label: "WCL Analysis",
+        status: "planned"
+      }
+    ]
+  };

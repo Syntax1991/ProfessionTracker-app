@@ -24,7 +24,7 @@ import "./styles/raid-tasks-responsive.css";
 import "./styles/gear-readiness.css";
 import "./styles/gear-readiness-slots.css";
 import "./styles/gear-readiness-responsive.css";
-import "./styles/guild-roster.css";
+import "./styles/guild.css";
 import "./styles/profession-overview.css";
 import "./styles/profession-module-workspaces.css";
 import "./styles/profession-module-workspaces-responsive.css";

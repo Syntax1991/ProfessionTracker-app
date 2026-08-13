@@ -155,3 +155,147 @@
   flex: 1;
   min-width: 160px;
 }
+
+.officer-note-member-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.officer-note-member-button {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: transparent;
+  text-align: left;
+}
+
+.officer-note-member-button span {
+  color: var(--text-muted);
+  font-size: 0.72rem;
+}
+
+.officer-note-member-button.selected {
+  border-color: var(--primary-soft);
+  background: var(--primary-soft);
+}
+
+.officer-note-list {
+  display: grid;
+  gap: 10px;
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.officer-note-list li {
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.officer-note-list p {
+  margin: 6px 0 8px;
+  font-size: 0.85rem;
+}
+
+.officer-note-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+}
+
+.attendance-event-list {
+  display: grid;
+  gap: 10px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.attendance-event-list li {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.attendance-event-button {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 0 0 8px;
+  border: 0;
+  background: transparent;
+  text-align: left;
+}
+
+.attendance-event-button span {
+  color: var(--text-muted);
+  font-size: 0.72rem;
+}
+
+.attendance-event-button.selected strong {
+  color: var(--primary);
+}
+
+.attendance-events-heading {
+  margin-top: 26px;
+}
+
+.attendance-status-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.attendance-status-button {
+  padding: 5px 9px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text-muted);
+  background: transparent;
+  font-size: 0.68rem;
+  white-space: nowrap;
+}
+
+.attendance-status-button.selected {
+  border-color: var(--primary-soft);
+  color: #d1c1f4;
+  background: var(--primary-soft);
+}
+
+.guild-dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(220px, 1fr)
+  );
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.guild-dashboard-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.guild-dashboard-card strong {
+  font-size: 1.8rem;
+}
+
+.guild-dashboard-card span {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+}

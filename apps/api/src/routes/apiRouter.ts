@@ -1,8 +1,12 @@
 import { Router } from "express";
+import { guildAttendanceRouter } from "../../../../modules/guild/api/attendance/attendance.routes.js";
+import { guildOfficerNoteRouter } from "../../../../modules/guild/api/officer-notes/officer-note.routes.js";
+import { guildRequirementRouter } from "../../../../modules/guild/api/requirements/requirement.routes.js";
 import { guildRosterRouter } from "../../../../modules/guild/api/roster/roster.routes.js";
 import { guildRosterImportRouter } from "../../../../modules/guild/api/roster-import/roster-import.routes.js";
 import { guildTeamRouter } from "../../../../modules/guild/api/teams/team.routes.js";
 import { guildVerificationRouter } from "../../../../modules/guild/api/verification/verification.routes.js";
+import { guildWeeklyProgressRouter } from "../../../../modules/guild/api/weekly-progress/weekly-progress.routes.js";
 import { characterRouter } from "../../../../modules/my-syntrack/api/characters/character.routes.js";
 import { dashboardRouter } from "../../../../modules/my-syntrack/api/dashboard/dashboard.routes.js";
 import { gearReadinessRouter } from "../../../../modules/my-syntrack/api/gear-readiness/gear-readiness.routes.js";
@@ -101,6 +105,26 @@ apiRouter.use(
 apiRouter.use(
   "/guild/roster-import",
   guildRosterImportRouter
+);
+
+apiRouter.use(
+  "/guild/requirements",
+  guildRequirementRouter
+);
+
+apiRouter.use(
+  "/guild/officer-notes",
+  guildOfficerNoteRouter
+);
+
+apiRouter.use(
+  "/guild/attendance",
+  guildAttendanceRouter
+);
+
+apiRouter.use(
+  "/guild/weekly-progress",
+  guildWeeklyProgressRouter
 );
 
 apiRouter.use(

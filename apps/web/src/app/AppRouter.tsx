@@ -3,8 +3,13 @@ import {
   Route,
   Routes
 } from "react-router-dom";
+import { AttendancePage } from "../../../../modules/guild/web/attendance/pages/AttendancePage";
+import { GuildDashboardPage } from "../../../../modules/guild/web/dashboard/pages/GuildDashboardPage";
+import { OfficerNotesPage } from "../../../../modules/guild/web/officer-notes/pages/OfficerNotesPage";
+import { RequirementsPage } from "../../../../modules/guild/web/requirements/pages/RequirementsPage";
 import { RosterPage } from "../../../../modules/guild/web/roster/pages/RosterPage";
 import { TeamsPage } from "../../../../modules/guild/web/teams/pages/TeamsPage";
+import { WeeklyProgressPage } from "../../../../modules/guild/web/weekly-progress/pages/WeeklyProgressPage";
 import { CharactersPage } from "../../../../modules/my-syntrack/web/characters/pages/CharactersPage";
 import { DashboardPage } from "../../../../modules/my-syntrack/web/dashboard/pages/DashboardPage";
 import { GearReadinessPage } from "../../../../modules/my-syntrack/web/gear-readiness/pages/GearReadinessPage";
@@ -146,6 +151,13 @@ export function AppRouter() {
         />
 
         <Route
+          path="guild"
+          element={
+            <GuildDashboardPage />
+          }
+        />
+
+        <Route
           path="guild/roster"
           element={
             <RosterPage />
@@ -156,6 +168,34 @@ export function AppRouter() {
           path="guild/teams"
           element={
             <TeamsPage />
+          }
+        />
+
+        <Route
+          path="guild/attendance"
+          element={
+            <AttendancePage />
+          }
+        />
+
+        <Route
+          path="guild/weekly-progress"
+          element={
+            <WeeklyProgressPage />
+          }
+        />
+
+        <Route
+          path="guild/requirements"
+          element={
+            <RequirementsPage />
+          }
+        />
+
+        <Route
+          path="guild/officer-notes"
+          element={
+            <OfficerNotesPage />
           }
         />
 

@@ -130,11 +130,18 @@ Guild organization and persistent guild state.
 
 ### Existing implementation
 
+Guild is fully implemented — all seven planned capabilities exist.
+
 Web:
 
+- `modules/guild/web/dashboard`
 - `modules/guild/web/roster`
 - `modules/guild/web/verification`
 - `modules/guild/web/teams`
+- `modules/guild/web/requirements`
+- `modules/guild/web/officer-notes`
+- `modules/guild/web/attendance`
+- `modules/guild/web/weekly-progress`
 
 API:
 
@@ -142,6 +149,10 @@ API:
 - `modules/guild/api/roster-import`
 - `modules/guild/api/verification`
 - `modules/guild/api/teams`
+- `modules/guild/api/requirements`
+- `modules/guild/api/officer-notes`
+- `modules/guild/api/attendance`
+- `modules/guild/api/weekly-progress`
 
 Module-owned addon:
 
@@ -161,9 +172,21 @@ Data Platform's generic Lua SavedVariables parser.
 
 Teams group existing roster members into persistent units (e.g. a
 Mythic core team) independent of any specific raid event; they only
-reference `GuildMember` by ID and go through the same verification
-gate as the roster. Boss-specific raid rosters built from a team are
-owned by the Raid module, not Guild.
+reference `GuildMember` by ID. Requirements are a documented list of
+expectations (gear, keystone, attendance, ...) with no automatic
+compliance checking against live character data. Officer Notes are
+freeform per-member commentary, stamped server-side with the verified
+officer's character name — never taken from client input. Attendance
+tracks raid events and per-member status, with an attendance
+percentage computed client-side (excused absences count toward
+neither attended nor missed). Weekly Progress is a read-only
+cross-reference against My SynTrack's `Character` /
+`WeeklyChecklistCompletion` / `WeeklyMythicPlusRun` data, matched by
+exact name/realm/region identity — an identity match, not a deeper
+integration. Requirements, Officer Notes and Attendance mutations go
+through the same verification gate as the roster; Weekly Progress and
+the Dashboard are read-only and stay open. Boss-specific raid rosters
+built from a team are owned by the Raid module, not Guild.
 
 ## 3. Raid
 
