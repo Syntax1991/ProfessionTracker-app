@@ -16,11 +16,12 @@ Crafting and profession intelligence.
 
 - API: `modules/professions/api`
 - Web: `modules/professions/web`
-- WoW addon: `modules/professions/addons/ProfessionTracker`
+- WoW addon: `modules/professions/addons/SynTrack_Professions`
 
-`ProfessionTracker` remains the technical addon name so existing
-SavedVariables continue to work. Additional profession addons belong in
-this module's `addons` directory.
+`modules/professions/addons/ProfessionTracker` remains as a
+compatibility shim that carries the historical `ProfessionTrackerDB`
+SavedVariables forward until the migration window ends. Additional
+profession addons belong in this module's `addons` directory.
 
 ## Web workspaces
 

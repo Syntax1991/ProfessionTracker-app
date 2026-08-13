@@ -1,55 +1,8 @@
 ## Interface: 120007
-## Title: SynTrack
-## Notes: Tracks characters, professions, crafting progress and account data for SynTrack.
+## Title: SynTrack Professions Legacy Data Migration
+## Notes: Loads the historical ProfessionTracker SavedVariables during the SynTrack_Professions migration.
 ## Author: Syntax1991
-## Version: 0.8.2
+## Version: 0.9.0
 ## SavedVariables: ProfessionTrackerDB
 ## X-Website: https://github.com/Syntax1991/SynTrack
-
-Core.lua
-ProfessionScope.lua
-ProfessionCatalogStorage.lua
-RecipeReagentCatalogCodec.lua
-RecipeReagentCatalogStorage.lua
-RecipeCatalogStorage.lua
-CharacterRecipeScenarioSelection.lua
-CharacterRecipeSimulationStorage.lua
-CharacterRecipeOperationCodec.lua
-CharacterRecipeOperationStorage.lua
-AddonStateCompaction.lua
-SpecializationEntries.lua
-SpecializationTraits.lua
-SpecializationTabs.lua
-Specializations.lua
-SpecializationCatalog.lua
-SpecializationProgress.lua
-ProfessionAutoSyncCandidates.lua
-ProfessionAutoSync.lua
-ProfessionSnapshots.lua
-RecipeOperation.lua
-RecipeClassification.lua
-RecipeSchematic.lua
-RecipeReagentSimulationCandidates.lua
-RecipeReagentSimulationInputs.lua
-RecipeReagentSimulation.lua
-RecipeCatalogEntry.lua
-RecipeCatalog.lua
-CharacterRecipeOperations.lua
-Recipes.lua
-Professions.lua
-Character.lua
-SyncRefresh.lua
-ProfessionCaptureRules.lua
-ProfessionBackgroundProbeRecipes.lua
-ProfessionBackgroundProbeOperations.lua
-ProfessionBackgroundProbeReporter.lua
-ProfessionBackgroundProbe.lua
-ProfessionHeadlessProbeData.lua
-ProfessionHeadlessProbeReporter.lua
-ProfessionHeadlessProbeSession.lua
-ProfessionCaptureStatus.lua
-ProfessionCaptureLocale.lua
-ProfessionCaptureReminderView.lua
-ProfessionCaptureReminder.lua
-ProfessionCaptureMessages.lua
-Events.lua
+## X-SynTrack-Migration: SynTrack_Professions

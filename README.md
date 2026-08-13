@@ -141,15 +141,15 @@ Never commit real credentials.
 
 ## WoW addon compatibility
 
-The public product name is SynTrack.
+The public product name is SynTrack. The professions addon has been
+migrated to its SynTrack-branded technical identity:
 
-For compatibility with existing SavedVariables, the internal WoW
-addon folder and SavedVariables database still use the historical
-technical identifiers:
+- `modules/professions/addons/SynTrack_Professions`
+- `SynTrack_Professions.toc`
 
-- `modules/professions/addons/ProfessionTracker`
-- `ProfessionTracker.toc`
-- `ProfessionTrackerDB`
-
-Those identifiers will only be renamed through a dedicated migration
-that preserves existing user data.
+The SavedVariables database name (`ProfessionTrackerDB`) is kept
+unchanged to preserve existing user data. During the migration window,
+`modules/professions/addons/ProfessionTracker` stays in place as a
+compatibility shim that only loads the historical SavedVariables file;
+it will be removed in a dedicated release once the migration window
+ends.

@@ -204,10 +204,13 @@ API:
 
 Module-owned addon:
 
-- `modules/professions/addons/ProfessionTracker`
+- `modules/professions/addons/SynTrack_Professions`
+- `modules/professions/addons/ProfessionTracker` (compatibility shim,
+  carries the historical `ProfessionTrackerDB` SavedVariables forward
+  during the migration window)
 
-The technical addon name remains unchanged to preserve existing WoW
-SavedVariables.
+The SavedVariables database name remains unchanged to preserve
+existing WoW user data.
 
 ## 6. Recruitment
 
