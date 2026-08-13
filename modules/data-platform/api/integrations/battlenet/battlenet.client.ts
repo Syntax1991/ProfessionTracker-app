@@ -2,6 +2,7 @@ import { env } from "../../../../../apps/api/src/config/env.js";
 import { AppError } from "../../../../../apps/api/src/shared/errors/AppError.js";
 import type {
   BattleNetAccountProfile,
+  BattleNetCharacterEquipment,
   BattleNetCharacterProfile,
   BattleNetGuildRoster,
   BattleNetProfessionsResponse,
@@ -209,6 +210,28 @@ export class BattleNetClient {
       BattleNetGuildRoster
     >(
       `/data/wow/guild/${encodedRealm}/${encodedGuild}/roster`,
+      accessToken,
+      true
+    );
+  }
+
+  async getCharacterEquipment(
+    accessToken: string,
+    realmSlug: string,
+    characterName: string
+  ): Promise<BattleNetCharacterEquipment | null> {
+    const encodedRealm = encodeURIComponent(
+      realmSlug.toLowerCase()
+    );
+
+    const encodedName = encodeURIComponent(
+      characterName.toLowerCase()
+    );
+
+    return this.getProfileResource<
+      BattleNetCharacterEquipment
+    >(
+      `/profile/wow/character/${encodedRealm}/${encodedName}/equipment`,
       accessToken,
       true
     );

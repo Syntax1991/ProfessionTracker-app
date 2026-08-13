@@ -4,10 +4,13 @@ Guild organization and persistent guild state.
 
 ## Capabilities
 
-All seven capabilities are implemented:
+All seven originally planned capabilities are implemented, plus a
+Gear Audit added afterward as a deliberate WoWAudit-inspired
+extension (see below):
 
 - Dashboard (available)
 - Roster (available)
+- Gear Audit (available)
 - Teams (available)
 - guild-level Attendance (available)
 - Weekly Progress (available)
@@ -19,11 +22,13 @@ All seven capabilities are implemented:
 - API: `modules/guild/api/roster`, `modules/guild/api/roster-import`,
   `modules/guild/api/verification`, `modules/guild/api/teams`,
   `modules/guild/api/requirements`, `modules/guild/api/officer-notes`,
-  `modules/guild/api/attendance`, `modules/guild/api/weekly-progress`
+  `modules/guild/api/attendance`, `modules/guild/api/weekly-progress`,
+  `modules/guild/api/audit`
 - Web: `modules/guild/web/roster`, `modules/guild/web/verification`,
   `modules/guild/web/teams`, `modules/guild/web/requirements`,
   `modules/guild/web/officer-notes`, `modules/guild/web/attendance`,
-  `modules/guild/web/weekly-progress`, `modules/guild/web/dashboard`
+  `modules/guild/web/weekly-progress`, `modules/guild/web/dashboard`,
+  `modules/guild/web/audit`
 - Addon: `modules/guild/addons/SynTrack_Guild`
 
 Roster members can be managed manually or synced from the
@@ -82,16 +87,48 @@ by ID, so deleting a `GuildMember` cascades and removes their team
 memberships too. A boss-specific raid roster built from a team
 belongs to the Raid module, not here.
 
+## Gear Audit
+
+Inspired directly by WoWAudit's core feature (added 2026-08-14 after
+explicit user feedback to model SynTrack's guild tooling on WoWAudit
+and WoWUtils — see the `project_wowaudit_reference` memory for the
+full context). `GuildMember` carries five nullable audit fields
+(`averageItemLevel`, `missingEnchantSlots`, `totalSocketCount`,
+`filledSocketCount`, `auditedAt`) populated by
+`POST /guild/audit/refresh` (verification-gated): it pulls every
+roster member's live equipped gear from Blizzard's Character
+Equipment Summary API (via the verified officer's Battle.net
+connection) and computes the stats in
+`modules/guild/api/audit/audit.stats.ts`.
+
+Unlike Weekly Progress, this does **not** require a matching My
+SynTrack `Character` — it works directly off the roster's own
+`name`/`realm`, covering every member regardless of whether they're
+separately tracked. The catch: `GuildMember.realm` only stores a
+realm *display name*, never a Blizzard realm *slug*, so
+`audit.realm-slug.ts` derives the slug with a lowercase/hyphenate
+heuristic (`slugifyRealmName`). This resolves correctly for the vast
+majority of realms but can miss ones with unusual characters — those
+members are silently skipped (counted in `skippedMembers`) rather
+than failing the whole refresh.
+
+The enchantable-slot list intentionally excludes head/shoulder, since
+whether those carry an enchant depends on expansion-specific systems
+(renown, crests, ...) that come and go; including them risked false
+"missing enchant" flags.
+
 ## Requirements
 
-`GuildRequirement` is a flat list of expectations the guild sets for
-its members (title, description, category —
-`GEAR`/`KEYSTONE`/`ATTENDANCE`/`PROFESSION`/`OTHER`). This module
-intentionally does **not** automatically check members against these
-requirements (e.g. comparing gear item level) — that would need a
-reliable link between `GuildMember` and a character's live gear data,
-which does not exist yet. Requirements are documentation officers can
-point to, not an enforcement engine.
+`GuildRequirement` is a list of expectations the guild sets for its
+members (title, description, category —
+`GEAR`/`KEYSTONE`/`ATTENDANCE`/`PROFESSION`/`OTHER`). A `GEAR`
+requirement may additionally set `minimumItemLevel`; when it does,
+the Requirements page cross-references it against every roster
+member's `averageItemLevel` from the Gear Audit and shows a live
+pass/fail count plus the names below threshold. Requirements in the
+other categories (Keystone, Attendance, Profession, Other) remain
+plain documentation — there's no automated compliance source for
+those yet.
 
 ## Officer Notes
 
@@ -114,7 +151,9 @@ implicit "everyone not marked is absent". The per-member attendance
 percentage shown on the Attendance page is computed client-side from
 all events: `EXCUSED` records count toward neither attended nor
 missed, so a sanctioned absence doesn't hurt the percentage, while
-`LATE` counts the same as `PRESENT`.
+`LATE` counts the same as `PRESENT`. The record grid has a "mark all
+as" bulk action per status so taking attendance for a full roster
+doesn't require clicking every member individually.
 
 ## Weekly Progress
 

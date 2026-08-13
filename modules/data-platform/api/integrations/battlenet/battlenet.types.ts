@@ -102,6 +102,32 @@ export type BattleNetGuildRoster = {
   members?: BattleNetGuildRosterMember[];
 };
 
+export type BattleNetEquippedItemSlot = {
+  type?: string;
+  name?: string;
+};
+
+export type BattleNetEquippedItemLevel = {
+  value?: number;
+};
+
+export type BattleNetEquippedItemSocket = {
+  item?: {
+    id?: number;
+  };
+};
+
+export type BattleNetEquippedItem = {
+  slot?: BattleNetEquippedItemSlot;
+  level?: BattleNetEquippedItemLevel;
+  enchantments?: unknown[];
+  sockets?: BattleNetEquippedItemSocket[];
+};
+
+export type BattleNetCharacterEquipment = {
+  equipped_items?: BattleNetEquippedItem[];
+};
+
 export type BattleNetConnectionInput = {
   battleTag: string | null;
   accessToken: string;

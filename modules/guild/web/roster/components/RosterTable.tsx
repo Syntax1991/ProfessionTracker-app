@@ -31,6 +31,7 @@ export function RosterTable({
             <th>Member</th>
             <th>Level</th>
             <th>Rank</th>
+            <th>Item Level</th>
             <th>Note</th>
             <th>Source</th>
             <th aria-label="Actions" />
@@ -71,6 +72,19 @@ export function RosterTable({
                   <span className="rank-badge">
                     {member.rank}
                   </span>
+                </td>
+
+                <td>
+                  {member.averageItemLevel !==
+                  null ? (
+                    Math.round(
+                      member.averageItemLevel
+                    )
+                  ) : (
+                    <span className="muted-text">
+                      —
+                    </span>
+                  )}
                 </td>
 
                 <td>

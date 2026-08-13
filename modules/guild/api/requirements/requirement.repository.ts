@@ -35,6 +35,8 @@ export class GuildRequirementRepository {
           input.description,
         category:
           input.category,
+        minimumItemLevel:
+          input.minimumItemLevel,
         sortOrder:
           input.sortOrder
       }
@@ -55,6 +57,8 @@ export class GuildRequirementRepository {
           input.description,
         category:
           input.category,
+        minimumItemLevel:
+          input.minimumItemLevel,
         sortOrder:
           input.sortOrder
       }

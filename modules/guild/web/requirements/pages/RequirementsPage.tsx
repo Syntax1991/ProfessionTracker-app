@@ -2,6 +2,7 @@ import { useState } from "react";
 import { LoadingPanel } from "../../../../../apps/web/src/shared/components/LoadingPanel";
 import { PageHeader } from "../../../../../apps/web/src/shared/components/PageHeader";
 import { StatusMessage } from "../../../../../apps/web/src/shared/components/StatusMessage";
+import { useRoster } from "../../roster/hooks/useRoster";
 import { GuildVerificationGate } from "../../verification/components/GuildVerificationGate";
 import { RequirementForm } from "../components/RequirementForm";
 import { RequirementList } from "../components/RequirementList";
@@ -28,6 +29,10 @@ export function RequirementsPage() {
     updateRequirement,
     deleteRequirement
   } = useRequirements();
+
+  const {
+    members: rosterMembers
+  } = useRoster();
 
   const handleSubmit = async (
     input: GuildRequirementInput
@@ -150,6 +155,9 @@ export function RequirementsPage() {
                 }
                 requirements={
                   requirements
+                }
+                rosterMembers={
+                  rosterMembers
                 }
               />
             )}

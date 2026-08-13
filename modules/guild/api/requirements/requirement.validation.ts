@@ -30,6 +30,14 @@ export const guildRequirementInputSchema =
           "OTHER"
         ),
 
+      minimumItemLevel: z.coerce
+        .number()
+        .int()
+        .min(1)
+        .max(999)
+        .nullable()
+        .default(null),
+
       sortOrder: z.coerce
         .number()
         .int()

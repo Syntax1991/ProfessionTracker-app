@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { guildAttendanceRouter } from "../../../../modules/guild/api/attendance/attendance.routes.js";
+import { guildAuditRouter } from "../../../../modules/guild/api/audit/audit.routes.js";
 import { guildOfficerNoteRouter } from "../../../../modules/guild/api/officer-notes/officer-note.routes.js";
 import { guildRequirementRouter } from "../../../../modules/guild/api/requirements/requirement.routes.js";
 import { guildRosterRouter } from "../../../../modules/guild/api/roster/roster.routes.js";
@@ -100,6 +101,11 @@ apiRouter.use(
 apiRouter.use(
   "/guild/roster",
   guildRosterRouter
+);
+
+apiRouter.use(
+  "/guild/audit",
+  guildAuditRouter
 );
 
 apiRouter.use(

@@ -251,6 +251,14 @@
   margin-top: 26px;
 }
 
+.attendance-bulk-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
 .attendance-status-buttons {
   display: flex;
   flex-wrap: wrap;

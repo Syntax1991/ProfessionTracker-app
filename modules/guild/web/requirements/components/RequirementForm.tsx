@@ -20,6 +20,7 @@ type RequirementFormState = {
   title: string;
   description: string;
   category: GuildRequirementCategory;
+  minimumItemLevel: string;
   sortOrder: string;
 };
 
@@ -34,6 +35,12 @@ function createInitialState(
     category:
       requirement?.category ??
       "OTHER",
+    minimumItemLevel:
+      requirement?.minimumItemLevel
+        ? String(
+            requirement.minimumItemLevel
+          )
+        : "",
     sortOrder: String(
       requirement?.sortOrder ?? 0
     )
@@ -68,6 +75,14 @@ export function RequirementForm({
           form.description.trim() ||
           null,
         category: form.category,
+        minimumItemLevel:
+          form.category ===
+            "GEAR" &&
+          form.minimumItemLevel.trim()
+            ? Number(
+                form.minimumItemLevel
+              )
+            : null,
         sortOrder: Number(
           form.sortOrder
         )
@@ -129,6 +144,32 @@ export function RequirementForm({
             </option>
           </select>
         </label>
+
+        {form.category ===
+          "GEAR" && (
+          <label>
+            <span>
+              Minimum item level
+            </span>
+            <input
+              max={999}
+              min={1}
+              onChange={(event) =>
+                setForm({
+                  ...form,
+                  minimumItemLevel:
+                    event.target
+                      .value
+                })
+              }
+              placeholder="e.g. 620"
+              type="number"
+              value={
+                form.minimumItemLevel
+              }
+            />
+          </label>
+        )}
 
         <label>
           <span>Sort order</span>

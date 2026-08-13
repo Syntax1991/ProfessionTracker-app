@@ -13,6 +13,11 @@ export type GuildMember = {
   lastSyncedAt: string | null;
   createdAt: string;
   updatedAt: string;
+  averageItemLevel: number | null;
+  missingEnchantSlots: number | null;
+  totalSocketCount: number | null;
+  filledSocketCount: number | null;
+  auditedAt: string | null;
 };
 
 export type GuildMemberInput = {

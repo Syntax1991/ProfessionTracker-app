@@ -53,87 +53,125 @@ export function AttendanceRecordGrid({
     );
   }
 
+  const handleBulkSetStatus = (
+    status: GuildAttendanceStatus
+  ) => {
+    for (const member of rosterMembers) {
+      onSetStatus(
+        member.id,
+        status
+      );
+    }
+  };
+
   return (
-    <div className="table-scroll">
-      <table>
-        <thead>
-          <tr>
-            <th>Member</th>
-            <th>Status</th>
-            <th aria-label="Actions" />
-          </tr>
-        </thead>
+    <div>
+      <div className="attendance-bulk-actions">
+        <span className="muted-text">
+          Mark all as:
+        </span>
 
-        <tbody>
-          {rosterMembers.map(
-            (member) => {
-              const record =
-                recordByMemberId.get(
-                  member.id
-                );
+        {statuses.map(
+          (status) => (
+            <button
+              className="button button-secondary"
+              key={
+                `bulk-${status}`
+              }
+              onClick={() =>
+                handleBulkSetStatus(
+                  status
+                )
+              }
+              type="button"
+            >
+              {status}
+            </button>
+          )
+        )}
+      </div>
 
-              return (
-                <tr
-                  key={member.id}
-                >
-                  <td>
-                    {member.name}
-                  </td>
+      <div className="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Member</th>
+              <th>Status</th>
+              <th aria-label="Actions" />
+            </tr>
+          </thead>
 
-                  <td>
-                    <div className="attendance-status-buttons">
-                      {statuses.map(
-                        (
-                          status
-                        ) => (
-                          <button
-                            className={
-                              record?.status ===
-                              status
-                                ? "attendance-status-button selected"
-                                : "attendance-status-button"
-                            }
-                            key={
-                              status
-                            }
-                            onClick={() =>
-                              onSetStatus(
-                                member.id,
+          <tbody>
+            {rosterMembers.map(
+              (member) => {
+                const record =
+                  recordByMemberId.get(
+                    member.id
+                  );
+
+                return (
+                  <tr
+                    key={member.id}
+                  >
+                    <td>
+                      {member.name}
+                    </td>
+
+                    <td>
+                      <div className="attendance-status-buttons">
+                        {statuses.map(
+                          (
+                            status
+                          ) => (
+                            <button
+                              className={
+                                record?.status ===
                                 status
-                              )
-                            }
-                            type="button"
-                          >
-                            {
-                              status
-                            }
-                          </button>
-                        )
-                      )}
-                    </div>
-                  </td>
-
-                  <td>
-                    {record && (
-                      <button
-                        className="text-button"
-                        onClick={() =>
-                          onClearStatus(
-                            member.id
+                                  ? "attendance-status-button selected"
+                                  : "attendance-status-button"
+                              }
+                              key={
+                                status
+                              }
+                              onClick={() =>
+                                onSetStatus(
+                                  member.id,
+                                  status
+                                )
+                              }
+                              type="button"
+                            >
+                              {
+                                status
+                              }
+                            </button>
                           )
-                        }
-                        type="button"
-                      >
-                        Clear
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              );
-            }
-          )}
-        </tbody>
-      </table>
+                        )}
+                      </div>
+                    </td>
+
+                    <td>
+                      {record && (
+                        <button
+                          className="text-button"
+                          onClick={() =>
+                            onClearStatus(
+                              member.id
+                            )
+                          }
+                          type="button"
+                        >
+                          Clear
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                );
+              }
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

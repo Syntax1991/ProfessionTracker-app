@@ -4,6 +4,7 @@ import {
   Routes
 } from "react-router-dom";
 import { AttendancePage } from "../../../../modules/guild/web/attendance/pages/AttendancePage";
+import { AuditPage } from "../../../../modules/guild/web/audit/pages/AuditPage";
 import { GuildDashboardPage } from "../../../../modules/guild/web/dashboard/pages/GuildDashboardPage";
 import { OfficerNotesPage } from "../../../../modules/guild/web/officer-notes/pages/OfficerNotesPage";
 import { RequirementsPage } from "../../../../modules/guild/web/requirements/pages/RequirementsPage";
@@ -161,6 +162,13 @@ export function AppRouter() {
           path="guild/roster"
           element={
             <RosterPage />
+          }
+        />
+
+        <Route
+          path="guild/audit"
+          element={
+            <AuditPage />
           }
         />
 

@@ -19,6 +19,11 @@ export const guildModule: MainModuleDefinition =
         status: "available"
       },
       {
+        label: "Gear Audit",
+        path: "/guild/audit",
+        status: "available"
+      },
+      {
         label: "Teams",
         path: "/guild/teams",
         status: "available"

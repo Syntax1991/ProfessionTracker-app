@@ -317,6 +317,12 @@ model GuildMember {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 
+  averageItemLevel    Float?
+  missingEnchantSlots Int?
+  totalSocketCount    Int?
+  filledSocketCount   Int?
+  auditedAt           DateTime?
+
   teamMemberships GuildTeamMembership[]
   officerNotes    GuildOfficerNote[]
   attendanceRecords GuildAttendanceRecord[]
@@ -394,13 +400,14 @@ model GuildTeamMembership {
 }
 
 model GuildRequirement {
-  id          String   @id @default(cuid())
-  title       String
-  description String?
-  category    String   @default("OTHER")
-  sortOrder   Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id               String   @id @default(cuid())
+  title            String
+  description      String?
+  category         String   @default("OTHER")
+  minimumItemLevel Int?
+  sortOrder        Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 }
 
 model GuildVerification {
