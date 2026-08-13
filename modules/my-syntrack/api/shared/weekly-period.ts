@@ -1,4 +1,8 @@
-import type { WeeklyChecklistPeriod } from "./weekly-checklist.types.js";
+export type WeeklyPeriod = {
+  key: string;
+  startsAt: string;
+  endsAt: string;
+};
 
 const weeklyResetDay = 3;
 const weeklyResetHourUtc = 7;
@@ -18,9 +22,9 @@ function createResetOnDate(
   );
 }
 
-export function getWeeklyChecklistPeriod(
+export function getWeeklyPeriod(
   now = new Date()
-): WeeklyChecklistPeriod {
+): WeeklyPeriod {
   const daysSinceReset =
     (now.getUTCDay() -
       weeklyResetDay +

@@ -23,6 +23,7 @@ model Character {
 
   professions       CharacterProfession[]
   weeklyCompletions WeeklyChecklistCompletion[]
+  weeklyMythicRuns  WeeklyMythicPlusRun[]
 
   @@unique([name, realm, region])
   @@index([battleNetId, region])
@@ -56,6 +57,22 @@ model WeeklyChecklistCompletion {
   @@unique([characterId, taskId, periodKey])
   @@index([periodKey])
   @@index([taskId, periodKey])
+}
+
+model WeeklyMythicPlusRun {
+  id          String   @id @default(cuid())
+  characterId String
+  periodKey   String
+  dungeonName String?
+  keyLevel    Int
+  completedAt DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  character Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+
+  @@index([characterId, periodKey])
+  @@index([periodKey, keyLevel])
 }
 
 model Profession {

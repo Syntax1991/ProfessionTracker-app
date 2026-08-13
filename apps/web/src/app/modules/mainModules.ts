@@ -56,7 +56,8 @@ export const mainModules:
         },
         {
           label: "Vault / M+",
-          status: "planned"
+          path: "/vault-mythic-plus",
+          status: "available"
         },
         {
           label: "Raid Tasks",

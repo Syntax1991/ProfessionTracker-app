@@ -21,6 +21,7 @@ Personal workspace and projections for the logged-in player.
 - personal dashboard and character overview
 - character roster management
 - reset-aware weekly checklist with per-character progress
+- Mythic+ run log and derived Great Vault dungeon slots
 
 My SynTrack may compose data from other modules, but does not duplicate
 their business rules.

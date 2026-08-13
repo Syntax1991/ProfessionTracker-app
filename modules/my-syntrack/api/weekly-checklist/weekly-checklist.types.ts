@@ -6,12 +6,6 @@ export type WeeklyChecklistTaskDefinition = {
   sortOrder: number;
 };
 
-export type WeeklyChecklistPeriod = {
-  key: string;
-  startsAt: string;
-  endsAt: string;
-};
-
 export type WeeklyTaskUpdateInput = {
   completed: boolean;
 };

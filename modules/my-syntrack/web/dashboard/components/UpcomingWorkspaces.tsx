@@ -12,8 +12,8 @@ const workspaces = [
     title: "Vault / M+",
     description:
       "Track reward slots, keys and weekly dungeon progress.",
-    status: "Planned",
-    path: null
+    status: "Available",
+    path: "/vault-mythic-plus"
   },
   {
     title: "Gear Readiness",

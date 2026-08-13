@@ -1,5 +1,5 @@
 import { AppError } from "../../../../apps/api/src/shared/errors/AppError.js";
-import { getWeeklyChecklistPeriod } from "./weekly-checklist.period.js";
+import { getWeeklyPeriod } from "../shared/weekly-period.js";
 import { WeeklyChecklistRepository } from "./weekly-checklist.repository.js";
 import type {
   WeeklyChecklistTaskDefinition,
@@ -61,7 +61,7 @@ export class WeeklyChecklistService {
       .syncTaskCatalog(taskCatalog);
 
     const period =
-      getWeeklyChecklistPeriod();
+      getWeeklyPeriod();
     const [tasks, characters] =
       await Promise.all([
         this.repository.findTasks(),
@@ -147,7 +147,7 @@ export class WeeklyChecklistService {
     }
 
     const period =
-      getWeeklyChecklistPeriod();
+      getWeeklyPeriod();
 
     await this.repository.setTaskCompletion(
       characterId,
@@ -180,7 +180,7 @@ export class WeeklyChecklistService {
     const tasks =
       await this.repository.findTasks();
     const period =
-      getWeeklyChecklistPeriod();
+      getWeeklyPeriod();
 
     await this.repository
       .setAllTaskCompletions(
