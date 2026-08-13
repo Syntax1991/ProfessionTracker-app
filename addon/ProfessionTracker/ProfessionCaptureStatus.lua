@@ -95,6 +95,10 @@ local function applyOperationCapture(
     status.captureVersion =
         captureVersion
 
+    status.capturedAt =
+        capture.capturedAt
+        or status.capturedAt
+
     status.expansionSkillLineId =
         capture.skillLineId
         or status.expansionSkillLineId
@@ -177,6 +181,9 @@ local function createProfessionStatus(
         captureLevel =
             "BASIC",
 
+        capturedAt =
+            nil,
+
         state =
             "MISSING",
 
@@ -206,6 +213,10 @@ local function createProfessionStatus(
         status.expansionSkillLineId =
             expansion.skillLineId
             or status.expansionSkillLineId
+
+        status.capturedAt =
+            expansion.recipeCapturedAt
+            or status.capturedAt
     end
 
     if PT.ProfessionExpansionHasRecipes(

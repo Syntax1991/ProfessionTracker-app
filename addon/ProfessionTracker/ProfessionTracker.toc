@@ -2,7 +2,7 @@
 ## Title: SynTrack
 ## Notes: Tracks characters, professions, crafting progress and account data for SynTrack.
 ## Author: Syntax1991
-## Version: 0.7.5
+## Version: 0.7.6
 ## SavedVariables: ProfessionTrackerDB
 ## X-Website: https://github.com/Syntax1991/ProfessionTracker-app
 
@@ -40,5 +40,7 @@ ProfessionHeadlessProbeData.lua
 ProfessionHeadlessProbeReporter.lua
 ProfessionHeadlessProbeSession.lua
 ProfessionCaptureStatus.lua
+ProfessionCaptureReminderView.lua
+ProfessionCaptureReminder.lua
 ProfessionCaptureMessages.lua
 Events.lua

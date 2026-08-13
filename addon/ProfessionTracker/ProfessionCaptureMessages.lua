@@ -1,10 +1,10 @@
 local _, PT = ...
 
-local warnedProfessions = {}
 local announcedCaptureSignatures = {}
-local loginWarningScheduled = false
 
-local function formatCapturedStatus(status)
+local function formatCapturedStatus(
+    status
+)
     return string.format(
         "%d/%d Operation-Daten · %d ohne Operation-Modell · %d gelernt",
         status.operationRecipeCount
@@ -18,12 +18,16 @@ local function formatCapturedStatus(status)
     )
 end
 
-local function printProfessionStatus(status)
+local function printProfessionStatus(
+    status
+)
     if status.state == "CAPTURED" then
         PT.Print(
             status.professionName
                 .. ": OPERATIONS · "
-                .. formatCapturedStatus(status)
+                .. formatCapturedStatus(
+                    status
+                )
                 .. " · erfasst"
         )
 
@@ -89,46 +93,18 @@ function PT.PrintCurrentProfessionCaptureStatus()
         "Crafting-Datenstatus:"
     )
 
-    for _, status in ipairs(statuses) do
+    for _, status in ipairs(
+        statuses
+    ) do
         printProfessionStatus(
             status
         )
     end
 end
 
-function PT.WarnMissingProfessionCaptureData()
-    for _, status in ipairs(
-        PT.GetCurrentProfessionCaptureStatuses()
-    ) do
-        local requiresCapture =
-            status.state ~= "CAPTURED"
-            and status.state ~= "LEGACY"
-
-        if requiresCapture then
-            local warningKey =
-                tostring(
-                    status.professionSkillLineId
-                    or status.professionName
-                )
-
-            if not warnedProfessions[
-                warningKey
-            ] then
-                warnedProfessions[
-                    warningKey
-                ] = true
-
-                PT.Print(
-                    status.professionName
-                        .. " erkannt, aber Safe-Craft-Daten fehlen. "
-                        .. "Öffne den Midnight-Beruf einmal."
-                )
-            end
-        end
-    end
-end
-
-local function createCaptureSignature(capture)
+local function createCaptureSignature(
+    capture
+)
     return table.concat(
         {
             tostring(
@@ -202,31 +178,3 @@ function PT.OnCharacterRecipeOperationsCaptured(
         )
     )
 end
-
-local eventFrame =
-    CreateFrame(
-        "Frame"
-    )
-
-eventFrame:RegisterEvent(
-    "PLAYER_ENTERING_WORLD"
-)
-
-eventFrame:SetScript(
-    "OnEvent",
-    function()
-        if loginWarningScheduled then
-            return
-        end
-
-        loginWarningScheduled =
-            true
-
-        C_Timer.After(
-            4,
-            function()
-                PT.WarnMissingProfessionCaptureData()
-            end
-        )
-    end
-)

@@ -1,5 +1,15 @@
 local _, PT = ...
 
+local REFRESH_DAYS = 7
+local SECONDS_PER_DAY = 24 * 60 * 60
+
+PT.PROFESSION_CAPTURE_REFRESH_DAYS =
+    REFRESH_DAYS
+
+PT.PROFESSION_CAPTURE_REFRESH_SECONDS =
+    REFRESH_DAYS
+    * SECONDS_PER_DAY
+
 local craftingProfessionSkillLines = {
     [164] = true,
     [165] = true,
@@ -74,4 +84,53 @@ function PT.ProfessionExpansionHasRecipes(
 )
     return type(expansion) == "table"
         and type(expansion.recipeIds) == "table"
+end
+
+function PT.GetProfessionCaptureReminderState(
+    status,
+    currentTime
+)
+    if type(status) ~= "table" then
+        return "MISSING",
+            nil
+    end
+
+    if status.state ~= "CAPTURED" then
+        return "MISSING",
+            nil
+    end
+
+    local capturedAt =
+        tonumber(
+            status.capturedAt
+        )
+
+    if not capturedAt
+        or capturedAt <= 0
+    then
+        return "MISSING",
+            nil
+    end
+
+    local now =
+        tonumber(
+            currentTime
+        )
+        or time()
+
+    local ageSeconds =
+        math.max(
+            now - capturedAt,
+            0
+        )
+
+    if ageSeconds
+        >= PT.PROFESSION_CAPTURE_REFRESH_SECONDS
+    then
+        return "OUTDATED",
+            ageSeconds
+    end
+
+    return nil,
+        ageSeconds
 end
