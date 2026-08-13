@@ -5,125 +5,24 @@ import {
   unixTimestampToIso
 } from "./addon-import.lua-utils.js";
 import {
-  normalizeOperationMetrics
-} from "./addon-import.operation-metrics.normalizer.js";
-import {
-  normalizeCharacterRecipeReagentSimulation
-} from "./addon-import.character-recipe-simulation.normalizer.js";
+  createCharacterRecipeReagentSchemaMap,
+  normalizeCharacterRecipeOperationRecipe
+} from "./addon-import.character-recipe-operation-recipe.normalizer.js";
 import type {
   AddonCharacterRecipeOperation,
   AddonCharacterRecipeOperationCapture,
   AddonRecipeCatalog,
-  AddonRecipeReagentSchema,
   LuaValue
 } from "./addon-import.types.js";
-
-type ReagentSchemaMap =
-  Map<
-    string,
-    AddonRecipeReagentSchema | null
-  >;
-
-function createReagentSchemaMap(
-  recipeCatalogs:
-    AddonRecipeCatalog[]
-): ReagentSchemaMap {
-  const result:
-    ReagentSchemaMap =
-    new Map();
-
-  for (
-    const catalog of
-    recipeCatalogs
-  ) {
-    for (
-      const recipe of
-      catalog.recipes
-    ) {
-      result.set(
-        [
-          catalog.skillLineId,
-          recipe.gameRecipeId
-        ].join(":"),
-        recipe.reagentSchema
-      );
-    }
-  }
-
-  return result;
-}
-
-function normalizeOperationRecipe(
-  skillLineId: number,
-  key: string,
-  value: LuaValue,
-  reagentSchemas:
-    ReagentSchemaMap
-): AddonCharacterRecipeOperation | null {
-  const recipe =
-    asTable(
-      value
-    );
-
-  if (!recipe) {
-    return null;
-  }
-
-  const gameRecipeId =
-    asNumber(
-      recipe.recipeId
-    ) ??
-    Number(
-      key
-    );
-
-  if (
-    !Number.isFinite(
-      gameRecipeId
-    )
-  ) {
-    return null;
-  }
-
-  const operationMetrics =
-    normalizeOperationMetrics(
-      recipe.operationMetrics
-    );
-
-  if (
-    Object.keys(
-      operationMetrics
-    ).length === 0
-  ) {
-    return null;
-  }
-
-  return {
-    gameRecipeId,
-
-    operationMetrics,
-
-    reagentSimulation:
-      normalizeCharacterRecipeReagentSimulation(
-        recipe.reagentSimulation,
-        operationMetrics,
-        reagentSchemas.get(
-          [
-            skillLineId,
-            gameRecipeId
-          ].join(":")
-        ) ??
-        null
-      )
-  };
-}
 
 function normalizeCapture(
   characterKey: string,
   skillLineKey: string,
   value: LuaValue,
   reagentSchemas:
-    ReagentSchemaMap
+    ReturnType<
+      typeof createCharacterRecipeReagentSchemaMap
+    >
 ): AddonCharacterRecipeOperationCapture | null {
   const capture =
     asTable(
@@ -171,7 +70,7 @@ function normalizeCapture(
       )
     ) {
       const recipe =
-        normalizeOperationRecipe(
+        normalizeCharacterRecipeOperationRecipe(
           skillLineId,
           recipeKey,
           recipeValue,
@@ -284,7 +183,7 @@ export function normalizeCharacterRecipeOperations(
   }
 
   const reagentSchemas =
-    createReagentSchemaMap(
+    createCharacterRecipeReagentSchemaMap(
       recipeCatalogs
     );
 

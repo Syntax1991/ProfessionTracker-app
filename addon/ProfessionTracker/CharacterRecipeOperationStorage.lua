@@ -12,6 +12,20 @@ local function createCompactBaseMetrics(
     return operationMetrics
 end
 
+local function encodeStoredRecipe(
+    recipe,
+    fallbackRecipeID
+)
+    if not PT.EncodeCompactCharacterRecipeOperation then
+        return recipe
+    end
+
+    return PT.EncodeCompactCharacterRecipeOperation(
+        recipe,
+        fallbackRecipeID
+    )
+end
+
 function PT.CreateCompactCharacterRecipeOperation(
     recipeID,
     operationMetrics,
@@ -41,9 +55,8 @@ function PT.CreateCompactCharacterRecipeOperation(
             )
     end
 
-    return {
-        recipeId =
-            recipeID,
+    local compactRecipe = {
+        recipeId = recipeID,
 
         operationMetrics =
             compactMetrics,
@@ -51,31 +64,51 @@ function PT.CreateCompactCharacterRecipeOperation(
         reagentSimulation =
             compactSimulation
     }
+
+    return encodeStoredRecipe(
+        compactRecipe,
+        recipeID
+    )
 end
 
 local function compactStoredRecipe(
     recipeKey,
     recipe
 )
-    if type(recipe) ~= "table" then
-        return nil
+    local recipeID =
+        tonumber(recipeKey)
+
+    if type(recipe) == "string" then
+        return encodeStoredRecipe(
+            recipe,
+            recipeID
+        ),
+        recipeID
     end
 
-    local recipeID =
+    if type(recipe) ~= "table" then
+        return nil,
+            recipeID
+    end
+
+    recipeID =
         recipe.recipeId
-        or tonumber(
-            recipeKey
-        )
+        or recipeID
 
     if not recipeID then
-        return nil
+        return nil,
+            nil
     end
 
-    return PT.CreateCompactCharacterRecipeOperation(
-        recipeID,
-        recipe.operationMetrics,
-        recipe.reagentSimulation
-    )
+    local compactRecipe =
+        PT.CreateCompactCharacterRecipeOperation(
+            recipeID,
+            recipe.operationMetrics,
+            recipe.reagentSimulation
+        )
+
+    return compactRecipe,
+        recipeID
 end
 
 local function compactCapture(
@@ -91,7 +124,8 @@ local function compactCapture(
         capture.recipes
         or {}
     ) do
-        local compactRecipe =
+        local compactRecipe,
+            recipeID =
             compactStoredRecipe(
                 recipeKey,
                 recipe
@@ -100,7 +134,8 @@ local function compactCapture(
         if compactRecipe then
             compactRecipes[
                 tostring(
-                    compactRecipe.recipeId
+                    recipeID
+                    or recipeKey
                 )
             ] =
                 compactRecipe
