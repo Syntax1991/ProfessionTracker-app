@@ -14,6 +14,7 @@ External ingestion, synchronization and transport contracts.
 
 - API: `modules/data-platform/api`
 - Web: `modules/data-platform/web`
+- Addon runtime: `modules/data-platform/addons/SynTrack_Core`
 
 Module-owned addons send data through Data Platform contracts. Data
 Platform normalizes external data; consuming modules own its business

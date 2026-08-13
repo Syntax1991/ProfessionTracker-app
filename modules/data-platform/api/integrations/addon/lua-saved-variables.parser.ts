@@ -4,6 +4,12 @@ import type {
 import { LuaParserCursor } from "./lua-parser.cursor.js";
 import { LuaTableValueParser } from "./lua-table-value.parser.js";
 
+const supportedVariableNames =
+  new Set([
+    "ProfessionTrackerDB",
+    "SynTrackCoreDB"
+  ]);
+
 export class LuaSavedVariablesParser {
   constructor(
     private readonly source: string
@@ -26,11 +32,12 @@ export class LuaSavedVariablesParser {
       cursor.parseIdentifier();
 
     if (
-      variableName !==
-      "ProfessionTrackerDB"
+      !supportedVariableNames.has(
+        variableName
+      )
     ) {
       cursor.fail(
-        "ProfessionTrackerDB wurde nicht gefunden"
+        "No supported SynTrack SavedVariables table was found"
       );
     }
 
@@ -44,7 +51,7 @@ export class LuaSavedVariablesParser {
       value === null
     ) {
       cursor.fail(
-        "ProfessionTrackerDB muss eine Lua-Tabelle sein"
+        `${variableName} must be a Lua table`
       );
     }
 
@@ -65,7 +72,7 @@ export class LuaSavedVariablesParser {
       cursor.hasMore()
     ) {
       cursor.fail(
-        "Unerwarteter Inhalt nach ProfessionTrackerDB"
+        `Unexpected content after ${variableName}`
       );
     }
 

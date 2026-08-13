@@ -1,0 +1,17 @@
+## Interface: 120007
+## Title: SynTrack Core
+## Notes: Shared identity, module registration and data transport for SynTrack addons.
+## Author: Syntax1991
+## Version: 0.1.0
+## SavedVariables: SynTrackCoreDB
+## X-Website: https://github.com/Syntax1991/SynTrack
+## X-SynTrack-Module: core
+
+Bootstrap.lua
+Database.lua
+CharacterIdentity.lua
+EventBus.lua
+ModuleRegistry.lua
+Export.lua
+Commands.lua
+Events.lua

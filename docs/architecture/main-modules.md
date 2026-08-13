@@ -277,6 +277,10 @@ API:
 
 - `modules/data-platform/api/integrations`
 
+Addon:
+
+- `modules/data-platform/addons/SynTrack_Core`
+
 ### Dependency rule
 
 Data Platform gathers and normalizes data.
@@ -508,6 +512,10 @@ several addons can coexist without mixing source files.
 The current profession addon therefore lives under Professions. Future
 Raid, Guild or personal-tracking addons can live under their respective
 main modules without growing one global addon directory.
+
+`SynTrack_Core` is the shared Data Platform runtime used for stable
+identity, module registration, events and SavedVariables transport. It
+contains no profession, raid, guild or loot business rules.
 
 Data Platform owns the shared import, validation, identity and
 synchronization contracts. Addons and the future SynTrack Companion use

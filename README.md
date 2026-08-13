@@ -47,6 +47,7 @@ The existing production code currently covers parts of:
   - Battle.net integration
   - SynTrack Addon import
   - Addon SavedVariables capture
+  - SynTrack Core addon runtime
 
 Guild, Raid, Loot, Recruitment and Automation are established as
 platform domains and will be implemented incrementally.

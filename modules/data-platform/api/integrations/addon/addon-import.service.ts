@@ -7,21 +7,45 @@ import type {
 } from "./addon-import.types.js";
 import { LuaSavedVariablesParser } from "./lua-saved-variables.parser.js";
 
-const MIN_SUPPORTED_ADDON_SCHEMA_VERSION =
+const CORE_SAVED_VARIABLES_FORMAT =
+  "syntrack-saved-variables";
+
+const SUPPORTED_CORE_SCHEMA_VERSION =
+  1;
+
+const MIN_SUPPORTED_PROFESSION_SCHEMA_VERSION =
   4;
 
-const MAX_SUPPORTED_ADDON_SCHEMA_VERSION =
+const MAX_SUPPORTED_PROFESSION_SCHEMA_VERSION =
   10;
 
 function isSupportedSchemaVersion(
-  schemaVersion: number
+  schemaVersion: number,
+  isCoreSnapshot: boolean
 ): boolean {
+  if (isCoreSnapshot) {
+    return (
+      schemaVersion ===
+      SUPPORTED_CORE_SCHEMA_VERSION
+    );
+  }
+
   return (
     schemaVersion >=
-      MIN_SUPPORTED_ADDON_SCHEMA_VERSION &&
+      MIN_SUPPORTED_PROFESSION_SCHEMA_VERSION &&
     schemaVersion <=
-      MAX_SUPPORTED_ADDON_SCHEMA_VERSION
+      MAX_SUPPORTED_PROFESSION_SCHEMA_VERSION
   );
+}
+
+function supportedSchemaDescription(
+  isCoreSnapshot: boolean
+): string {
+  return isCoreSnapshot
+    ? String(
+        SUPPORTED_CORE_SCHEMA_VERSION
+      )
+    : `${MIN_SUPPORTED_PROFESSION_SCHEMA_VERSION} to ${MAX_SUPPORTED_PROFESSION_SCHEMA_VERSION}`;
 }
 
 export class AddonImportService {
@@ -65,6 +89,10 @@ export class AddonImportService {
           source
         ).parse();
 
+      const isCoreSnapshot =
+        root.format ===
+        CORE_SAVED_VARIABLES_FORMAT;
+
       const snapshot =
         normalizeAddonSnapshot(
           root
@@ -72,12 +100,13 @@ export class AddonImportService {
 
       if (
         !isSupportedSchemaVersion(
-          snapshot.schemaVersion
+          snapshot.schemaVersion,
+          isCoreSnapshot
         )
       ) {
         throw new AppError(
           400,
-          `Unsupported addon schema version ${snapshot.schemaVersion}. Supported versions are ${MIN_SUPPORTED_ADDON_SCHEMA_VERSION} bis ${MAX_SUPPORTED_ADDON_SCHEMA_VERSION}.`
+          `Unsupported addon schema version ${snapshot.schemaVersion}. Supported version is ${supportedSchemaDescription(isCoreSnapshot)}.`
         );
       }
 
@@ -104,7 +133,7 @@ export class AddonImportService {
 
       throw new AppError(
         400,
-        "ProfessionTracker SavedVariables could not be read.",
+        "SynTrack SavedVariables could not be read.",
         error instanceof Error
           ? error.message
           : String(error)
