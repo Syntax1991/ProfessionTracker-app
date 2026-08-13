@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { asyncHandler } from "../../../../apps/api/src/shared/http/asyncHandler.js";
+import { guildVerificationService } from "../verification/verification.routes.js";
 import { GuildRosterController } from "./roster.controller.js";
 import { GuildRosterRepository } from "./roster.repository.js";
 import { GuildRosterService } from "./roster.service.js";
@@ -9,7 +10,8 @@ const repository =
 
 const service =
   new GuildRosterService(
-    repository
+    repository,
+    guildVerificationService
   );
 
 const controller =

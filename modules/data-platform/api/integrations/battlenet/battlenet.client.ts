@@ -2,6 +2,8 @@ import { env } from "../../../../../apps/api/src/config/env.js";
 import { AppError } from "../../../../../apps/api/src/shared/errors/AppError.js";
 import type {
   BattleNetAccountProfile,
+  BattleNetCharacterProfile,
+  BattleNetGuildRoster,
   BattleNetProfessionsResponse,
   BattleNetTokenResponse,
   BattleNetUserInfo
@@ -166,6 +168,50 @@ export class BattleNetClient {
       primaries: [],
       secondaries: []
     };
+  }
+
+  async getCharacterProfile(
+    accessToken: string,
+    realmSlug: string,
+    characterName: string
+  ): Promise<BattleNetCharacterProfile | null> {
+    const encodedRealm = encodeURIComponent(
+      realmSlug.toLowerCase()
+    );
+
+    const encodedName = encodeURIComponent(
+      characterName.toLowerCase()
+    );
+
+    return this.getProfileResource<
+      BattleNetCharacterProfile
+    >(
+      `/profile/wow/character/${encodedRealm}/${encodedName}`,
+      accessToken,
+      true
+    );
+  }
+
+  async getGuildRoster(
+    accessToken: string,
+    realmSlug: string,
+    guildSlug: string
+  ): Promise<BattleNetGuildRoster | null> {
+    const encodedRealm = encodeURIComponent(
+      realmSlug.toLowerCase()
+    );
+
+    const encodedGuild = encodeURIComponent(
+      guildSlug.toLowerCase()
+    );
+
+    return this.getProfileResource<
+      BattleNetGuildRoster
+    >(
+      `/data/wow/guild/${encodedRealm}/${encodedGuild}/roster`,
+      accessToken,
+      true
+    );
   }
 
   private async getProfileResource<T>(

@@ -3,6 +3,7 @@ import { mapWithConcurrency } from "../../../../../apps/api/src/shared/async/map
 import { AppError } from "../../../../../apps/api/src/shared/errors/AppError.js";
 import { CharacterRepository } from "../../../../my-syntrack/api/characters/character.repository.js";
 import { ProfessionRepository } from "../../../../professions/api/profession.repository.js";
+import { getUsableBattleNetConnection } from "./battlenet-connection.guard.js";
 import { BattleNetClient } from "./battlenet.client.js";
 import {
   createBattleNetCharacterKey,
@@ -16,9 +17,6 @@ import type {
   BattleNetImportFailure,
   BattleNetImportResult
 } from "./battlenet.types.js";
-
-const tokenExpiryBufferMilliseconds =
-  30 * 1000;
 
 const importConcurrency = 4;
 
@@ -274,33 +272,9 @@ export class BattleNetImportService {
     );
   }
 
-  private async getUsableConnection() {
-    const connection =
-      await this.repository
-        .findConnection();
-
-    if (
-      !connection ||
-      !this.isTokenUsable(
-        connection.expiresAt
-      )
-    ) {
-      throw new AppError(
-        401,
-        "Bitte SynTrack zuerst mit Battle.net verbinden."
-      );
-    }
-
-    return connection;
-  }
-
-  private isTokenUsable(
-    expiresAt: Date
-  ): boolean {
-    return (
-      expiresAt.getTime() -
-        tokenExpiryBufferMilliseconds >
-      Date.now()
+  private getUsableConnection() {
+    return getUsableBattleNetConnection(
+      this.repository
     );
   }
 }

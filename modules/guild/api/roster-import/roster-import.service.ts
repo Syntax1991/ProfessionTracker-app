@@ -11,10 +11,17 @@ import type {
 
 const SUPPORTED_SCHEMA_VERSION = 1;
 
+export type GuildRosterImportVerificationGuard = {
+  ensureVerified(): Promise<void>;
+};
+
 export class GuildRosterImportService {
   constructor(
     private readonly persistence:
-      GuildRosterImportPersistence
+      GuildRosterImportPersistence,
+
+    private readonly verification:
+      GuildRosterImportVerificationGuard
   ) {}
 
   preview(
@@ -44,6 +51,8 @@ export class GuildRosterImportService {
   async importSavedVariables(
     source: string
   ): Promise<GuildRosterImportResult> {
+    await this.verification.ensureVerified();
+
     const snapshot =
       this.readSnapshot(source);
 

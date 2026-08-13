@@ -55,6 +55,53 @@ export type BattleNetProfessionsResponse = {
   secondaries?: BattleNetProfessionEntry[];
 };
 
+export type BattleNetGuildReference = {
+  name?: string;
+  id?: number;
+  realm?: {
+    name?: string;
+    slug?: string;
+  };
+  faction?: {
+    type?: string;
+    name?: string;
+  };
+  key?: {
+    href?: string;
+  };
+};
+
+export type BattleNetCharacterProfile = {
+  name?: string;
+  level?: number;
+  realm?: {
+    name?: string;
+    slug?: string;
+  };
+  guild?: BattleNetGuildReference;
+};
+
+export type BattleNetGuildRosterMember = {
+  character?: {
+    name?: string;
+    id?: number;
+    level?: number;
+    realm?: {
+      name?: string;
+      slug?: string;
+    };
+    playable_class?: {
+      name?: string;
+    };
+  };
+  rank?: number;
+};
+
+export type BattleNetGuildRoster = {
+  guild?: BattleNetGuildReference;
+  members?: BattleNetGuildRosterMember[];
+};
+
 export type BattleNetConnectionInput = {
   battleTag: string | null;
   accessToken: string;

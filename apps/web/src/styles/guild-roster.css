@@ -51,3 +51,48 @@
     grid-template-columns: 1fr;
   }
 }
+
+.guild-verification-candidates {
+  display: grid;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.guild-verification-candidate {
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.guild-verification-candidate-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-bottom: 12px;
+}
+
+.guild-verification-candidate-heading span {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+}
+
+.guild-verification-candidate-characters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.guild-verification-status .panel-header {
+  align-items: flex-start;
+}
+
+.guild-verification-status h2 {
+  margin-bottom: 2px;
+}
+
+.guild-verification-status
+  .panel-header
+  span {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+}

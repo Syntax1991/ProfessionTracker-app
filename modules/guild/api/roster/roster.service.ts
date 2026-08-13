@@ -2,10 +2,17 @@ import { AppError } from "../../../../apps/api/src/shared/errors/AppError.js";
 import { GuildRosterRepository } from "./roster.repository.js";
 import type { GuildMemberInput } from "./roster.types.js";
 
+export type GuildRosterVerificationGuard = {
+  ensureVerified(): Promise<void>;
+};
+
 export class GuildRosterService {
   constructor(
     private readonly repository:
-      GuildRosterRepository
+      GuildRosterRepository,
+
+    private readonly verification:
+      GuildRosterVerificationGuard
   ) {}
 
   list() {
@@ -15,6 +22,8 @@ export class GuildRosterService {
   async create(
     input: GuildMemberInput
   ) {
+    await this.verification.ensureVerified();
+
     const normalizedInput =
       this.normalize(input);
 
@@ -41,6 +50,8 @@ export class GuildRosterService {
     memberId: string,
     input: GuildMemberInput
   ) {
+    await this.verification.ensureVerified();
+
     const currentMember =
       await this.repository.findById(
         memberId
@@ -82,6 +93,8 @@ export class GuildRosterService {
   async delete(
     memberId: string
   ) {
+    await this.verification.ensureVerified();
+
     const member =
       await this.repository.findById(
         memberId

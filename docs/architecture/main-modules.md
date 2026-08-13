@@ -113,6 +113,7 @@ Guild organization and persistent guild state.
 ### Owns
 
 - guild roster
+- guild leadership verification
 - teams
 - attendance policy and guild-level attendance views
 - weekly guild progress
@@ -124,28 +125,37 @@ Guild organization and persistent guild state.
 - boss-specific raid assignments
 - loot decisions
 - recruitment application lifecycle
+- the Battle.net OAuth connection itself (Data Platform owns that;
+  Guild only consumes it to verify leadership)
 
 ### Existing implementation
 
 Web:
 
 - `modules/guild/web/roster`
+- `modules/guild/web/verification`
 
 API:
 
 - `modules/guild/api/roster`
 - `modules/guild/api/roster-import`
+- `modules/guild/api/verification`
 
 Module-owned addon:
 
 - `modules/guild/addons/SynTrack_Guild`
 
 Guild members can be managed manually through the Roster API or
-synced from the `SynTrack_Guild` WoW addon. The addon keeps its own
-`SynTrack_GuildDB` SavedVariables and registers with `SynTrack_Core`
-only for status visibility; roster data is transported through the
-dedicated roster-import endpoints, reusing Data Platform's generic
-Lua SavedVariables parser.
+synced from the `SynTrack_Guild` WoW addon, but only once the guild's
+leadership has been verified through Blizzard's official Battle.net
+APIs (see `modules/guild/api/verification`). Verification reuses Data
+Platform's existing Battle.net client and connection rather than
+duplicating OAuth handling — this is Guild consuming a Data Platform
+contract, not Data Platform making a business decision. The addon
+keeps its own `SynTrack_GuildDB` SavedVariables and registers with
+`SynTrack_Core` only for status visibility; roster data is
+transported through the dedicated roster-import endpoints, reusing
+Data Platform's generic Lua SavedVariables parser.
 
 ## 3. Raid
 

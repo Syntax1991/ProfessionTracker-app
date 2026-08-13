@@ -322,6 +322,22 @@ model GuildMember {
   @@index([source])
 }
 
+model GuildVerification {
+  id                  String   @id
+  guildName           String
+  realmName           String
+  realmSlug           String
+  region              String
+  faction             String?
+  memberCount         Int?
+  verifiedCharacter   String
+  verifiedRealmSlug   String
+  verifiedRank        Int
+  leadershipThreshold Int      @default(2)
+  verifiedAt          DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
 model BattleNetConnection {
   id          String   @id
   battleTag   String?
