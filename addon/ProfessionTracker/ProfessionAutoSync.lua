@@ -121,6 +121,29 @@ local function createSnapshot(
     )
 end
 
+local function preserveRecipeCapture(
+    snapshot,
+    existing
+)
+    if type(snapshot) ~= "table"
+        or type(existing) ~= "table"
+    then
+        return snapshot
+    end
+
+    if type(existing.recipeIds) == "table" then
+        snapshot.recipeIds =
+            existing.recipeIds
+    end
+
+    if existing.recipeCapturedAt ~= nil then
+        snapshot.recipeCapturedAt =
+            existing.recipeCapturedAt
+    end
+
+    return snapshot
+end
+
 local function applyCandidateData(
     profession,
     data
@@ -134,11 +157,25 @@ local function applyCandidateData(
             data.skillLineId
         )
 
+    local existing =
+        profession.expansions[
+            expansionKey
+        ]
+        or profession.expansions[
+            data.skillLineId
+        ]
+
+    local snapshot =
+        createSnapshot(
+            data
+        )
+
     profession.expansions[
         expansionKey
     ] =
-        createSnapshot(
-            data
+        preserveRecipeCapture(
+            snapshot,
+            existing
         )
 
     profession.activeExpansionSkillLineId =

@@ -171,6 +171,18 @@ local function runBackgroundProbe()
     PT.RunBackgroundProfessionProbe()
 end
 
+local function runHeadlessProbe()
+    if not PT.RunHeadlessProfessionProbe then
+        PT.Print(
+            "Headless-Probe ist nicht verfügbar."
+        )
+
+        return
+    end
+
+    PT.RunHeadlessProfessionProbe()
+end
+
 local function handleSlashCommand(input)
     local command =
         trimCommand(
@@ -192,6 +204,11 @@ local function handleSlashCommand(input)
         return
     end
 
+    if command == "headless" then
+        runHeadlessProbe()
+        return
+    end
+
     if command == "sync" then
         clearPendingRefresh()
 
@@ -205,7 +222,7 @@ local function handleSlashCommand(input)
     end
 
     PT.Print(
-        "Befehle: /st status, /st sync, /st probe"
+        "Befehle: /st status, /st sync, /st probe, /st headless"
     )
 end
 
@@ -237,7 +254,16 @@ local function handleAddonLoaded(
     initializeSlashCommands()
 end
 
+local function headlessProbeActive()
+    return PT.IsHeadlessProfessionProbeActive
+        and PT.IsHeadlessProfessionProbeActive()
+end
+
 local function handleAutomaticRefresh(event)
+    if headlessProbeActive() then
+        return
+    end
+
     local configuration =
         automaticRefreshEvents[
             event
