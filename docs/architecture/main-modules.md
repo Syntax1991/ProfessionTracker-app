@@ -187,22 +187,27 @@ All crafting and profession intelligence.
 
 ### Existing implementation
 
-Most of the current SynTrack code belongs to this module.
+The current profession implementation is physically grouped beneath
+the Professions main module.
 
-Current frontend feature directories:
+Web:
 
-- `profession-details`
-- `professions`
-- `specializations`
+- `modules/professions/web`
+- `modules/professions/web/details`
+- `modules/professions/web/specializations`
 
-Current backend module directories:
+API:
 
-- `profession-details`
-- `professions`
-- `specializations`
+- `modules/professions/api`
+- `modules/professions/api/details`
+- `modules/professions/api/specializations`
 
-These directories will be moved beneath the Professions domain in a
-dedicated structural migration.
+Module-owned addon:
+
+- `modules/professions/addons/ProfessionTracker`
+
+The technical addon name remains unchanged to preserve existing WoW
+SavedVariables.
 
 ## 6. Recruitment
 
@@ -264,13 +269,13 @@ External integrations, ingestion, synchronization and transport.
 
 ### Existing implementation
 
-Current frontend feature directory:
+Web:
 
-- `integrations`
+- `modules/data-platform/web/integrations`
 
-Current backend module directory:
+API:
 
-- `integrations`
+- `modules/data-platform/api/integrations`
 
 ### Dependency rule
 
@@ -287,101 +292,127 @@ For example:
 - Data Platform imports Raider.io.
 - Recruitment evaluates applicant context.
 
-## Current My SynTrack mapping
+## Current My SynTrack implementation
 
-The current generic character and dashboard features become part of
-My SynTrack.
+Character and dashboard features are grouped beneath My SynTrack.
 
-Frontend:
+Web:
 
-- `characters`
-- `dashboard`
+- `modules/my-syntrack/web/characters`
+- `modules/my-syntrack/web/dashboard`
 
-Backend:
+API:
 
-- `characters`
-- `dashboard`
+- `modules/my-syntrack/api/characters`
+- `modules/my-syntrack/api/dashboard`
 
-This is an ownership assignment first. Physical directory moves happen
-in a later migration.
+## Web structure
 
-## Frontend target structure
-
-Long-term target:
+Module-owned frontend code lives with its domain. The web app contains
+only application composition and genuinely shared UI.
 
 ```text
-frontend/src
+apps/web/src
 |
 +-- app
 |   +-- modules
 |   +-- routing
-|
-+-- features
-|   +-- my-syntrack
-|   +-- guild
-|   +-- raid
-|   +-- loot
-|   +-- professions
-|   +-- recruitment
-|   +-- automation
-|   +-- data-platform
-|
 +-- shared
 +-- styles
+
+modules/<main-module>/web
+|
++-- pages
++-- components
++-- hooks
++-- api
++-- types
 ```
 
-Each domain can contain its own pages, components, hooks, APIs and
-models.
+Planned modules receive a `web` directory only with their first real
+frontend capability.
 
-## Backend target structure
+## API structure
 
-Long-term target:
+Module-owned backend code lives with its domain. The API app contains
+server startup, route composition, Prisma and shared infrastructure.
 
 ```text
-backend/src/modules
+apps/api/src
 |
-+-- my-syntrack
-+-- guild
-+-- raid
-+-- loot
-+-- professions
-+-- recruitment
-+-- automation
-+-- data-platform
++-- server.ts
++-- app.ts
++-- routes
++-- infrastructure
++-- shared
+
+modules/<main-module>/api
+|
++-- controllers
++-- services
++-- repositories
++-- routes
 ```
 
 Feature-level Route -> Controller -> Service -> Repository boundaries
 remain inside the owning main module.
 
-## Repository applications
+## Repository layout
 
-The main modules describe business ownership.
+Main modules own business code. Apps are thin deployable runtimes that
+compose those modules.
 
-Deployable applications are a different architectural dimension.
-
-Future repository target:
+Current module-oriented layout:
 
 ```text
 SynTrack
 |
-+-- apps
-|   +-- web
-|   +-- api
-|   +-- companion
++-- modules
+|   +-- my-syntrack
+|   |   +-- api
+|   |   +-- web
+|   +-- guild
+|   +-- raid
+|   +-- loot
+|   +-- professions
+|   |   +-- api
+|   |   +-- web
+|   |   +-- addons
+|   |       +-- ProfessionTracker
+|   +-- recruitment
+|   +-- automation
+|   +-- data-platform
+|       +-- api
+|       +-- web
 |
-+-- addons
-|   +-- syntrack
++-- apps
+|   +-- api
+|   +-- web
++-- docs
++-- scripts
+```
+
+The root `modules` directory is the single source location for all
+domain-specific API, web and addon code. `apps` contains only runtime
+composition and shared application infrastructure.
+
+If several independently deployable services or shared packages are
+introduced later, shared technical packages may be added without
+changing the domain ownership model:
+
+```text
+SynTrack
 |
 +-- packages
 |   +-- contracts
 |   +-- shared
 |   +-- wow-data
-|
 +-- docs
 +-- scripts
 ```
 
-We do not perform this complete physical move in one commit.
+The project remains one Git repository unless release cadence, access
+control or team ownership later requires a split.
 
 ## Migration sequence
 
@@ -394,31 +425,39 @@ We do not perform this complete physical move in one commit.
 
 ### Phase 18B - Frontend domain migration
 
-Move current features into:
+Completed for currently implemented capabilities:
 
 - `my-syntrack`
 - `professions`
 - `data-platform`
 
-Update all imports and routes while preserving behavior.
-
 ### Phase 18C - Backend domain migration
 
-Move backend capabilities beneath the same three owning modules.
+Completed for currently implemented capabilities beneath the same
+three owning modules.
 
 Preserve Route -> Controller -> Service -> Repository -> Prisma.
 
-### Phase 18D - New domain skeletons
+### Phase 18D - Module-first monorepo
 
-Create Guild, Raid, Loot, Recruitment and Automation only when their
-first real capability is implemented.
+Completed for current production code:
+
+- move application shells to `apps/api` and `apps/web`
+- colocate API, web and addon source under each owning module
+- retain one repository and one root verification workflow
+
+### Phase 18E - New capabilities
+
+The root manifests establish Guild, Raid, Loot, Recruitment and
+Automation. API and web directories are created only with the first
+real capability.
 
 Do not create large empty module trees.
 
-### Later - Application monorepo migration
+### Later - Additional applications and packages
 
-When the Companion and additional platform services are implemented,
-move deployable applications toward `apps`, `addons` and `packages`.
+Add the Companion or reusable technical packages beneath `apps` and
+`packages` while module business logic remains beneath `modules`.
 
 ## Dependency principles
 
@@ -437,12 +476,16 @@ move deployable applications toward `apps`, `addons` and `packages`.
 9. Cross-module database relations use stable identifiers.
 10. Circular module dependencies are not allowed.
 
-## WoW addon and Companion
+## WoW addons and Companion
 
-The SynTrack Addon and SynTrack Companion are platform data clients.
+SynTrack supports multiple module-owned WoW addons. Their source lives
+under `modules/<main-module>/addons/<technical-name>`.
 
-They belong architecturally to Data Platform.
+The current profession addon therefore lives under Professions. Future
+Raid, Guild or personal-tracking addons can live under their respective
+main modules without growing one global addon directory.
 
-Profession-specific capture logic may exist inside the Addon, but the
-Addon itself must remain capable of transporting future guild, raid,
-weekly and character data without becoming owned by Professions.
+Data Platform owns the shared import, validation, identity and
+synchronization contracts. Addons and the future SynTrack Companion use
+those contracts but do not transfer their business ownership to Data
+Platform.

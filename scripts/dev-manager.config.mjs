@@ -16,21 +16,23 @@ export const projectRoot =
 
 export const services = [
   {
-    name: "backend",
+    name: "api",
     port: 4000,
     directory:
       path.join(
         projectRoot,
-        "backend"
+        "apps",
+        "api"
       )
   },
   {
-    name: "frontend",
+    name: "web",
     port: 5173,
     directory:
       path.join(
         projectRoot,
-        "frontend"
+        "apps",
+        "web"
       )
   }
 ];

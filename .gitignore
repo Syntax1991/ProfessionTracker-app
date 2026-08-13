@@ -6,15 +6,15 @@ coverage/
 **/.env
 !**/.env.example
 
-backend/prisma/dev.db
-backend/prisma/dev.db-journal
-backend/src/generated/
+apps/api/prisma/dev.db
+apps/api/prisma/dev.db-journal
+apps/api/src/generated/
 
-frontend/node_modules/
-frontend/dist/
+apps/web/node_modules/
+apps/web/dist/
 
-backend/node_modules/
-backend/dist/
+apps/api/node_modules/
+apps/api/dist/
 
 .vscode/
 .idea/

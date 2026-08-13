@@ -45,9 +45,11 @@ if (
 const parserPath =
   path.join(
     projectRoot,
-    "backend",
+    "apps/api",
     "dist",
     "modules",
+    "data-platform",
+    "api",
     "integrations",
     "addon",
     "lua-saved-variables.parser.js"

@@ -22,7 +22,7 @@ const projectRoot =
 const backendRoot =
   path.join(
     projectRoot,
-    "backend"
+    "apps/api"
   );
 
 const savedVariablesPath =
@@ -62,7 +62,7 @@ if (
 
 /*
  * DATABASE_URL defaults to file:./prisma/dev.db.
- * The backend normally starts with backend as cwd.
+ * The API normally starts with apps/api as cwd.
  * Match that environment before importing Prisma.
  */
 process.chdir(
@@ -74,6 +74,9 @@ const prismaClientUrl =
     path.join(
       backendRoot,
       "dist",
+      "apps",
+      "api",
+      "src",
       "infrastructure",
       "database",
       "prismaClient.js"
@@ -86,6 +89,8 @@ const persistenceUrl =
       backendRoot,
       "dist",
       "modules",
+      "data-platform",
+      "api",
       "integrations",
       "addon",
       "addon-import.persistence.js"
@@ -98,6 +103,8 @@ const serviceUrl =
       backendRoot,
       "dist",
       "modules",
+      "data-platform",
+      "api",
       "integrations",
       "addon",
       "addon-import.service.js"

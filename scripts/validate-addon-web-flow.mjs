@@ -28,15 +28,15 @@ const projectRoot =
 const backendRoot =
   path.join(
     projectRoot,
-    "backend"
+    "apps/api"
   );
 
 const specializationApiPath =
   path.join(
     projectRoot,
-    "frontend",
-    "src",
-    "features",
+    "modules",
+    "professions",
+    "web",
     "specializations",
     "api",
     "specializationApi.ts"
@@ -45,7 +45,8 @@ const specializationApiPath =
 const appRouterPath =
   path.join(
     projectRoot,
-    "frontend",
+    "apps",
+    "web",
     "src",
     "app",
     "AppRouter.tsx"
@@ -65,6 +66,9 @@ const appUrl =
     path.join(
       backendRoot,
       "dist",
+      "apps",
+      "api",
+      "src",
       "app.js"
     )
   ).href;
@@ -74,6 +78,9 @@ const prismaUrl =
     path.join(
       backendRoot,
       "dist",
+      "apps",
+      "api",
+      "src",
       "infrastructure",
       "database",
       "prismaClient.js"

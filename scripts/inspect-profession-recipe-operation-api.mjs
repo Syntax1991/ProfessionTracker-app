@@ -25,7 +25,7 @@ const projectRoot =
 const backendRoot =
   path.join(
     projectRoot,
-    "backend"
+    "apps/api"
   );
 
 process.chdir(
@@ -49,6 +49,9 @@ const {
 } =
   await import(
     moduleUrl(
+      "apps",
+      "api",
+      "src",
       "infrastructure",
       "database",
       "prismaClient.js"
@@ -61,7 +64,9 @@ const {
   await import(
     moduleUrl(
       "modules",
-      "profession-details",
+      "professions",
+      "api",
+      "details",
       "profession-detail.repository.js"
     )
   );
@@ -72,7 +77,9 @@ const {
   await import(
     moduleUrl(
       "modules",
-      "profession-details",
+      "professions",
+      "api",
+      "details",
       "profession-recipe.repository.js"
     )
   );
@@ -83,7 +90,9 @@ const {
   await import(
     moduleUrl(
       "modules",
-      "profession-details",
+      "professions",
+      "api",
+      "details",
       "profession-detail.service.js"
     )
   );

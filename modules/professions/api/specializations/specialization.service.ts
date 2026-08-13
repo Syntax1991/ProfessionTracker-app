@@ -1,0 +1,339 @@
+import { AppError } from "../../../../apps/api/src/shared/errors/AppError.js";
+import { SpecializationRepository } from "./specialization.repository.js";
+import type {
+  SpecializationNodeView,
+  SpecializationProgressInput,
+  SpecializationTreeView
+} from "./specialization.types.js";
+
+export class SpecializationService {
+  constructor(
+    private readonly repository:
+      SpecializationRepository
+  ) {}
+
+  async getCharacterOverview(
+    characterId: string
+  ) {
+    const character =
+      await this.repository.findCharacter(
+        characterId
+      );
+
+    if (!character) {
+      throw new AppError(
+        404,
+        "Charakter nicht gefunden."
+      );
+    }
+
+    const professionIds =
+      character.professions.map(
+        (assignment) =>
+          assignment.professionId
+      );
+
+    const trees =
+      await this.repository
+        .findTreesByProfessionIds(
+          professionIds
+        );
+
+    const treesByProfessionId =
+      new Map<
+        string,
+        typeof trees
+      >();
+
+    for (const tree of trees) {
+      const existingTrees =
+        treesByProfessionId.get(
+          tree.professionId
+        ) ?? [];
+
+      existingTrees.push(tree);
+
+      treesByProfessionId.set(
+        tree.professionId,
+        existingTrees
+      );
+    }
+
+    const professions =
+      character.professions
+        .map((assignment) => {
+          const progressByNodeId =
+            new Map(
+              assignment.nodeProgress.map(
+                (progress) => [
+                  progress.nodeId,
+                  progress
+                ]
+              )
+            );
+
+          const professionTrees =
+            treesByProfessionId.get(
+              assignment.professionId
+            ) ?? [];
+
+          return {
+            id: assignment.id,
+            skill: assignment.skill,
+            knowledgePoints:
+              assignment.knowledgePoints,
+            specializationSummary:
+              assignment.specializationSummary,
+            profession: {
+              id:
+                assignment.profession.id,
+              key:
+                assignment.profession.key,
+              name:
+                assignment.profession.name,
+              category:
+                assignment.profession.category
+            },
+            trees:
+              professionTrees.map(
+                (tree) =>
+                  this.createTreeView(
+                    tree,
+                    progressByNodeId
+                  )
+              )
+          };
+        })
+        .sort(
+          (left, right) =>
+            left.profession.name.localeCompare(
+              right.profession.name,
+              "de"
+            )
+        );
+
+    return {
+      character: {
+        id: character.id,
+        name: character.name,
+        realm: character.realm,
+        className:
+          character.className,
+        level: character.level
+      },
+      professions
+    };
+  }
+
+  async updateProfessionProgress(
+    characterId: string,
+    characterProfessionId: string,
+    progress: SpecializationProgressInput[]
+  ) {
+    const assignment =
+      await this.repository
+        .findCharacterProfession(
+          characterProfessionId
+        );
+
+    if (
+      !assignment ||
+      assignment.characterId !==
+        characterId
+    ) {
+      throw new AppError(
+        404,
+        "Berufszuweisung für diesen Charakter nicht gefunden."
+      );
+    }
+
+    const activeProgress =
+      progress.filter(
+        (entry) =>
+          entry.rank > 0
+      );
+
+    const nodes =
+      await this.repository.findNodesByIds(
+        activeProgress.map(
+          (entry) =>
+            entry.nodeId
+        )
+      );
+
+    if (
+      nodes.length !==
+      activeProgress.length
+    ) {
+      throw new AppError(
+        400,
+        "Mindestens ein Spezialisierungsknoten ist ungültig."
+      );
+    }
+
+    const nodeById =
+      new Map(
+        nodes.map(
+          (node) => [
+            node.id,
+            node
+          ]
+        )
+      );
+
+    for (
+      const entry of
+      activeProgress
+    ) {
+      const node =
+        nodeById.get(
+          entry.nodeId
+        );
+
+      if (
+        !node ||
+        node.tree.professionId !==
+          assignment.professionId
+      ) {
+        throw new AppError(
+          400,
+          "Ein Spezialisierungsknoten gehört nicht zum ausgewählten Beruf."
+        );
+      }
+
+      if (
+        node.maxRank !== null &&
+        entry.rank > node.maxRank
+      ) {
+        throw new AppError(
+          400,
+          `${node.name} erlaubt maximal Rang ${node.maxRank}.`
+        );
+      }
+    }
+
+    await this.repository.replaceProgress(
+      characterProfessionId,
+      progress,
+      "MANUAL"
+    );
+
+    return this.getCharacterOverview(
+      characterId
+    );
+  }
+
+  private createTreeView(
+    tree: Awaited<
+      ReturnType<
+        SpecializationRepository["findTreesByProfessionIds"]
+      >
+    >[number],
+    progressByNodeId: Map<
+      string,
+      {
+        rank: number;
+        source: string;
+        lastSyncedAt: Date | null;
+      }
+    >
+  ): SpecializationTreeView {
+    const nodeViews =
+      new Map<
+        string,
+        SpecializationNodeView
+      >();
+
+    for (const node of tree.nodes) {
+      const progress =
+        progressByNodeId.get(
+          node.id
+        );
+
+      nodeViews.set(
+        node.id,
+        {
+          id: node.id,
+          key: node.key,
+          name: node.name,
+          description:
+            node.description,
+          maxRank:
+            node.maxRank,
+          sortOrder:
+            node.sortOrder,
+          parentNodeId:
+            node.parentNodeId,
+          rank:
+            progress?.rank ?? 0,
+          source:
+            progress?.source ?? null,
+          lastSyncedAt:
+            progress?.lastSyncedAt
+              ?.toISOString() ?? null,
+          children: []
+        }
+      );
+    }
+
+    const rootNodes:
+      SpecializationNodeView[] = [];
+
+    for (
+      const node of
+      nodeViews.values()
+    ) {
+      if (
+        node.parentNodeId &&
+        nodeViews.has(
+          node.parentNodeId
+        )
+      ) {
+        nodeViews
+          .get(
+            node.parentNodeId
+          )!
+          .children.push(node);
+      }
+      else {
+        rootNodes.push(node);
+      }
+    }
+
+    this.sortNodes(rootNodes);
+
+    return {
+      id: tree.id,
+      key: tree.key,
+      name: tree.name,
+      description:
+        tree.description,
+      expansion:
+        tree.expansion,
+      sortOrder:
+        tree.sortOrder,
+      nodes:
+        rootNodes
+    };
+  }
+
+  private sortNodes(
+    nodes: SpecializationNodeView[]
+  ): void {
+    nodes.sort(
+      (left, right) =>
+        left.sortOrder -
+          right.sortOrder ||
+        left.name.localeCompare(
+          right.name,
+          "de"
+        )
+    );
+
+    for (const node of nodes) {
+      this.sortNodes(
+        node.children
+      );
+    }
+  }
+}

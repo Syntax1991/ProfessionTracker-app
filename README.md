@@ -55,20 +55,16 @@ Route -> Controller -> Service -> Repository -> Prisma
 
 Frontend structure:
 
-- `app`: routing, main-module registry and application composition
-- `features`: implemented business capabilities
-- `shared`: reusable UI and infrastructure
-- `styles`: separated visual responsibilities
+- `apps/web`: routing, application composition, shared UI and styles
+- `modules/<main-module>/web`: module-owned pages, components, hooks and APIs
 
 Backend structure:
 
-- `modules`: business capabilities and integrations
-- `shared`: shared backend infrastructure where applicable
+- `apps/api`: server bootstrap, route composition, Prisma and shared infrastructure
+- `modules/<main-module>/api`: module-owned controllers, services and repositories
 
-The current feature directories will be moved under their owning
-main modules incrementally. This avoids one large high-risk repository
-move while the profession data pipeline is still under active
-development.
+Each business module keeps its API, web and addon code together beneath
+`modules`. The complete project remains one Git monorepo.
 
 Source files are limited to 350 lines by an automated architecture
 check.
@@ -83,8 +79,9 @@ Data Platform owns external data ingestion and synchronization.
 
 Automation owns triggers, reminders and notifications.
 
-The SynTrack Addon and future SynTrack Companion are ingestion clients
-of Data Platform rather than profession-specific applications.
+Each addon belongs to the main module whose game-side capability it
+implements. Data Platform owns the shared ingestion and synchronization
+contracts used by those addons and by the future SynTrack Companion.
 
 ## Local development
 
@@ -92,6 +89,7 @@ Run from PowerShell:
 
 ```powershell
 cd D:\Projects\SynTrack
+npm install
 npm run dev
 ```
 
@@ -114,13 +112,13 @@ npm run verify
 This performs:
 
 - architecture checks
-- frontend lint
-- backend build
-- frontend build
+- web lint
+- API build
+- web build
 
 ## Battle.net configuration
 
-Add credentials only to `backend/.env`:
+Add credentials only to `apps/api/.env`:
 
 ```text
 BATTLENET_CLIENT_ID=
@@ -137,7 +135,7 @@ For compatibility with existing SavedVariables, the internal WoW
 addon folder and SavedVariables database still use the historical
 technical identifiers:
 
-- `addon/ProfessionTracker`
+- `modules/professions/addons/ProfessionTracker`
 - `ProfessionTracker.toc`
 - `ProfessionTrackerDB`
 

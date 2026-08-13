@@ -24,7 +24,7 @@ const projectRoot =
 const backendRoot =
   path.join(
     projectRoot,
-    "backend"
+    "apps/api"
   );
 
 process.chdir(
@@ -36,6 +36,9 @@ const prismaClientUrl =
     path.join(
       backendRoot,
       "dist",
+      "apps",
+      "api",
+      "src",
       "infrastructure",
       "database",
       "prismaClient.js"

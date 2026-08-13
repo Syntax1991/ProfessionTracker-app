@@ -7,9 +7,9 @@ import path from "node:path";
 const maximumLines = 350;
 
 const sourceRoots = [
-  "backend/src",
-  "frontend/src",
-  "addon/ProfessionTracker",
+  "apps/api/src",
+  "apps/web/src",
+  "modules",
   "scripts"
 ];
 

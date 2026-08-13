@@ -22,7 +22,7 @@ const projectRoot =
 const backendRoot =
   path.join(
     projectRoot,
-    "backend"
+    "apps/api"
   );
 
 const savedVariablesPath =
@@ -50,6 +50,8 @@ const parserUrl =
       backendRoot,
       "dist",
       "modules",
+      "data-platform",
+      "api",
       "integrations",
       "addon",
       "lua-saved-variables.parser.js"
@@ -62,6 +64,8 @@ const normalizerUrl =
       backendRoot,
       "dist",
       "modules",
+      "data-platform",
+      "api",
       "integrations",
       "addon",
       "addon-import.normalizer.js"

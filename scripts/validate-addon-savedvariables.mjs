@@ -1,8 +1,8 @@
 import fs from "node:fs";
 import process from "node:process";
-import { LuaSavedVariablesParser } from "../backend/dist/modules/integrations/addon/lua-saved-variables.parser.js";
-import { normalizeAddonSnapshot } from "../backend/dist/modules/integrations/addon/addon-import.normalizer.js";
-import { createAddonImportPreview } from "../backend/dist/modules/integrations/addon/addon-import.preview.js";
+import { LuaSavedVariablesParser } from "../apps/api/dist/modules/data-platform/api/integrations/addon/lua-saved-variables.parser.js";
+import { normalizeAddonSnapshot } from "../apps/api/dist/modules/data-platform/api/integrations/addon/addon-import.normalizer.js";
+import { createAddonImportPreview } from "../apps/api/dist/modules/data-platform/api/integrations/addon/addon-import.preview.js";
 
 const savedVariablesPath =
   process.argv[2];
