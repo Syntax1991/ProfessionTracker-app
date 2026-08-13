@@ -8,6 +8,7 @@ import { guildRosterImportRouter } from "../../../../modules/guild/api/roster-im
 import { guildTeamRouter } from "../../../../modules/guild/api/teams/team.routes.js";
 import { guildVerificationRouter } from "../../../../modules/guild/api/verification/verification.routes.js";
 import { guildWeeklyProgressRouter } from "../../../../modules/guild/api/weekly-progress/weekly-progress.routes.js";
+import { raidPlannerRouter } from "../../../../modules/raid/api/planner/planner.routes.js";
 import { characterRouter } from "../../../../modules/my-syntrack/api/characters/character.routes.js";
 import { dashboardRouter } from "../../../../modules/my-syntrack/api/dashboard/dashboard.routes.js";
 import { gearReadinessRouter } from "../../../../modules/my-syntrack/api/gear-readiness/gear-readiness.routes.js";
@@ -131,6 +132,11 @@ apiRouter.use(
 apiRouter.use(
   "/guild/weekly-progress",
   guildWeeklyProgressRouter
+);
+
+apiRouter.use(
+  "/raid/planner",
+  raidPlannerRouter
 );
 
 apiRouter.use(

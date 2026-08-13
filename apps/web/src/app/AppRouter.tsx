@@ -11,6 +11,7 @@ import { RequirementsPage } from "../../../../modules/guild/web/requirements/pag
 import { RosterPage } from "../../../../modules/guild/web/roster/pages/RosterPage";
 import { TeamsPage } from "../../../../modules/guild/web/teams/pages/TeamsPage";
 import { WeeklyProgressPage } from "../../../../modules/guild/web/weekly-progress/pages/WeeklyProgressPage";
+import { RaidPlannerPage } from "../../../../modules/raid/web/planner/pages/RaidPlannerPage";
 import { CharactersPage } from "../../../../modules/my-syntrack/web/characters/pages/CharactersPage";
 import { DashboardPage } from "../../../../modules/my-syntrack/web/dashboard/pages/DashboardPage";
 import { GearReadinessPage } from "../../../../modules/my-syntrack/web/gear-readiness/pages/GearReadinessPage";
@@ -204,6 +205,13 @@ export function AppRouter() {
           path="guild/officer-notes"
           element={
             <OfficerNotesPage />
+          }
+        />
+
+        <Route
+          path="raid/planner"
+          element={
+            <RaidPlannerPage />
           }
         />
 

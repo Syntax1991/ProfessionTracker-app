@@ -410,6 +410,21 @@ model GuildRequirement {
   updatedAt        DateTime @updatedAt
 }
 
+model RaidEvent {
+  id           String   @id @default(cuid())
+  title        String
+  raidInstance String
+  difficulty   String   @default("HEROIC")
+  scheduledAt  DateTime
+  teamId       String?
+  notes        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([scheduledAt])
+  @@index([teamId])
+}
+
 model GuildVerification {
   id                  String   @id
   guildName           String

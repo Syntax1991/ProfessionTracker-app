@@ -225,6 +225,30 @@ Raid preparation, execution and analysis.
 Raid may reference Guild members and Teams but does not own the guild
 roster.
 
+### Existing implementation
+
+Being built incrementally, one capability per pass, starting
+2026-08-14.
+
+Web:
+
+- `modules/raid/web/planner`
+
+API:
+
+- `modules/raid/api/planner`
+
+The Raid Planner (`RaidEvent`: title, raid instance, difficulty,
+scheduled time, optional team link, notes) is the first capability.
+Its link to a `GuildTeam` is a loose `teamId` string rather than a
+Prisma foreign key, per the "stable identifiers" dependency
+principle. Its mutations reuse Guild's `GuildVerificationGuard` and
+its page reuses Guild's `GuildVerificationGate` and team list
+directly — raid officers are guild officers, so the same verified
+leadership link gates both. The remaining six capabilities
+(Boss Rosters, Assignments, Cooldowns, Raid Notes, Attendance, WCL
+Analysis) are deliberately not started yet.
+
 ## 4. Loot
 
 ### Responsibility

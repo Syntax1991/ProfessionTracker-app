@@ -6,11 +6,12 @@ export const raidModule: MainModuleDefinition =
     label: "Raid",
     description:
       "Planning, assignments and raid analysis.",
-    status: "planned",
+    status: "active",
     items: [
       {
         label: "Raid Planner",
-        status: "planned"
+        path: "/raid/planner",
+        status: "available"
       },
       {
         label: "Boss Rosters",
