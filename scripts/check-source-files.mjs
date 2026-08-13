@@ -13,6 +13,17 @@ const sourceRoots = [
   "scripts"
 ];
 
+const mainModuleSlugs = [
+  "my-syntrack",
+  "guild",
+  "raid",
+  "loot",
+  "professions",
+  "recruitment",
+  "automation",
+  "data-platform"
+];
+
 const checkedExtensions =
   new Set([
     ".ts",
@@ -85,6 +96,68 @@ async function findSourceFiles(
   return files;
 }
 
+async function findModuleStructureViolations() {
+  const violations = [];
+
+  for (
+    const moduleSlug of
+    mainModuleSlugs
+  ) {
+    const addonDirectory =
+      path.join(
+        "modules",
+        moduleSlug,
+        "addons"
+      );
+
+    let entries;
+
+    try {
+      entries =
+        await readdir(
+          addonDirectory,
+          {
+            withFileTypes: true
+          }
+        );
+    } catch {
+      violations.push(
+        `${addonDirectory} is missing.`
+      );
+
+      continue;
+    }
+
+    if (
+      !entries.some(
+        (entry) =>
+          entry.isFile() &&
+          entry.name === "README.md"
+      )
+    ) {
+      violations.push(
+        `${addonDirectory}/README.md is missing.`
+      );
+    }
+
+    for (
+      const entry of
+      entries
+    ) {
+      if (
+        entry.isFile() &&
+        entry.name !== "README.md"
+      ) {
+        violations.push(
+          `${addonDirectory}/${entry.name} must live inside an addon directory.`
+        );
+      }
+    }
+  }
+
+  return violations;
+}
+
 const sourceGroups =
   await Promise.all(
     sourceRoots.map(
@@ -97,6 +170,9 @@ const sourceGroups =
 
 const sourceFiles =
   sourceGroups.flat();
+
+const moduleStructureViolations =
+  await findModuleStructureViolations();
 
 const violations = [];
 
@@ -128,9 +204,7 @@ for (
   }
 }
 
-if (
-  violations.length > 0
-) {
+if (violations.length > 0) {
   console.error(
     `Source files may not exceed ${maximumLines} lines.`
   );
@@ -143,10 +217,32 @@ if (
       `- ${violation.sourceFile}: ${violation.lineCount} lines`
     );
   }
+}
 
+if (
+  moduleStructureViolations.length > 0
+) {
+  console.error(
+    "Main-module addon structure is invalid."
+  );
+
+  for (
+    const violation of
+    moduleStructureViolations
+  ) {
+    console.error(
+      `- ${violation}`
+    );
+  }
+}
+
+if (
+  violations.length > 0 ||
+  moduleStructureViolations.length > 0
+) {
   process.exit(1);
 }
 
 console.log(
-  `Architecture check passed for ${sourceFiles.length} source files.`
+  `Architecture check passed for ${sourceFiles.length} source files and ${mainModuleSlugs.length} module addon boundaries.`
 );

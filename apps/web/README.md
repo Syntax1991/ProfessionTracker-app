@@ -1,32 +1,31 @@
-# React + TypeScript + Vite
+# SynTrack Web App
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+This directory is the executable React application shell. It is not a
+business module.
 
-Currently, two official plugins are available:
+The shell owns only cross-module application concerns:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- browser startup
+- top-level routing and module registration
+- shared layouts, navigation, styles and technical UI primitives
+- shared HTTP-client infrastructure
 
-## React Compiler
+Domain pages, components, hooks and API clients belong under:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```text
+modules/<main-module>/web
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+The Web app imports those module entrypoints and composes them into one
+deployable product. It must not become a second location for
+module-specific business logic.
+
+## Development
+
+Run all SynTrack development processes from the repository root:
+
+```powershell
+npm run dev
+```
+
+The Web app is served at `http://localhost:5173`.

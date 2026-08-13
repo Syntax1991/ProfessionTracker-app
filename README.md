@@ -55,16 +55,23 @@ Route -> Controller -> Service -> Repository -> Prisma
 
 Frontend structure:
 
-- `apps/web`: routing, application composition, shared UI and styles
+- `apps/web`: executable Web shell, routing, application composition,
+  shared UI and styles
 - `modules/<main-module>/web`: module-owned pages, components, hooks and APIs
 
 Backend structure:
 
-- `apps/api`: server bootstrap, route composition, Prisma and shared infrastructure
+- `apps/api`: executable server shell, route composition, Prisma and
+  shared infrastructure
 - `modules/<main-module>/api`: module-owned controllers, services and repositories
 
 Each business module keeps its API, web and addon code together beneath
-`modules`. The complete project remains one Git monorepo.
+`modules`. Every module has an `addons` directory, and every real addon
+lives in its own `addons/<technical-name>` subdirectory. The complete
+project remains one Git monorepo.
+
+`apps/web` and `apps/api` are not business modules. They are executable
+entrypoints that assemble the main modules into deployable products.
 
 Source files are limited to 350 lines by an automated architecture
 check.

@@ -4,12 +4,22 @@ This directory contains SynTrack's business modules. Each child
 directory owns its API, web and addon code instead of spreading one
 feature across global backend and frontend feature trees.
 
-Module source uses these optional subdirectories:
+Every main module has the same stable top-level contract:
+
+- `README.md`: ownership and dependency rules
+- `addons`: permanent home for module-owned WoW addons
+
+The following source directories are added when the module gains the
+corresponding runtime capability:
 
 - `api`: backend controllers, services, repositories and contracts
 - `web`: frontend pages, components, hooks, API clients and models
-- `addons`: module-owned WoW addons
-- `README.md`: ownership and dependency rules
+
+An addon is always placed in its own technical subdirectory:
+
+```text
+modules/<main-module>/addons/<AddonName>
+```
 
 The deployable shells live in `apps/api` and `apps/web`. They compose
 the modules but do not own module-specific business rules.
@@ -29,6 +39,6 @@ access boundary or ownership team.
 | Automation | `automation` | Planned |
 | Data Platform | `data-platform` | Implemented in part |
 
-Planned modules contain only a manifest until their first real
-capability is implemented. This keeps the source tree explicit without
-creating large empty skeletons.
+Planned modules keep their ownership README and an `addons/README.md`.
+Empty `api` and `web` skeletons are added only with the first real
+capability, while the addon boundary remains visible from day one.

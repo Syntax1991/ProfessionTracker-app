@@ -362,28 +362,20 @@ remain inside the owning main module.
 Main modules own business code. Apps are thin deployable runtimes that
 compose those modules.
 
-Current module-oriented layout:
+Every module has a permanent addon boundary. API and web directories
+are capability-driven and appear when the module implements them.
 
 ```text
 SynTrack
 |
 +-- modules
-|   +-- my-syntrack
-|   |   +-- api
-|   |   +-- web
-|   +-- guild
-|   +-- raid
-|   +-- loot
-|   +-- professions
-|   |   +-- api
-|   |   +-- web
-|   |   +-- addons
-|   |       +-- ProfessionTracker
-|   +-- recruitment
-|   +-- automation
-|   +-- data-platform
-|       +-- api
-|       +-- web
+|   +-- <main-module>
+|       +-- README.md
+|       +-- addons
+|       |   +-- README.md
+|       |   +-- <AddonName>        (when implemented)
+|       +-- api                    (when implemented)
+|       +-- web                    (when implemented)
 |
 +-- apps
 |   +-- api
@@ -395,6 +387,24 @@ SynTrack
 The root `modules` directory is the single source location for all
 domain-specific API, web and addon code. `apps` contains only runtime
 composition and shared application infrastructure.
+
+### Why the Web app remains under `apps`
+
+`modules` and `apps` answer different ownership questions:
+
+- `modules/<main-module>` owns a business domain and all of its API,
+  web and WoW-addon capabilities.
+- `apps/web` is the executable browser application. It bootstraps React,
+  supplies the shared layout and routing, and composes module pages.
+- `apps/api` is the executable server. It starts the process, supplies
+  shared infrastructure and mounts module routes.
+
+The Web app is therefore not a ninth business module. Moving it to
+`modules/webapp` would create a technical catch-all that owns parts of
+every domain and would weaken the module boundaries. The same rule
+applies to future executable products such as a Companion or Discord
+bot: their runtime shell may live under `apps`, while their business
+workflows remain in the owning main module.
 
 If several independently deployable services or shared packages are
 introduced later, shared technical packages may be added without
@@ -480,6 +490,11 @@ Add the Companion or reusable technical packages beneath `apps` and
 
 SynTrack supports multiple module-owned WoW addons. Their source lives
 under `modules/<main-module>/addons/<technical-name>`.
+
+Every main module contains an `addons` directory even before its first
+addon exists. The directory itself is only the module boundary; each
+real addon must be placed in a separate technical-name subdirectory so
+several addons can coexist without mixing source files.
 
 The current profession addon therefore lives under Professions. Future
 Raid, Guild or personal-tracking addons can live under their respective
