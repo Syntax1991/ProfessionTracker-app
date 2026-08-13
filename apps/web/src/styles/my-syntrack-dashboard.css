@@ -235,7 +235,7 @@
 .my-upcoming-card {
   min-height: 165px;
   display: grid;
-  grid-template-columns: 42px 1fr;
+  grid-template-columns: 42px 1fr auto;
   gap: 15px;
   padding: 20px;
   border: 1px solid var(--border);
@@ -243,14 +243,24 @@
   background: rgb(20 23 32 / 76%);
 }
 
-.my-upcoming-card.is-next {
+.my-upcoming-card.is-available {
   border-color: #4a3b6b;
-  background:
-    linear-gradient(
-      145deg,
-      rgb(128 88 221 / 16%),
-      rgb(20 23 32 / 92%)
-    );
+  background: linear-gradient(
+    145deg,
+    rgb(128 88 221 / 16%),
+    rgb(20 23 32 / 92%)
+  );
+  transition: border-color 140ms ease,
+    transform 140ms ease;
+}
+
+.my-upcoming-card.is-available:hover {
+  border-color: #6c56a0;
+  transform: translateY(-2px);
+}
+.my-upcoming-arrow {
+  align-self: start;
+  color: #bca2f2;
 }
 
 .my-upcoming-index {
@@ -259,7 +269,6 @@
   font-weight: 850;
   letter-spacing: 0.08em;
 }
-
 .my-upcoming-status {
   color: #a987ef;
   font-size: 0.65rem;
@@ -267,11 +276,9 @@
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
-
 .my-upcoming-card h3 {
   margin-top: 12px;
 }
-
 .my-upcoming-card p {
   margin-top: 8px;
   color: var(--text-secondary);

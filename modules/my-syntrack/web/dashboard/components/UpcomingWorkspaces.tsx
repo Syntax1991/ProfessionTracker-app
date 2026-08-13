@@ -1,23 +1,66 @@
+import { Link } from "react-router-dom";
+
 const workspaces = [
   {
     title: "Weekly Checklist",
     description:
       "One reset view for every character and recurring task.",
-    status: "Next up"
+    status: "Available",
+    path: "/weekly-checklist"
   },
   {
     title: "Vault / M+",
     description:
       "Track reward slots, keys and weekly dungeon progress.",
-    status: "Planned"
+    status: "Planned",
+    path: null
   },
   {
     title: "Gear Readiness",
     description:
       "Surface missing enchants, gems and upgrade opportunities.",
-    status: "Planned"
+    status: "Planned",
+    path: null
   }
 ];
+
+type Workspace =
+  (typeof workspaces)[number];
+
+function WorkspaceCardContent({
+  workspace,
+  index
+}: {
+  workspace: Workspace;
+  index: number;
+}) {
+  return (
+    <>
+      <span className="my-upcoming-index">
+        0{index + 1}
+      </span>
+
+      <div>
+        <span className="my-upcoming-status">
+          {workspace.status}
+        </span>
+
+        <h3>{workspace.title}</h3>
+
+        <p>{workspace.description}</p>
+      </div>
+
+      {workspace.path && (
+        <span
+          aria-hidden="true"
+          className="my-upcoming-arrow"
+        >
+          →
+        </span>
+      )}
+    </>
+  );
+}
 
 export function UpcomingWorkspaces() {
   return (
@@ -28,7 +71,7 @@ export function UpcomingWorkspaces() {
             PERSONAL WORKSPACES
           </p>
 
-          <h2>Coming to My SynTrack</h2>
+          <h2>My SynTrack workspaces</h2>
         </div>
 
         <p>
@@ -38,30 +81,30 @@ export function UpcomingWorkspaces() {
       </div>
 
       <div className="my-upcoming-grid">
-        {workspaces.map((workspace, index) => (
-          <article
-            className={
-              index === 0
-                ? "my-upcoming-card is-next"
-                : "my-upcoming-card"
-            }
-            key={workspace.title}
-          >
-            <span className="my-upcoming-index">
-              0{index + 1}
-            </span>
-
-            <div>
-              <span className="my-upcoming-status">
-                {workspace.status}
-              </span>
-
-              <h3>{workspace.title}</h3>
-
-              <p>{workspace.description}</p>
-            </div>
-          </article>
-        ))}
+        {workspaces.map((workspace, index) =>
+          workspace.path ? (
+            <Link
+              className="my-upcoming-card is-available"
+              key={workspace.title}
+              to={workspace.path}
+            >
+              <WorkspaceCardContent
+                index={index}
+                workspace={workspace}
+              />
+            </Link>
+          ) : (
+            <article
+              className="my-upcoming-card"
+              key={workspace.title}
+            >
+              <WorkspaceCardContent
+                index={index}
+                workspace={workspace}
+              />
+            </article>
+          )
+        )}
       </div>
     </section>
   );

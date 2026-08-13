@@ -51,7 +51,8 @@ export const mainModules:
         },
         {
           label: "Weekly Checklist",
-          status: "planned"
+          path: "/weekly-checklist",
+          status: "available"
         },
         {
           label: "Vault / M+",

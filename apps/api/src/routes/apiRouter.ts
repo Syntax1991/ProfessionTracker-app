@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { characterRouter } from "../../../../modules/my-syntrack/api/characters/character.routes.js";
 import { dashboardRouter } from "../../../../modules/my-syntrack/api/dashboard/dashboard.routes.js";
+import { weeklyChecklistRouter } from "../../../../modules/my-syntrack/api/weekly-checklist/weekly-checklist.routes.js";
 import { addonImportRouter } from "../../../../modules/data-platform/api/integrations/addon/addon-import.routes.js";
 import {
   battleNetAuthRouter,
@@ -33,6 +34,11 @@ apiRouter.get(
 apiRouter.use(
   "/dashboard",
   dashboardRouter
+);
+
+apiRouter.use(
+  "/weekly-checklist",
+  weeklyChecklistRouter
 );
 
 apiRouter.use(
