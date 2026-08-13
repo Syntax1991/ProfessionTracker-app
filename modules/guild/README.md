@@ -6,7 +6,7 @@ Guild organization and persistent guild state.
 
 - Dashboard (planned)
 - Roster (available)
-- Teams (planned)
+- Teams (available)
 - guild-level Attendance (planned)
 - Weekly Progress (planned)
 - Requirements (planned)
@@ -15,8 +15,9 @@ Guild organization and persistent guild state.
 ## Current source
 
 - API: `modules/guild/api/roster`, `modules/guild/api/roster-import`,
-  `modules/guild/api/verification`
-- Web: `modules/guild/web/roster`, `modules/guild/web/verification`
+  `modules/guild/api/verification`, `modules/guild/api/teams`
+- Web: `modules/guild/web/roster`, `modules/guild/web/verification`,
+  `modules/guild/web/teams`
 - Addon: `modules/guild/addons/SynTrack_Guild`
 
 Roster members can be managed manually or synced from the
@@ -25,10 +26,23 @@ WoW officer note captured by the addon lives on `GuildMember`; the
 richer Officer Notes capability (freeform, timestamped officer
 commentary) is a separate future addition.
 
+## Teams
+
+Teams (`GuildTeam` + `GuildTeamMembership`) group existing roster
+members into persistent units — e.g. a Mythic core team or a second
+Heroic team — independent of any specific raid event. A member can
+belong to multiple teams; each membership carries a `role`
+(`MEMBER`, `SUBSTITUTE`, `LEAD`). Teams only reference roster members
+by ID, so deleting a `GuildMember` cascades and removes their team
+memberships too. Team mutations go through the same guild
+verification gate as the roster (see below); a boss-specific raid
+roster built from a team belongs to the Raid module, not here.
+
 ## Guild leadership verification
 
-Roster mutations (create, update, delete, addon import) require a
-verified guild leadership link. Verification works entirely through
+Roster and team mutations (create, update, delete, addon import,
+membership changes) require a verified guild leadership link.
+Verification works entirely through
 Blizzard's official APIs, reusing the existing Battle.net OAuth
 connection (`modules/data-platform/api/integrations/battlenet`):
 
@@ -46,10 +60,11 @@ connection (`modules/data-platform/api/integrations/battlenet`):
    threshold is intentionally not a client-supplied parameter —
    accepting it from the request would make the check meaningless.
 4. A successful verification is persisted as a singleton
-   `GuildVerification` record. `GuildRosterService` and
-   `GuildRosterImportService` call `ensureVerified()` before any
-   mutation and reject with `403` otherwise. Reading the roster
-   remains open.
+   `GuildVerification` record. `GuildRosterService`,
+   `GuildRosterImportService` and `GuildTeamService` all call the
+   shared `GuildVerificationGuard.ensureVerified()` before any
+   mutation and reject with `403` otherwise. Reading the roster and
+   teams remains open.
 
 Known limitation: because Blizzard never returns rank names, a real
 officer placed below rank `2` will not pass verification until the

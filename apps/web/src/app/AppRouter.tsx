@@ -4,6 +4,7 @@ import {
   Routes
 } from "react-router-dom";
 import { RosterPage } from "../../../../modules/guild/web/roster/pages/RosterPage";
+import { TeamsPage } from "../../../../modules/guild/web/teams/pages/TeamsPage";
 import { CharactersPage } from "../../../../modules/my-syntrack/web/characters/pages/CharactersPage";
 import { DashboardPage } from "../../../../modules/my-syntrack/web/dashboard/pages/DashboardPage";
 import { GearReadinessPage } from "../../../../modules/my-syntrack/web/gear-readiness/pages/GearReadinessPage";
@@ -148,6 +149,13 @@ export function AppRouter() {
           path="guild/roster"
           element={
             <RosterPage />
+          }
+        />
+
+        <Route
+          path="guild/teams"
+          element={
+            <TeamsPage />
           }
         />
 

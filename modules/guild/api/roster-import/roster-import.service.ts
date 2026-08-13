@@ -1,6 +1,7 @@
 import { AppError } from "../../../../apps/api/src/shared/errors/AppError.js";
 import { asTable } from "../../../data-platform/api/integrations/addon/addon-import.lua-utils.js";
 import { LuaSavedVariablesParser } from "../../../data-platform/api/integrations/addon/lua-saved-variables.parser.js";
+import type { GuildVerificationGuard } from "../verification/verification.types.js";
 import { normalizeGuildSnapshot } from "./roster-import.normalizer.js";
 import { GuildRosterImportPersistence } from "./roster-import.persistence.js";
 import type {
@@ -11,17 +12,13 @@ import type {
 
 const SUPPORTED_SCHEMA_VERSION = 1;
 
-export type GuildRosterImportVerificationGuard = {
-  ensureVerified(): Promise<void>;
-};
-
 export class GuildRosterImportService {
   constructor(
     private readonly persistence:
       GuildRosterImportPersistence,
 
     private readonly verification:
-      GuildRosterImportVerificationGuard
+      GuildVerificationGuard
   ) {}
 
   preview(

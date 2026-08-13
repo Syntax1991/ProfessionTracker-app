@@ -317,9 +317,37 @@ model GuildMember {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 
+  teamMemberships GuildTeamMembership[]
+
   @@unique([name, realm, region])
   @@index([rankIndex])
   @@index([source])
+}
+
+model GuildTeam {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  color       String?
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  members GuildTeamMembership[]
+}
+
+model GuildTeamMembership {
+  id       String   @id @default(cuid())
+  teamId   String
+  memberId String
+  role     String   @default("MEMBER")
+  joinedAt DateTime @default(now())
+
+  team   GuildTeam   @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  member GuildMember @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, memberId])
+  @@index([memberId])
 }
 
 model GuildVerification {

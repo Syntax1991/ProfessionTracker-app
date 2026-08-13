@@ -1,10 +1,7 @@
 import { AppError } from "../../../../apps/api/src/shared/errors/AppError.js";
+import type { GuildVerificationGuard } from "../verification/verification.types.js";
 import { GuildRosterRepository } from "./roster.repository.js";
 import type { GuildMemberInput } from "./roster.types.js";
-
-export type GuildRosterVerificationGuard = {
-  ensureVerified(): Promise<void>;
-};
 
 export class GuildRosterService {
   constructor(
@@ -12,7 +9,7 @@ export class GuildRosterService {
       GuildRosterRepository,
 
     private readonly verification:
-      GuildRosterVerificationGuard
+      GuildVerificationGuard
   ) {}
 
   list() {

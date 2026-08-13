@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { guildRosterRouter } from "../../../../modules/guild/api/roster/roster.routes.js";
 import { guildRosterImportRouter } from "../../../../modules/guild/api/roster-import/roster-import.routes.js";
+import { guildTeamRouter } from "../../../../modules/guild/api/teams/team.routes.js";
 import { guildVerificationRouter } from "../../../../modules/guild/api/verification/verification.routes.js";
 import { characterRouter } from "../../../../modules/my-syntrack/api/characters/character.routes.js";
 import { dashboardRouter } from "../../../../modules/my-syntrack/api/dashboard/dashboard.routes.js";
@@ -85,6 +86,11 @@ apiRouter.use(
 apiRouter.use(
   "/guild/verification",
   guildVerificationRouter
+);
+
+apiRouter.use(
+  "/guild/teams",
+  guildTeamRouter
 );
 
 apiRouter.use(

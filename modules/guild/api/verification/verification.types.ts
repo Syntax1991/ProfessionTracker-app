@@ -18,6 +18,10 @@ export type GuildVerificationInput = {
   characterRealmSlug: string;
 };
 
+export type GuildVerificationGuard = {
+  ensureVerified(): Promise<void>;
+};
+
 export type GuildVerificationStatus = {
   verified: boolean;
   guildName: string | null;

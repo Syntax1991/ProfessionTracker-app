@@ -134,12 +134,14 @@ Web:
 
 - `modules/guild/web/roster`
 - `modules/guild/web/verification`
+- `modules/guild/web/teams`
 
 API:
 
 - `modules/guild/api/roster`
 - `modules/guild/api/roster-import`
 - `modules/guild/api/verification`
+- `modules/guild/api/teams`
 
 Module-owned addon:
 
@@ -156,6 +158,12 @@ keeps its own `SynTrack_GuildDB` SavedVariables and registers with
 `SynTrack_Core` only for status visibility; roster data is
 transported through the dedicated roster-import endpoints, reusing
 Data Platform's generic Lua SavedVariables parser.
+
+Teams group existing roster members into persistent units (e.g. a
+Mythic core team) independent of any specific raid event; they only
+reference `GuildMember` by ID and go through the same verification
+gate as the roster. Boss-specific raid rosters built from a team are
+owned by the Raid module, not Guild.
 
 ## 3. Raid
 

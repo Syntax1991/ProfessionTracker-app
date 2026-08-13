@@ -93,7 +93,8 @@ export const mainModules:
         },
         {
           label: "Teams",
-          status: "planned"
+          path: "/guild/teams",
+          status: "available"
         },
         {
           label: "Attendance",
