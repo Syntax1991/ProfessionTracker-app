@@ -151,7 +151,8 @@ export function normalizeAddonSnapshot(
 
   const characterRecipeOperations =
     normalizeCharacterRecipeOperations(
-      root.characterRecipeOperations
+      root.characterRecipeOperations,
+      recipeCatalogs
     );
 
   const client =

@@ -13,12 +13,52 @@ import {
 import type {
   AddonCharacterRecipeOperation,
   AddonCharacterRecipeOperationCapture,
+  AddonRecipeCatalog,
+  AddonRecipeReagentSchema,
   LuaValue
 } from "./addon-import.types.js";
 
+type ReagentSchemaMap =
+  Map<
+    string,
+    AddonRecipeReagentSchema | null
+  >;
+
+function createReagentSchemaMap(
+  recipeCatalogs:
+    AddonRecipeCatalog[]
+): ReagentSchemaMap {
+  const result:
+    ReagentSchemaMap =
+    new Map();
+
+  for (
+    const catalog of
+    recipeCatalogs
+  ) {
+    for (
+      const recipe of
+      catalog.recipes
+    ) {
+      result.set(
+        [
+          catalog.skillLineId,
+          recipe.gameRecipeId
+        ].join(":"),
+        recipe.reagentSchema
+      );
+    }
+  }
+
+  return result;
+}
+
 function normalizeOperationRecipe(
+  skillLineId: number,
   key: string,
-  value: LuaValue
+  value: LuaValue,
+  reagentSchemas:
+    ReagentSchemaMap
 ): AddonCharacterRecipeOperation | null {
   const recipe =
     asTable(
@@ -65,7 +105,15 @@ function normalizeOperationRecipe(
 
     reagentSimulation:
       normalizeCharacterRecipeReagentSimulation(
-        recipe.reagentSimulation
+        recipe.reagentSimulation,
+        operationMetrics,
+        reagentSchemas.get(
+          [
+            skillLineId,
+            gameRecipeId
+          ].join(":")
+        ) ??
+        null
       )
   };
 }
@@ -73,7 +121,9 @@ function normalizeOperationRecipe(
 function normalizeCapture(
   characterKey: string,
   skillLineKey: string,
-  value: LuaValue
+  value: LuaValue,
+  reagentSchemas:
+    ReagentSchemaMap
 ): AddonCharacterRecipeOperationCapture | null {
   const capture =
     asTable(
@@ -122,8 +172,10 @@ function normalizeCapture(
     ) {
       const recipe =
         normalizeOperationRecipe(
+          skillLineId,
           recipeKey,
-          recipeValue
+          recipeValue,
+          reagentSchemas
         );
 
       if (recipe) {
@@ -218,7 +270,9 @@ function normalizeCapture(
 }
 
 export function normalizeCharacterRecipeOperations(
-  value: LuaValue | undefined
+  value: LuaValue | undefined,
+  recipeCatalogs:
+    AddonRecipeCatalog[] = []
 ): AddonCharacterRecipeOperationCapture[] {
   const root =
     asTable(
@@ -228,6 +282,11 @@ export function normalizeCharacterRecipeOperations(
   if (!root) {
     return [];
   }
+
+  const reagentSchemas =
+    createReagentSchemaMap(
+      recipeCatalogs
+    );
 
   const captures:
     AddonCharacterRecipeOperationCapture[] =
@@ -262,7 +321,8 @@ export function normalizeCharacterRecipeOperations(
         normalizeCapture(
           characterKey,
           skillLineKey,
-          captureValue
+          captureValue,
+          reagentSchemas
         );
 
       if (capture) {

@@ -1,59 +1,79 @@
 local _, PT = ...
 
-local simulationOperationKeys = {
-    "lowestQualityOperation",
-    "highestQualityOperation",
-    "highestQualityConcentrationOperation"
-}
-
-local function compactSimulationOperations(
-    simulation
+local function createCompactBaseMetrics(
+    operationMetrics
 )
-    if type(simulation) ~= "table" then
-        return
+    if PT.CreateCompactRecipeOperationMetrics then
+        return PT.CreateCompactRecipeOperationMetrics(
+            operationMetrics
+        )
     end
 
-    for _, key in ipairs(
-        simulationOperationKeys
-    ) do
-        if simulation[key] then
-            simulation[key] =
-                PT.CreateCompactRecipeOperationMetrics(
-                    simulation[key]
-                )
-        end
-    end
-
-    for _, scenario in ipairs(
-        simulation.qualityScenarios
-        or {}
-    ) do
-        if type(scenario) == "table"
-            and scenario.operationMetrics
-        then
-            scenario.operationMetrics =
-                PT.CreateCompactRecipeOperationMetrics(
-                    scenario.operationMetrics
-                )
-        end
-    end
+    return operationMetrics
 end
 
-local function compactRecipeOperation(
-    recipe
+function PT.CreateCompactCharacterRecipeOperation(
+    recipeID,
+    operationMetrics,
+    reagentSimulation
 )
-    if type(recipe) ~= "table" then
-        return
+    if not recipeID then
+        return nil
     end
 
-    if recipe.operationMetrics then
-        recipe.operationMetrics =
-            PT.CreateCompactRecipeOperationMetrics(
-                recipe.operationMetrics
+    local compactMetrics =
+        createCompactBaseMetrics(
+            operationMetrics
+        )
+
+    if type(compactMetrics) ~= "table" then
+        return nil
+    end
+
+    local compactSimulation =
+        reagentSimulation
+
+    if PT.CreateCompactCharacterRecipeSimulation then
+        compactSimulation =
+            PT.CreateCompactCharacterRecipeSimulation(
+                compactMetrics,
+                reagentSimulation
             )
     end
 
-    compactSimulationOperations(
+    return {
+        recipeId =
+            recipeID,
+
+        operationMetrics =
+            compactMetrics,
+
+        reagentSimulation =
+            compactSimulation
+    }
+end
+
+local function compactStoredRecipe(
+    recipeKey,
+    recipe
+)
+    if type(recipe) ~= "table" then
+        return nil
+    end
+
+    local recipeID =
+        recipe.recipeId
+        or tonumber(
+            recipeKey
+        )
+
+    if not recipeID then
+        return nil
+    end
+
+    return PT.CreateCompactCharacterRecipeOperation(
+        recipeID,
+        recipe.operationMetrics,
         recipe.reagentSimulation
     )
 end
@@ -65,14 +85,35 @@ local function compactCapture(
         return
     end
 
-    for _, recipe in pairs(
+    local compactRecipes = {}
+
+    for recipeKey, recipe in pairs(
         capture.recipes
         or {}
     ) do
-        compactRecipeOperation(
-            recipe
-        )
+        local compactRecipe =
+            compactStoredRecipe(
+                recipeKey,
+                recipe
+            )
+
+        if compactRecipe then
+            compactRecipes[
+                tostring(
+                    compactRecipe.recipeId
+                )
+            ] =
+                compactRecipe
+        else
+            compactRecipes[
+                recipeKey
+            ] =
+                recipe
+        end
     end
+
+    capture.recipes =
+        compactRecipes
 end
 
 function PT.CompactCharacterRecipeOperationStorage(

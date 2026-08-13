@@ -1,5 +1,4 @@
 import {
-  asNumber,
   asString,
   asTable
 } from "./addon-import.lua-utils.js";
@@ -11,27 +10,66 @@ import {
 } from "./addon-import.character-recipe-quality-scenario.normalizer.js";
 import type {
   AddonCharacterRecipeReagentSimulation,
+  AddonRecipeOperationMetrics,
+  AddonRecipeReagentSchema,
   LuaValue
 } from "./addon-import.types.js";
+
+const COMPACT_STORAGE_FORMAT =
+  "BASE_DELTA_CATALOG_REF_V1";
 
 function nonNegativeNumber(
   value: LuaValue | undefined
 ): number {
-  const number =
-    asNumber(
-      value
-    );
+  const tableValue =
+    typeof value === "number"
+      ? value
+      : null;
 
   return (
-    number !== null &&
-    number >= 0
+    tableValue !== null &&
+    tableValue >= 0
   )
-    ? number
+    ? tableValue
     : 0;
 }
 
+function normalizeStoredOperation(
+  value: LuaValue | undefined,
+  baseOperationMetrics:
+    AddonRecipeOperationMetrics,
+  useBaseDelta: boolean
+): AddonRecipeOperationMetrics {
+  const table =
+    asTable(
+      value
+    );
+
+  if (!table) {
+    return {};
+  }
+
+  const storedMetrics =
+    normalizeOperationMetrics(
+      value
+    );
+
+  if (!useBaseDelta) {
+    return storedMetrics;
+  }
+
+  return {
+    ...baseOperationMetrics,
+    ...storedMetrics
+  };
+}
+
 export function normalizeCharacterRecipeReagentSimulation(
-  value: LuaValue | undefined
+  value: LuaValue | undefined,
+  baseOperationMetrics:
+    AddonRecipeOperationMetrics,
+  reagentSchema:
+    AddonRecipeReagentSchema | null
 ): AddonCharacterRecipeReagentSimulation | null {
   const simulation =
     asTable(
@@ -41,6 +79,23 @@ export function normalizeCharacterRecipeReagentSimulation(
   if (!simulation) {
     return null;
   }
+
+  const useBaseDelta =
+    asString(
+      simulation.storageFormat
+    ) ===
+    COMPACT_STORAGE_FORMAT;
+
+  const normalizeSimulationOperation =
+    (
+      operation:
+        LuaValue | undefined
+    ) =>
+      normalizeStoredOperation(
+        operation,
+        baseOperationMetrics,
+        useBaseDelta
+      );
 
   return {
     captureVersion:
@@ -73,17 +128,17 @@ export function normalizeCharacterRecipeReagentSimulation(
       true,
 
     lowestQualityOperation:
-      normalizeOperationMetrics(
+      normalizeSimulationOperation(
         simulation.lowestQualityOperation
       ),
 
     highestQualityOperation:
-      normalizeOperationMetrics(
+      normalizeSimulationOperation(
         simulation.highestQualityOperation
       ),
 
     highestQualityConcentrationOperation:
-      normalizeOperationMetrics(
+      normalizeSimulationOperation(
         simulation.highestQualityConcentrationOperation
       ),
 
@@ -109,7 +164,9 @@ export function normalizeCharacterRecipeReagentSimulation(
 
     qualityScenarios:
       normalizeCharacterRecipeQualityScenarios(
-        simulation.qualityScenarios
+        simulation.qualityScenarios,
+        reagentSchema,
+        normalizeSimulationOperation
       )
   };
 }

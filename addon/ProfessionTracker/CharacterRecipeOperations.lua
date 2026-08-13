@@ -109,21 +109,27 @@ local function collectRecipeOperations(
                     )
             end
 
-            storedRecipes[
-                tostring(recipeID)
-            ] = {
-                recipeId =
+            local storedRecipe =
+                PT.CreateCompactCharacterRecipeOperation(
                     recipeID,
-
-                operationMetrics =
                     operationMetrics,
-
-                reagentSimulation =
                     reagentSimulation
-            }
+                )
 
-            operationRecipeCount =
-                operationRecipeCount + 1
+            if storedRecipe then
+                storedRecipes[
+                    tostring(recipeID)
+                ] =
+                    storedRecipe
+
+                operationRecipeCount =
+                    operationRecipeCount + 1
+            else
+                table.insert(
+                    unavailableRecipeIDs,
+                    recipeID
+                )
+            end
         else
             table.insert(
                 unavailableRecipeIDs,
