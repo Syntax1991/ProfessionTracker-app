@@ -181,26 +181,75 @@ local function createCompactScenario(
     return result
 end
 
-local function createCompactScenarios(
-    scenarios,
+local function createWinnerScenarios(
+    source,
     baseMetrics
 )
+    if not PT.SelectCharacterRecipeStorageScenarios then
+        return {}
+    end
+
+    local minimumSafe,
+        maximumCaptured,
+        lowestIsSafe =
+        PT.SelectCharacterRecipeStorageScenarios(
+            baseMetrics,
+            source
+        )
+
+    if lowestIsSafe
+        or not minimumSafe
+    then
+        return {}
+    end
+
+    local minimumScore =
+        minimumSafe.qualityScore
+
+    local maximumScore =
+        maximumCaptured
+        and maximumCaptured.qualityScore
+        or nil
+
+    if maximumCaptured
+        and (
+            type(minimumScore) ~= "number"
+            or type(maximumScore) ~= "number"
+            or minimumScore >= maximumScore
+        )
+    then
+        return {}
+    end
+
     local result = {}
 
-    for _, scenario in ipairs(
-        scenarios
-        or {}
-    ) do
-        local compactScenario =
+    local compactMinimum =
+        createCompactScenario(
+            minimumSafe,
+            baseMetrics
+        )
+
+    if compactMinimum then
+        table.insert(
+            result,
+            compactMinimum
+        )
+    end
+
+    if maximumCaptured
+        and maximumCaptured
+            ~= minimumSafe
+    then
+        local compactMaximum =
             createCompactScenario(
-                scenario,
+                maximumCaptured,
                 baseMetrics
             )
 
-        if compactScenario then
+        if compactMaximum then
             table.insert(
                 result,
-                compactScenario
+                compactMaximum
             )
         end
     end
@@ -214,12 +263,6 @@ function PT.CreateCompactCharacterRecipeSimulation(
 )
     if type(source) ~= "table" then
         return nil
-    end
-
-    if source.storageFormat
-        == STORAGE_FORMAT
-    then
-        return source
     end
 
     return {
@@ -278,8 +321,8 @@ function PT.CreateCompactCharacterRecipeSimulation(
             ),
 
         qualityScenarios =
-            createCompactScenarios(
-                source.qualityScenarios,
+            createWinnerScenarios(
+                source,
                 baseMetrics
             )
     }
