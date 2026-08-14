@@ -1,3 +1,8 @@
+export type RaidCatalogBoss = {
+  name: string;
+  sortOrder: number;
+};
+
 export type RaidCatalogEntry = {
   key: string;
   expansion: "MIDNIGHT";
@@ -5,6 +10,7 @@ export type RaidCatalogEntry = {
   name: string;
   bossCount: number;
   availableFrom: string;
+  bosses: RaidCatalogBoss[];
 };
 
 export type RaidSeasonCatalog = {
@@ -27,7 +33,33 @@ const midnightSeasonOne: RaidSeasonCatalog = {
       season: 1,
       name: "The Voidspire",
       bossCount: 6,
-      availableFrom: "2026-03-17"
+      availableFrom: "2026-03-17",
+      bosses: [
+        {
+          name: "Imperator Averzian",
+          sortOrder: 0
+        },
+        {
+          name: "Vorasius",
+          sortOrder: 1
+        },
+        {
+          name: "Fallen-King Salhadaar",
+          sortOrder: 2
+        },
+        {
+          name: "Vaelgor & Ezzorak",
+          sortOrder: 3
+        },
+        {
+          name: "Lightblinded Vanguard",
+          sortOrder: 4
+        },
+        {
+          name: "Crown of the Cosmos",
+          sortOrder: 5
+        }
+      ]
     },
     {
       key: "MIDNIGHT_S1_DREAMRIFT",
@@ -35,7 +67,13 @@ const midnightSeasonOne: RaidSeasonCatalog = {
       season: 1,
       name: "The Dreamrift",
       bossCount: 1,
-      availableFrom: "2026-03-17"
+      availableFrom: "2026-03-17",
+      bosses: [
+        {
+          name: "Chimaerus the Undreamt God",
+          sortOrder: 0
+        }
+      ]
     },
     {
       key: "MIDNIGHT_S1_QUELDANAS",
@@ -43,7 +81,17 @@ const midnightSeasonOne: RaidSeasonCatalog = {
       season: 1,
       name: "March on Quel'Danas",
       bossCount: 2,
-      availableFrom: "2026-03-31"
+      availableFrom: "2026-03-31",
+      bosses: [
+        {
+          name: "Belo'ren, Child of Al'ar",
+          sortOrder: 0
+        },
+        {
+          name: "Midnight Falls",
+          sortOrder: 1
+        }
+      ]
     }
   ]
 };
@@ -60,7 +108,41 @@ const midnightSeasonTwo: RaidSeasonCatalog = {
       season: 2,
       name: "The Venomous Abyss",
       bossCount: 8,
-      availableFrom: "2026-08-19"
+      availableFrom: "2026-08-19",
+      bosses: [
+        {
+          name: "Nek'zali the Soulcoiler",
+          sortOrder: 0
+        },
+        {
+          name: "Entombed Sentinels",
+          sortOrder: 1
+        },
+        {
+          name: "The Lost Explorers",
+          sortOrder: 2
+        },
+        {
+          name: "Vashnik the Malignant",
+          sortOrder: 3
+        },
+        {
+          name: "Sszorak",
+          sortOrder: 4
+        },
+        {
+          name: "The Twin Fangs",
+          sortOrder: 5
+        },
+        {
+          name: "The Coiled Altar",
+          sortOrder: 6
+        },
+        {
+          name: "Ula'tek",
+          sortOrder: 7
+        }
+      ]
     }
   ]
 };

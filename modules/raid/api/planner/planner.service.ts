@@ -1,6 +1,8 @@
 import { AppError } from "../../../../apps/api/src/shared/errors/AppError.js";
 import { GuildTeamRepository } from "../../../guild/api/teams/team.repository.js";
 import type { GuildVerificationGuard } from "../../../guild/api/verification/verification.types.js";
+import { RaidBossRosterRepository } from "../boss-rosters/boss-roster.repository.js";
+import { findRaidByName } from "../../shared/catalog/raidCatalog.js";
 import { RaidPlannerRepository } from "./planner.repository.js";
 import type {
   RaidEventInput,
@@ -14,6 +16,9 @@ export class RaidPlannerService {
 
     private readonly teamRepository:
       GuildTeamRepository,
+
+    private readonly bossRosterRepository:
+      RaidBossRosterRepository,
 
     private readonly verification:
       GuildVerificationGuard
@@ -56,9 +61,20 @@ export class RaidPlannerService {
       input.teamId
     );
 
-    return this.repository.create(
-      this.normalize(input)
+    const normalized =
+      this.normalize(input);
+
+    const event =
+      await this.repository.create(
+        normalized
+      );
+
+    await this.seedBossesFromCatalog(
+      event.id,
+      normalized.raidInstance
     );
+
+    return event;
   }
 
   async update(
@@ -127,6 +143,28 @@ export class RaidPlannerService {
       throw new AppError(
         400,
         "Das ausgewählte Team existiert nicht."
+      );
+    }
+  }
+
+  private async seedBossesFromCatalog(
+    eventId: string,
+    raidInstance: string
+  ) {
+    const raid =
+      findRaidByName(raidInstance);
+
+    if (!raid) {
+      return;
+    }
+
+    for (const boss of raid.bosses) {
+      await this.bossRosterRepository.createBoss(
+        eventId,
+        {
+          name: boss.name,
+          sortOrder: boss.sortOrder
+        }
       );
     }
   }

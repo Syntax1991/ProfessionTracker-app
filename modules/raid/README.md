@@ -192,14 +192,41 @@ defaulting to whichever season contains today's date.
 
 ## Raid content catalog
 
-Known Midnight raid instances live in
+Known Midnight raid instances, with their real encounter lists
+(researched 2026-08-14, not guessed — see sources in the
+`project_wowaudit_reference` memory), live in
 `modules/raid/shared/catalog/raidCatalog.ts` (season, name,
-`availableFrom` date, boss count) — `RaidEventForm` uses
-`getRaidsForScheduledAt` to turn "raid instance" into a dropdown
-scoped to whatever's live on the picked date, so officers no longer
-type the raid name by hand. **Not yet done**: the catalog only has a
-`bossCount` per raid, not actual encounter names, so it can't drive
-automatic boss-row creation yet — Boss Rosters still requires
-manually adding each boss by name. Filling in real encounter names
-(researched, not guessed) and wiring `boss-roster.service.ts` to
-seed them automatically from the catalog is the next step here.
+`availableFrom` date, `bosses: {name, sortOrder}[]`).
+`RaidEventForm` uses `getRaidsForScheduledAt` to turn "raid instance"
+into a dropdown scoped to whatever's live on the picked date, so
+officers no longer type the raid name by hand.
+
+`RaidPlannerService.create` looks up the picked `raidInstance` via
+`findRaidByName` right after creating the `RaidEvent` and, if it
+matches a catalog raid, creates all of that raid's `RaidBoss` rows
+immediately (reusing `RaidBossRosterRepository.createBoss` — Planner
+and Boss Rosters are both Raid-owned, so this is an in-module
+dependency, not a cross-module one). This closed a direct complaint:
+"das wir Bosse noch anlegen müssen [ist] umständlich" (having to
+still manually add bosses is cumbersome) — for any catalog raid,
+Boss Rosters now opens pre-populated; the manual "Add boss" form
+stays only as a fallback for content outside the catalog (old-tier
+runs, custom trials). This only fires on event creation, not on
+edit — changing `raidInstance` on an existing event does not
+retroactively reseed bosses.
+
+## Demo data
+
+`apps/api/prisma/seed-demo-guild.ts` (run via `npm run
+seed:demo-guild`) seeds a persistent, idempotent demo guild —
+18 `GuildMember` rows on realm "Draenor" (a WoWAudit reference guild
+the user pointed at, kept separate from any real verified guild's
+realm so it can never collide with real data), a "Team Main"
+`GuildTeam`, a few `GuildRequirement`s, two `GuildOfficerNote`s, and
+two `RaidEvent`s (one past, fully populated with signups/boss
+roster/attendance; one upcoming, signups only) built via
+`findRaidByName` the same way `RaidPlannerService.create` does. Built
+so there's always something to look at without seeding-then-deleting
+scratch data by hand for every manual test pass; safe to re-run
+(upserts on natural keys, skips raid events that already exist by
+title).

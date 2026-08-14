@@ -2,6 +2,7 @@ import { Router } from "express";
 import { asyncHandler } from "../../../../apps/api/src/shared/http/asyncHandler.js";
 import { GuildTeamRepository } from "../../../guild/api/teams/team.repository.js";
 import { guildVerificationService } from "../../../guild/api/verification/verification.routes.js";
+import { RaidBossRosterRepository } from "../boss-rosters/boss-roster.repository.js";
 import { RaidPlannerController } from "./planner.controller.js";
 import { RaidPlannerRepository } from "./planner.repository.js";
 import { RaidPlannerService } from "./planner.service.js";
@@ -12,10 +13,14 @@ const repository =
 const teamRepository =
   new GuildTeamRepository();
 
+const bossRosterRepository =
+  new RaidBossRosterRepository();
+
 const service =
   new RaidPlannerService(
     repository,
     teamRepository,
+    bossRosterRepository,
     guildVerificationService
   );
 
