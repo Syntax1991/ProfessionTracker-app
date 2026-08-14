@@ -6,8 +6,13 @@ export const lootModule: MainModuleDefinition =
     label: "Loot",
     description:
       "Loot planning, council and history.",
-    status: "planned",
+    status: "active",
     items: [
+      {
+        label: "Loot Table",
+        path: "/loot",
+        status: "available"
+      },
       {
         label: "Wishlist",
         status: "planned"

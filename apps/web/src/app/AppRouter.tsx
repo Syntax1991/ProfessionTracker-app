@@ -21,6 +21,7 @@ import { RaidTasksPage } from "../../../../modules/my-syntrack/web/raid-tasks/pa
 import { WeeklyChecklistPage } from "../../../../modules/my-syntrack/web/weekly-checklist/pages/WeeklyChecklistPage";
 import { VaultMythicPlusPage } from "../../../../modules/my-syntrack/web/vault-mythic-plus/pages/VaultMythicPlusPage";
 import { RaiderLoginCallbackPage } from "../../../../modules/data-platform/web/raider-auth/pages/RaiderLoginCallbackPage";
+import { LootTablePage } from "../../../../modules/loot/web/catalog/pages/LootTablePage";
 import { ProfessionDetailPage } from "../../../../modules/professions/web/details/pages/ProfessionDetailPage";
 import { ProfessionCrafterFinderPage } from "../../../../modules/professions/web/pages/ProfessionCrafterFinderPage";
 import { ProfessionKnowledgePage } from "../../../../modules/professions/web/pages/ProfessionKnowledgePage";
@@ -224,6 +225,11 @@ export function AppRouter() {
         <Route
           path="raid/attendance"
           element={<AttendancePage />}
+        />
+
+        <Route
+          path="loot"
+          element={<LootTablePage />}
         />
 
         <Route
