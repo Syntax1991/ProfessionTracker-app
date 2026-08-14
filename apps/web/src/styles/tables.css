@@ -42,6 +42,10 @@ tbody tr:last-child td {
   border-bottom: 0;
 }
 
+.clickable-row {
+  cursor: pointer;
+}
+
 .character-identity {
   min-width: 190px;
   display: flex;

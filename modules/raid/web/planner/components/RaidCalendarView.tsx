@@ -12,7 +12,7 @@ type RaidCalendarViewProps = {
   onCreateOnDate: (
     date: Date
   ) => void;
-  onEditEvent: (
+  onSelectEvent: (
     event: RaidEvent
   ) => void;
 };
@@ -32,7 +32,7 @@ export function RaidCalendarView({
   monthDate,
   events,
   onCreateOnDate,
-  onEditEvent
+  onSelectEvent
 }: RaidCalendarViewProps) {
   const days =
     getMonthGridDays(monthDate);
@@ -107,7 +107,7 @@ export function RaidCalendarView({
                         event.id
                       }
                       onClick={() =>
-                        onEditEvent(
+                        onSelectEvent(
                           event
                         )
                       }

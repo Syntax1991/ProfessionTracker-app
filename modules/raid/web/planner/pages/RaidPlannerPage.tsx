@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { LoadingPanel } from "../../../../../apps/web/src/shared/components/LoadingPanel";
 import { PageHeader } from "../../../../../apps/web/src/shared/components/PageHeader";
 import { StatusMessage } from "../../../../../apps/web/src/shared/components/StatusMessage";
@@ -20,12 +21,7 @@ import {
 type ViewMode = "calendar" | "list";
 
 export function RaidPlannerPage() {
-  const [
-    editingEvent,
-    setEditingEvent
-  ] = useState<RaidEvent | null>(
-    null
-  );
+  const navigate = useNavigate();
 
   const [
     prefillDate,
@@ -49,9 +45,7 @@ export function RaidPlannerPage() {
     events,
     isLoading,
     error,
-    createEvent,
-    updateEvent,
-    deleteEvent
+    createEvent
   } = useRaidEvents();
 
   const { teams } = useTeams();
@@ -59,53 +53,22 @@ export function RaidPlannerPage() {
   const handleSubmit = async (
     input: RaidEventInput
   ) => {
-    if (editingEvent) {
-      await updateEvent(
-        editingEvent.id,
-        input
-      );
-
-      setEditingEvent(null);
-      return;
-    }
-
     await createEvent(input);
     setPrefillDate(null);
-  };
-
-  const handleDelete = async (
-    event: RaidEvent
-  ) => {
-    const confirmed = window.confirm(
-      `${event.title} delete?`
-    );
-
-    if (!confirmed) {
-      return;
-    }
-
-    await deleteEvent(event.id);
-
-    if (
-      editingEvent?.id ===
-      event.id
-    ) {
-      setEditingEvent(null);
-    }
   };
 
   const handleCreateOnDate = (
     date: Date
   ) => {
-    setEditingEvent(null);
     setPrefillDate(date);
   };
 
-  const handleEditEvent = (
+  const handleSelectEvent = (
     event: RaidEvent
   ) => {
-    setPrefillDate(null);
-    setEditingEvent(event);
+    navigate(
+      `/raid/planner/${event.id}`
+    );
   };
 
   return (
@@ -128,37 +91,24 @@ export function RaidPlannerPage() {
             <div className="panel-header">
               <div>
                 <p className="eyebrow">
-                  {editingEvent
-                    ? "EDIT"
-                    : "NEW RAID"}
+                  NEW RAID
                 </p>
 
                 <h2>
-                  {editingEvent
-                    ? editingEvent.title
-                    : "Schedule Raid"}
+                  Schedule Raid
                 </h2>
               </div>
             </div>
 
             <RaidEventForm
-              event={
-                editingEvent
-              }
+              event={null}
               key={
-                editingEvent?.id ??
                 prefillDate?.toISOString() ??
                 "new-event"
               }
-              onCancel={() => {
-                setEditingEvent(
-                  null
-                );
-
-                setPrefillDate(
-                  null
-                );
-              }}
+              onCancel={() =>
+                setPrefillDate(null)
+              }
               onSubmit={
                 handleSubmit
               }
@@ -282,22 +232,15 @@ export function RaidPlannerPage() {
                 onCreateOnDate={
                   handleCreateOnDate
                 }
-                onEditEvent={
-                  handleEditEvent
+                onSelectEvent={
+                  handleSelectEvent
                 }
               />
             ) : (
               <RaidEventList
                 events={events}
-                onDelete={(
-                  event
-                ) => {
-                  void handleDelete(
-                    event
-                  );
-                }}
-                onEdit={
-                  handleEditEvent
+                onSelect={
+                  handleSelectEvent
                 }
               />
             )}

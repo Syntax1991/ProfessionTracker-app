@@ -35,8 +35,10 @@ does not own the guild roster.
 
 - API: `modules/raid/api/planner`, `modules/raid/api/boss-rosters`,
   `modules/raid/api/signups`
-- Web: `modules/raid/web/planner`, `modules/raid/web/boss-rosters`,
-  `modules/raid/web/signups`
+- Web: `modules/raid/web/planner` (the only routed pages — Planner
+  index + Event Detail), `modules/raid/web/boss-rosters` and
+  `modules/raid/web/signups` (components/hooks/types only, composed
+  into the Event Detail page, no page/route of their own anymore)
 
 ## Signups
 
@@ -119,5 +121,38 @@ with events rendered as small cards color-coded by difficulty
 create form with that date at a default 20:00 start time
 (`RaidEventForm`'s `prefillDate` prop) rather than opening a separate
 flow — reuses the exact same form/validation/submit path as manual
-creation, just seeds the date field. Clicking an event card opens
-that event for editing, same as the List view's Edit action.
+creation, just seeds the date field. Clicking an event card (Calendar
+view) or an event row (List view) navigates to that event's detail
+page rather than opening inline edit.
+
+## Event Detail Page (Planner + Boss Rosters + Signups consolidation)
+
+Built 2026-08-14 after the user shared six more WoWAudit screenshots
+proving WoWAudit has **no** separate Boss Rosters or Signups tabs at
+all — one `Events` tab, and clicking an event opens a single detail
+page showing the raider's own signup status, the attendance count,
+and the roster setup together. SynTrack made you pick "which raid?"
+independently on three separate pages
+(`/raid/planner`, `/raid/boss-rosters`, `/raid/signups`) to look at
+the same event from three angles — that was the "workflow ist nicht
+so schlau" complaint.
+
+The fix is navigational, not a data-model change: `RaidBoss` +
+`RaidBossRosterEntry` (per-boss roster granularity, more granular
+than WoWAudit's single roster-wide "Setup") is deliberately kept —
+still the right model, no reason to throw it away. `BossRostersPage`
+and `SignupsPage` are deleted along with their routes and nav
+entries; their `api`/`components`/`hooks`/`types` folders stay and
+are composed, unchanged, into the new
+`modules/raid/web/planner/pages/RaidEventDetailPage.tsx` at route
+`/raid/planner/:eventId`: header (title/instance/difficulty/time,
+Edit/Delete gated behind `GuildVerificationGate`) → `MySignupCard`
+(ungated, self-service) → boss list + `BossRosterGrid` (gated
+mutations, open reads, same as before) → officer signup overview
+grid (`SignupOfficerGrid`, gated). No new backend endpoints — every
+piece already read by `eventId`; this is a pure frontend
+recomposition. `RaidPlannerPage` (`/raid/planner`) itself simplifies
+to create-only (the calendar-day-prefill flow stays) plus the
+Calendar/List overview, since editing/deleting an existing event now
+lives entirely on its detail page — `RaidEventList` dropped its own
+Delete column for the same reason.

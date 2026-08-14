@@ -12,9 +12,8 @@ import { RequirementsPage } from "../../../../modules/guild/web/requirements/pag
 import { RosterPage } from "../../../../modules/guild/web/roster/pages/RosterPage";
 import { TeamsPage } from "../../../../modules/guild/web/teams/pages/TeamsPage";
 import { WeeklyProgressPage } from "../../../../modules/guild/web/weekly-progress/pages/WeeklyProgressPage";
-import { BossRostersPage } from "../../../../modules/raid/web/boss-rosters/pages/BossRostersPage";
+import { RaidEventDetailPage } from "../../../../modules/raid/web/planner/pages/RaidEventDetailPage";
 import { RaidPlannerPage } from "../../../../modules/raid/web/planner/pages/RaidPlannerPage";
-import { SignupsPage } from "../../../../modules/raid/web/signups/pages/SignupsPage";
 import { CharactersPage } from "../../../../modules/my-syntrack/web/characters/pages/CharactersPage";
 import { DashboardPage } from "../../../../modules/my-syntrack/web/dashboard/pages/DashboardPage";
 import { GearReadinessPage } from "../../../../modules/my-syntrack/web/gear-readiness/pages/GearReadinessPage";
@@ -227,16 +226,9 @@ export function AppRouter() {
         />
 
         <Route
-          path="raid/boss-rosters"
+          path="raid/planner/:eventId"
           element={
-            <BossRostersPage />
-          }
-        />
-
-        <Route
-          path="raid/signups"
-          element={
-            <SignupsPage />
+            <RaidEventDetailPage />
           }
         />
 

@@ -2,10 +2,7 @@ import type { RaidEvent } from "../types/raidEvent.types";
 
 type RaidEventListProps = {
   events: RaidEvent[];
-  onDelete: (
-    event: RaidEvent
-  ) => void;
-  onEdit: (
+  onSelect: (
     event: RaidEvent
   ) => void;
 };
@@ -20,8 +17,7 @@ function formatSchedule(
 
 export function RaidEventList({
   events,
-  onDelete,
-  onEdit
+  onSelect
 }: RaidEventListProps) {
   if (events.length === 0) {
     return (
@@ -40,14 +36,19 @@ export function RaidEventList({
             <th>Difficulty</th>
             <th>Scheduled</th>
             <th>Team</th>
-            <th aria-label="Actions" />
           </tr>
         </thead>
 
         <tbody>
           {events.map(
             (event) => (
-              <tr key={event.id}>
+              <tr
+                className="clickable-row"
+                key={event.id}
+                onClick={() =>
+                  onSelect(event)
+                }
+              >
                 <td>
                   <strong>
                     {event.title}
@@ -80,34 +81,6 @@ export function RaidEventList({
                       —
                     </span>
                   )}
-                </td>
-
-                <td>
-                  <div className="table-actions">
-                    <button
-                      className="text-button"
-                      onClick={() =>
-                        onEdit(
-                          event
-                        )
-                      }
-                      type="button"
-                    >
-                      Edit
-                    </button>
-
-                    <button
-                      className="text-button danger"
-                      onClick={() =>
-                        onDelete(
-                          event
-                        )
-                      }
-                      type="button"
-                    >
-                      Delete
-                    </button>
-                  </div>
                 </td>
               </tr>
             )
