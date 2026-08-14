@@ -5,6 +5,7 @@ import {
   ROLE_ORDER,
   resolveRoleKey
 } from "../../../../guild/web/roster/utils/rosterRoles";
+import { BossMatrixMemberCell } from "./BossMatrixMemberCell";
 import { BossForm } from "./BossForm";
 import type {
   RaidBoss,
@@ -50,15 +51,15 @@ const cellLabel: Record<
   BENCH: "B"
 };
 
-const cellBadgeClass: Record<
+const cellBarClass: Record<
   RaidBossRosterStatus,
   string
 > = {
   CONFIRMED:
-    "boss-matrix-badge confirmed",
+    "boss-matrix-bar confirmed",
   TENTATIVE:
-    "boss-matrix-badge tentative",
-  BENCH: "boss-matrix-badge bench"
+    "boss-matrix-bar tentative",
+  BENCH: "boss-matrix-bar bench"
 };
 
 export function BossRosterMatrix({
@@ -251,30 +252,14 @@ export function BossRosterMatrix({
                           }
                         >
                           <td>
-                            <div className="character-identity boss-matrix-member">
-                              <div className="character-avatar">
-                                {member.name
-                                  .slice(
-                                    0,
-                                    2
-                                  )
-                                  .toUpperCase()}
-                              </div>
-
-                              <div>
-                                <strong>
-                                  {
-                                    member.name
-                                  }
-                                </strong>
-
-                                <span>
-                                  {
-                                    member.className
-                                  }
-                                </span>
-                              </div>
-                            </div>
+                            <BossMatrixMemberCell
+                              className={
+                                member.className
+                              }
+                              name={
+                                member.name
+                              }
+                            />
                           </td>
 
                           {bosses.map(
@@ -312,21 +297,21 @@ export function BossRosterMatrix({
                                     0
                                   }
                                 >
-                                  <span
+                                  <div
                                     className={
                                       status
-                                        ? cellBadgeClass[
+                                        ? cellBarClass[
                                             status
                                           ]
-                                        : "boss-matrix-badge empty"
+                                        : "boss-matrix-bar empty"
                                     }
                                   >
                                     {status
                                       ? cellLabel[
                                           status
                                         ]
-                                      : "–"}
-                                  </span>
+                                      : ""}
+                                  </div>
                                 </td>
                               );
                             }
