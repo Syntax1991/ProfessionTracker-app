@@ -1,25 +1,33 @@
 /**
  * Real loot table for Midnight Season 2's raid, "The Venomous
- * Abyss" (researched via Wowhead-derived guides, cross-checked
- * against a WoWAudit reference screenshot of the same raid's item
- * slots/sources — not guessed). Item slot strings match Blizzard's
- * own equipped-item vocabulary (see `enchantableSlotTypes` in
- * `modules/guild/api/audit/audit.stats.ts`). `tierSlot` is set only
- * on tier-token items; Ula'tek's flexible token uses "ANY" since it
- * can be exchanged for any of the five tier slots rather than being
- * tied to one. `id` is a stable local slug — not a real Blizzard
- * item id, since bulk-resolving ~100 real ids wasn't feasible from
- * the sources available; real ids should be backfilled once Step 3
- * (sim upload) needs to match parsed report items against this
- * catalog.
+ * Abyss", pulled directly from Blizzard's own Game Data API —
+ * `journal-instance`/`journal-encounter` (item list per boss) and
+ * `/data/wow/item/{id}` (slot/quality/level per item), app-level
+ * OAuth via `BATTLENET_CLIENT_ID`/`SECRET`. Not scraped, not
+ * hand-typed from guide text (an earlier pass of this file was —
+ * rebuilt once an API source was confirmed available; see the
+ * `feedback_verify_data_availability` memory). `slot` uses
+ * Blizzard's own `inventory_type` vocabulary as-is (`CLOAK` not
+ * `BACK`, `HAND` not `HANDS`, `WEAPON`/`WEAPONMAINHAND`/`TWOHWEAPON`
+ * distinct, etc.) except `ROBE` is normalized to `CHEST` since both
+ * occupy the same equipment slot in-game. `tierSlot` is set only on
+ * tier-token items (`itemClass "Miscellaneous"`/`itemSubclass
+ * "Junk"` in Blizzard's own data — derived here from each token's
+ * real name suffix: Idol→Gloves, Remnant→Shoulder, Icon→Chest,
+ * Relic→Legs, Effigy→Head); Ula'tek's flexible "Slumbering Coil
+ * Curio" uses `tierSlot: "ANY"`. Housing decor, companion pets and
+ * the mythic mount that also drop from these encounters are
+ * deliberately excluded — real loot, but not gear.
  */
 
 export type LootCatalogItem = {
-  id: string;
+  itemId: number;
   name: string;
   slot: string;
   bossName: string;
   tierSlot: string | null;
+  quality: string;
+  itemLevel: number;
 };
 
 export type LootCatalogRaid = {
@@ -28,112 +36,110 @@ export type LootCatalogRaid = {
 };
 
 const items: LootCatalogItem[] = [
-  { id: "crown-of-the-eternal-fang", name: "Crown of the Eternal Fang", slot: "HEAD", bossName: "Nek'zali the Soulcoiler", tierSlot: null },
-  { id: "soulslither-spaulders", name: "Soulslither Spaulders", slot: "SHOULDER", bossName: "Nek'zali the Soulcoiler", tierSlot: null },
-  { id: "vestment-of-the-awakening", name: "Vestment of the Awakening", slot: "CHEST", bossName: "Nek'zali the Soulcoiler", tierSlot: null },
-  { id: "restless-spirit-shackles", name: "Restless Spirit Shackles", slot: "WRIST", bossName: "Nek'zali the Soulcoiler", tierSlot: null },
-  { id: "cursed-reliquary-cincture", name: "Cursed Reliquary Cincture", slot: "WAIST", bossName: "Nek'zali the Soulcoiler", tierSlot: null },
-  { id: "initiates-sacrificial-tights", name: "Initiate's Sacrificial Tights", slot: "LEGS", bossName: "Nek'zali the Soulcoiler", tierSlot: null },
-  { id: "skullguard-of-the-risen-sacrifice", name: "Skullguard of the Risen Sacrifice", slot: "FEET", bossName: "Nek'zali the Soulcoiler", tierSlot: null },
-  { id: "strongbloods-ceremonial-cleaver", name: "Strongblood's Ceremonial Cleaver", slot: "MAIN_HAND", bossName: "Nek'zali the Soulcoiler", tierSlot: null },
-  { id: "hexing-spiritrender", name: "Hexing Spiritrender", slot: "MAIN_HAND", bossName: "Nek'zali the Soulcoiler", tierSlot: null },
-  { id: "tomb-creepers-claw", name: "Tomb Creeper's Claw", slot: "MAIN_HAND", bossName: "Nek'zali the Soulcoiler", tierSlot: null },
-  { id: "bubblefin-splash-guard", name: "Bubblefin Splash Guard", slot: "OFF_HAND", bossName: "Nek'zali the Soulcoiler", tierSlot: null },
-  { id: "frostscales-mystic-frond", name: "Frostscale's Mystic Frond", slot: "OFF_HAND", bossName: "Nek'zali the Soulcoiler", tierSlot: null },
-
-  { id: "venom-singed-cuffs", name: "Venom-Singed Cuffs", slot: "WRIST", bossName: "Entombed Sentinels", tierSlot: null },
-  { id: "shadow-hunters-warmask", name: "Shadow Hunter's Warmask", slot: "HEAD", bossName: "Entombed Sentinels", tierSlot: null },
-  { id: "venom-wardens-greaves", name: "Venom Warden's Greaves", slot: "LEGS", bossName: "Entombed Sentinels", tierSlot: null },
-  { id: "ancient-constructs-venomshiv", name: "Ancient Construct's Venomshiv", slot: "MAIN_HAND", bossName: "Entombed Sentinels", tierSlot: null },
-  { id: "caustic-keeper-crusher", name: "Caustic Keeper Crusher", slot: "TWOHAND", bossName: "Entombed Sentinels", tierSlot: null },
-  { id: "spine-of-the-hissing-abyss", name: "Spine of the Hissing Abyss", slot: "OFF_HAND", bossName: "Entombed Sentinels", tierSlot: null },
-  { id: "sentinels-vitriolic-chain", name: "Sentinel's Vitriolic Chain", slot: "NECK", bossName: "Entombed Sentinels", tierSlot: null },
-  { id: "keepers-seething-core", name: "Keeper's Seething Core", slot: "TRINKET", bossName: "Entombed Sentinels", tierSlot: null },
-  { id: "venomwoven-idol", name: "Venomwoven Idol", slot: "HANDS", bossName: "Entombed Sentinels", tierSlot: "GLOVES" },
-  { id: "venomcured-idol", name: "Venomcured Idol", slot: "HANDS", bossName: "Entombed Sentinels", tierSlot: "GLOVES" },
-  { id: "venomcast-idol", name: "Venomcast Idol", slot: "HANDS", bossName: "Entombed Sentinels", tierSlot: "GLOVES" },
-  { id: "venomforged-idol", name: "Venomforged Idol", slot: "HANDS", bossName: "Entombed Sentinels", tierSlot: "GLOVES" },
-
-  { id: "errant-scrollsages-hood", name: "Errant Scrollsage's Hood", slot: "HEAD", bossName: "The Lost Explorers", tierSlot: null },
-  { id: "unpossessed-skullsash", name: "Unpossessed Skullsash", slot: "WAIST", bossName: "The Lost Explorers", tierSlot: null },
-  { id: "shellbound-bracers", name: "Shellbound Bracers", slot: "WRIST", bossName: "The Lost Explorers", tierSlot: null },
-  { id: "boots-of-the-reckless-wayfarer", name: "Boots of the Reckless Wayfarer", slot: "FEET", bossName: "The Lost Explorers", tierSlot: null },
-  { id: "malevolent-spiritcudgel", name: "Malevolent Spiritcudgel", slot: "MAIN_HAND", bossName: "The Lost Explorers", tierSlot: null },
-  { id: "gebbos-backup-blaster", name: "Gebbo's Backup Blaster", slot: "RANGED", bossName: "The Lost Explorers", tierSlot: null },
-  { id: "venom-slashed-scuteward", name: "Venom-Slashed Scuteward", slot: "OFF_HAND", bossName: "The Lost Explorers", tierSlot: null },
-  { id: "first-mates-shellward", name: "First Mate's Shellward", slot: "TRINKET", bossName: "The Lost Explorers", tierSlot: null },
-  { id: "gebbos-bottomless-bag", name: "Gebbo's Bottomless Bag", slot: "TRINKET", bossName: "The Lost Explorers", tierSlot: null },
-  { id: "venomwoven-remnant", name: "Venomwoven Remnant", slot: "SHOULDER", bossName: "The Lost Explorers", tierSlot: "SHOULDER" },
-  { id: "venomcured-remnant", name: "Venomcured Remnant", slot: "SHOULDER", bossName: "The Lost Explorers", tierSlot: "SHOULDER" },
-  { id: "venomcast-remnant", name: "Venomcast Remnant", slot: "SHOULDER", bossName: "The Lost Explorers", tierSlot: "SHOULDER" },
-  { id: "venomforged-remnant", name: "Venomforged Remnant", slot: "SHOULDER", bossName: "The Lost Explorers", tierSlot: "SHOULDER" },
-
-  { id: "frothing-venom-spaulders", name: "Frothing Venom Spaulders", slot: "SHOULDER", bossName: "Vashnik the Malignant", tierSlot: null },
-  { id: "serpentine-mixing-belt", name: "Serpentine Mixing Belt", slot: "WAIST", bossName: "Vashnik the Malignant", tierSlot: null },
-  { id: "scaled-fiends-warboots", name: "Scaled Fiend's Warboots", slot: "FEET", bossName: "Vashnik the Malignant", tierSlot: null },
-  { id: "venomancers-winged-channeler", name: "Venomancer's Winged Channeler", slot: "TWOHAND", bossName: "Vashnik the Malignant", tierSlot: null },
-  { id: "malignant-toothed-edge", name: "Malignant Toothed Edge", slot: "MAIN_HAND", bossName: "Vashnik the Malignant", tierSlot: null },
-  { id: "vile-alchemists-band", name: "Vile Alchemist's Band", slot: "FINGER_1", bossName: "Vashnik the Malignant", tierSlot: null },
-  { id: "vashniks-sanguine-rancor", name: "Vashnik's Sanguine Rancor", slot: "TRINKET", bossName: "Vashnik the Malignant", tierSlot: null },
-  { id: "fang-of-umbral-malignance", name: "Fang of Umbral Malignance", slot: "TRINKET", bossName: "Vashnik the Malignant", tierSlot: null },
-  { id: "venomwoven-icon", name: "Venomwoven Icon", slot: "CHEST", bossName: "Vashnik the Malignant", tierSlot: "CHEST" },
-  { id: "venomcured-icon", name: "Venomcured Icon", slot: "CHEST", bossName: "Vashnik the Malignant", tierSlot: "CHEST" },
-  { id: "venomcast-icon", name: "Venomcast Icon", slot: "CHEST", bossName: "Vashnik the Malignant", tierSlot: "CHEST" },
-  { id: "venomforged-icon", name: "Venomforged Icon", slot: "CHEST", bossName: "Vashnik the Malignant", tierSlot: "CHEST" },
-
-  { id: "ruthless-slaughtergrips", name: "Ruthless Slaughtergrips", slot: "HANDS", bossName: "Sszorak", tierSlot: null },
-  { id: "ferocious-scaleboots", name: "Ferocious Scaleboots", slot: "FEET", bossName: "Sszorak", tierSlot: null },
-  { id: "caustic-chain-wrapped-sash", name: "Caustic Chain-Wrapped Sash", slot: "WAIST", bossName: "Sszorak", tierSlot: null },
-  { id: "venomous-boneglaive", name: "Venomous Boneglaive", slot: "TWOHAND", bossName: "Sszorak", tierSlot: null },
-  { id: "slithering-savages-gavel", name: "Slithering Savage's Gavel", slot: "MAIN_HAND", bossName: "Sszorak", tierSlot: null },
-  { id: "apex-brutes-claw-ring", name: "Apex Brute's Claw Ring", slot: "FINGER_1", bossName: "Sszorak", tierSlot: null },
-  { id: "sszoraks-ferocity", name: "Sszorak's Ferocity", slot: "TRINKET", bossName: "Sszorak", tierSlot: null },
-  { id: "idol-of-the-howling-nexus", name: "Idol of the Howling Nexus", slot: "TRINKET", bossName: "Sszorak", tierSlot: null },
-  { id: "venomwoven-relic", name: "Venomwoven Relic", slot: "LEGS", bossName: "Sszorak", tierSlot: "LEGS" },
-  { id: "venomcured-relic", name: "Venomcured Relic", slot: "LEGS", bossName: "Sszorak", tierSlot: "LEGS" },
-  { id: "venomcast-relic", name: "Venomcast Relic", slot: "LEGS", bossName: "Sszorak", tierSlot: "LEGS" },
-  { id: "venomforged-relic", name: "Venomforged Relic", slot: "LEGS", bossName: "Sszorak", tierSlot: "LEGS" },
-
-  { id: "ornaments-of-the-eternal-coil", name: "Ornaments of the Eternal Coil", slot: "HEAD", bossName: "The Twin Fangs", tierSlot: null },
-  { id: "ophidian-fangmail", name: "Ophidian Fangmail", slot: "CHEST", bossName: "The Twin Fangs", tierSlot: null },
-  { id: "scaleplate-strangulators", name: "Scaleplate Strangulators", slot: "WRIST", bossName: "The Twin Fangs", tierSlot: null },
-  { id: "bespittled-slitherslippers", name: "Bespittled Slitherslippers", slot: "FEET", bossName: "The Twin Fangs", tierSlot: null },
-  { id: "ravenous-feasters-fang", name: "Ravenous Feaster's Fang", slot: "MAIN_HAND", bossName: "The Twin Fangs", tierSlot: null },
-  { id: "amulet-of-the-twin-fangs", name: "Amulet of the Twin Fangs", slot: "NECK", bossName: "The Twin Fangs", tierSlot: null },
-  { id: "preternatural-antivenom", name: "Preternatural Antivenom", slot: "TRINKET", bossName: "The Twin Fangs", tierSlot: null },
-  { id: "vexhuls-everflowing-gland", name: "Vexhul's Everflowing Gland", slot: "TRINKET", bossName: "The Twin Fangs", tierSlot: null },
-  { id: "venomwoven-effigy", name: "Venomwoven Effigy", slot: "HEAD", bossName: "The Twin Fangs", tierSlot: "HEAD" },
-  { id: "venomcured-effigy", name: "Venomcured Effigy", slot: "HEAD", bossName: "The Twin Fangs", tierSlot: "HEAD" },
-  { id: "venomcast-effigy", name: "Venomcast Effigy", slot: "HEAD", bossName: "The Twin Fangs", tierSlot: "HEAD" },
-  { id: "venomforged-effigy", name: "Venomforged Effigy", slot: "HEAD", bossName: "The Twin Fangs", tierSlot: "HEAD" },
-
-  { id: "grasps-of-the-eternal-shadow", name: "Grasps of the Eternal Shadow", slot: "HANDS", bossName: "The Coiled Altar", tierSlot: null },
-  { id: "reckless-spirit-breastplate", name: "Reckless Spirit Breastplate", slot: "CHEST", bossName: "The Coiled Altar", tierSlot: null },
-  { id: "coiled-hex-legguards", name: "Coiled Hex Legguards", slot: "LEGS", bossName: "The Coiled Altar", tierSlot: null },
-  { id: "cuisses-of-the-uncoiled-union", name: "Cuisses of the Uncoiled Union", slot: "LEGS", bossName: "The Coiled Altar", tierSlot: null },
-  { id: "girdle-of-toxic-regret", name: "Girdle of Toxic Regret", slot: "WAIST", bossName: "The Coiled Altar", tierSlot: null },
-  { id: "cackling-soultreads", name: "Cackling Soultreads", slot: "FEET", bossName: "The Coiled Altar", tierSlot: null },
-  { id: "sash-of-the-forlorn-vessel", name: "Sash of the Forlorn Vessel", slot: "WAIST", bossName: "The Coiled Altar", tierSlot: null },
-  { id: "silken-voodoo-drape", name: "Silken Voodoo Drape", slot: "BACK", bossName: "The Coiled Altar", tierSlot: null },
-  { id: "baleful-hexblade", name: "Baleful Hexblade", slot: "MAIN_HAND", bossName: "The Coiled Altar", tierSlot: null },
-  { id: "amanmuso-warlords-vengeance", name: "Aman'muso, Warlord's Vengeance", slot: "TWOHAND", bossName: "The Coiled Altar", tierSlot: null },
-  { id: "maze-roa-warlords-fury", name: "Maze-roa, Warlord's Fury", slot: "TWOHAND", bossName: "The Coiled Altar", tierSlot: null },
-  { id: "hex-lords-dooming-idol", name: "Hex Lord's Dooming Idol", slot: "TRINKET", bossName: "The Coiled Altar", tierSlot: null },
-  { id: "zuljins-guillotine-technique", name: "Zul'jin's Guillotine Technique", slot: "TRINKET", bossName: "The Coiled Altar", tierSlot: null },
-
-  { id: "venomkeepers-horrific-cowl", name: "Venomkeeper's Horrific Cowl", slot: "HEAD", bossName: "Ula'tek", tierSlot: null },
-  { id: "gaze-of-the-coiled-watcher", name: "Gaze of the Coiled Watcher", slot: "HEAD", bossName: "Ula'tek", tierSlot: null },
-  { id: "awoken-dreadfang-cuirass", name: "Awoken Dreadfang Cuirass", slot: "CHEST", bossName: "Ula'tek", tierSlot: null },
-  { id: "chausses-of-unbound-rancor", name: "Chausses of Unbound Rancor", slot: "LEGS", bossName: "Ula'tek", tierSlot: null },
-  { id: "jaw-of-the-shackled-goddess", name: "Jaw of the Shackled Goddess", slot: "MAIN_HAND", bossName: "Ula'tek", tierSlot: null },
-  { id: "abyssal-broodfiends-bardiche", name: "Abyssal Broodfiend's Bardiche", slot: "TWOHAND", bossName: "Ula'tek", tierSlot: null },
-  { id: "caustic-repose-greatbow", name: "Caustic Repose Greatbow", slot: "RANGED", bossName: "Ula'tek", tierSlot: null },
-  { id: "zathatek-breath-of-corruption", name: "Zatha'tek, Breath of Corruption", slot: "MAIN_HAND", bossName: "Ula'tek", tierSlot: null },
-  { id: "janthrazet-the-soul-fang", name: "Jan'thrazet, the Soul Fang", slot: "MAIN_HAND", bossName: "Ula'tek", tierSlot: null },
-  { id: "aqirbane-reliquary", name: "Aqirbane Reliquary", slot: "NECK", bossName: "Ula'tek", tierSlot: null },
-  { id: "font-of-venomous-rage", name: "Font of Venomous Rage", slot: "TRINKET", bossName: "Ula'tek", tierSlot: null },
-  { id: "voracious-heart-of-ulatek", name: "Voracious Heart of Ula'tek", slot: "TRINKET", bossName: "Ula'tek", tierSlot: null },
-  { id: "slumbering-coil-curio", name: "Slumbering Coil Curio", slot: "MISCELLANEOUS", bossName: "Ula'tek", tierSlot: "ANY" }
+  { itemId: 281227, name: "Soulcoiler's Rush'kah", slot: "HEAD", bossName: "Nek'zali the Soulcoiler", tierSlot: null, quality: "RARE", itemLevel: 1 },
+  { itemId: 268230, name: "Crown of the Eternal Fang", slot: "HEAD", bossName: "Nek'zali the Soulcoiler", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 270162, name: "Soulcoiler Ritual Vessel", slot: "TRINKET", bossName: "Nek'zali the Soulcoiler", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 268203, name: "Hexing Spiritrender", slot: "WEAPON", bossName: "Nek'zali the Soulcoiler", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 268236, name: "Initiate's Sacrificial Tights", slot: "LEGS", bossName: "Nek'zali the Soulcoiler", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 268235, name: "Vestment of the Awakening", slot: "CHEST", bossName: "Nek'zali the Soulcoiler", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 268229, name: "Skullguard of the Risen Sacrifice", slot: "HEAD", bossName: "Nek'zali the Soulcoiler", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 268245, name: "Entombed Cultist's Sabatons", slot: "FEET", bossName: "Nek'zali the Soulcoiler", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 268208, name: "Strongblood's Ceremonial Cleaver", slot: "WEAPON", bossName: "Nek'zali the Soulcoiler", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 270930, name: "Tomb-Creeper's Claw", slot: "WEAPON", bossName: "Nek'zali the Soulcoiler", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 268248, name: "Amani Summoning Shawl", slot: "CLOAK", bossName: "Nek'zali the Soulcoiler", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 268218, name: "Nek'zali's Spiritwalkers", slot: "FEET", bossName: "Nek'zali the Soulcoiler", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 268240, name: "Restless Spirit Shackles", slot: "WRIST", bossName: "Nek'zali the Soulcoiler", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 268216, name: "Cursed Reliquary Cincture", slot: "WAIST", bossName: "Nek'zali the Soulcoiler", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 270913, name: "Venomforged Idol", slot: "HAND", bossName: "Entombed Sentinels", tierSlot: "GLOVES", quality: "EPIC", itemLevel: 219 },
+  { itemId: 270912, name: "Venomcast Idol", slot: "HAND", bossName: "Entombed Sentinels", tierSlot: "GLOVES", quality: "EPIC", itemLevel: 219 },
+  { itemId: 270911, name: "Venomcured Idol", slot: "HAND", bossName: "Entombed Sentinels", tierSlot: "GLOVES", quality: "EPIC", itemLevel: 219 },
+  { itemId: 270910, name: "Venomwoven Idol", slot: "HAND", bossName: "Entombed Sentinels", tierSlot: "GLOVES", quality: "EPIC", itemLevel: 219 },
+  { itemId: 268250, name: "Sentinel's Vitriolic Chain", slot: "NECK", bossName: "Entombed Sentinels", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 270165, name: "Keeper's Seething Core", slot: "TRINKET", bossName: "Entombed Sentinels", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 268204, name: "Ancient Construct's Venomshiv", slot: "WEAPON", bossName: "Entombed Sentinels", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 268198, name: "Caustic Keeper-Crusher", slot: "TWOHWEAPON", bossName: "Entombed Sentinels", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 268224, name: "Venom Warden's Greaves", slot: "LEGS", bossName: "Entombed Sentinels", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 268228, name: "Venom-Singed Cuffs", slot: "WRIST", bossName: "Entombed Sentinels", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 268219, name: "Shadow Hunter's Warmask", slot: "HEAD", bossName: "Entombed Sentinels", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 268197, name: "Spine of the Hissing Abyss", slot: "HOLDABLE", bossName: "Entombed Sentinels", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 270925, name: "Venomforged Remnant", slot: "SHOULDER", bossName: "The Lost Explorers", tierSlot: "SHOULDER", quality: "EPIC", itemLevel: 219 },
+  { itemId: 270924, name: "Venomcast Remnant", slot: "SHOULDER", bossName: "The Lost Explorers", tierSlot: "SHOULDER", quality: "EPIC", itemLevel: 219 },
+  { itemId: 270923, name: "Venomcured Remnant", slot: "SHOULDER", bossName: "The Lost Explorers", tierSlot: "SHOULDER", quality: "EPIC", itemLevel: 219 },
+  { itemId: 270922, name: "Venomwoven Remnant", slot: "SHOULDER", bossName: "The Lost Explorers", tierSlot: "SHOULDER", quality: "EPIC", itemLevel: 219 },
+  { itemId: 270164, name: "Gebbo's Bottomless Bag", slot: "TRINKET", bossName: "The Lost Explorers", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 270160, name: "First Mate's Shellward", slot: "TRINKET", bossName: "The Lost Explorers", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 268210, name: "Malevolent Spiritcudgel", slot: "WEAPON", bossName: "The Lost Explorers", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 268200, name: "Gebbo's Backup Blaster", slot: "RANGEDRIGHT", bossName: "The Lost Explorers", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 268227, name: "Unpossessed Skullsash", slot: "WAIST", bossName: "The Lost Explorers", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 268242, name: "Errant Scrollsage's Hood", slot: "HEAD", bossName: "The Lost Explorers", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 268258, name: "Boots of the Reckless Wayfarer", slot: "FEET", bossName: "The Lost Explorers", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 268239, name: "Shellbound Bracers", slot: "WRIST", bossName: "The Lost Explorers", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 268196, name: "Venom-Slashed Scuteward", slot: "SHIELD", bossName: "The Lost Explorers", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 270929, name: "Venomforged Icon", slot: "CHEST", bossName: "Vashnik the Malignant", tierSlot: "CHEST", quality: "EPIC", itemLevel: 219 },
+  { itemId: 270928, name: "Venomcast Icon", slot: "CHEST", bossName: "Vashnik the Malignant", tierSlot: "CHEST", quality: "EPIC", itemLevel: 219 },
+  { itemId: 270927, name: "Venomcured Icon", slot: "CHEST", bossName: "Vashnik the Malignant", tierSlot: "CHEST", quality: "EPIC", itemLevel: 219 },
+  { itemId: 270926, name: "Venomwoven Icon", slot: "CHEST", bossName: "Vashnik the Malignant", tierSlot: "CHEST", quality: "EPIC", itemLevel: 219 },
+  { itemId: 268249, name: "Vile Alchemist's Band", slot: "FINGER", bossName: "Vashnik the Malignant", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 268246, name: "Frothing Venom Spaulders", slot: "SHOULDER", bossName: "Vashnik the Malignant", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 268254, name: "Serpentine Mixing Belt", slot: "WAIST", bossName: "Vashnik the Malignant", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 268260, name: "Scaled Fiend's Warboots", slot: "FEET", bossName: "Vashnik the Malignant", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 268214, name: "Malignant Toothed Edge", slot: "TWOHWEAPON", bossName: "Vashnik the Malignant", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 270166, name: "Vashnik's Sanguine Rancor", slot: "TRINKET", bossName: "Vashnik the Malignant", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 270161, name: "Fang of Umbral Malignance", slot: "TRINKET", bossName: "Vashnik the Malignant", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 268205, name: "Venomancer's Winged Channeler", slot: "TWOHWEAPON", bossName: "Vashnik the Malignant", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 270921, name: "Venomforged Relic", slot: "LEGS", bossName: "Sszorak", tierSlot: "LEGS", quality: "EPIC", itemLevel: 219 },
+  { itemId: 270920, name: "Venomcast Relic", slot: "LEGS", bossName: "Sszorak", tierSlot: "LEGS", quality: "EPIC", itemLevel: 219 },
+  { itemId: 270919, name: "Venomcured Relic", slot: "LEGS", bossName: "Sszorak", tierSlot: "LEGS", quality: "EPIC", itemLevel: 219 },
+  { itemId: 270918, name: "Venomwoven Relic", slot: "LEGS", bossName: "Sszorak", tierSlot: "LEGS", quality: "EPIC", itemLevel: 219 },
+  { itemId: 270163, name: "Sszorak's Ferocity", slot: "TRINKET", bossName: "Sszorak", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 270174, name: "Idol of the Howling Nexus", slot: "TRINKET", bossName: "Sszorak", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 268206, name: "Slithering Savage's Gavel", slot: "WEAPON", bossName: "Sszorak", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 268201, name: "Venomous Boneglaive", slot: "WEAPON", bossName: "Sszorak", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 268257, name: "Caustic Chain-Wrapped Sash", slot: "WAIST", bossName: "Sszorak", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 268234, name: "Ruthless Slaughtergrips", slot: "HAND", bossName: "Sszorak", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 268233, name: "Ferocious Scaleboots", slot: "FEET", bossName: "Sszorak", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 268252, name: "Apex Brute's Claw Ring", slot: "FINGER", bossName: "Sszorak", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 270917, name: "Venomforged Effigy", slot: "HEAD", bossName: "The Twin Fangs", tierSlot: "HEAD", quality: "EPIC", itemLevel: 219 },
+  { itemId: 270916, name: "Venomcast Effigy", slot: "HEAD", bossName: "The Twin Fangs", tierSlot: "HEAD", quality: "EPIC", itemLevel: 219 },
+  { itemId: 270915, name: "Venomcured Effigy", slot: "HEAD", bossName: "The Twin Fangs", tierSlot: "HEAD", quality: "EPIC", itemLevel: 219 },
+  { itemId: 270914, name: "Venomwoven Effigy", slot: "HEAD", bossName: "The Twin Fangs", tierSlot: "HEAD", quality: "EPIC", itemLevel: 219 },
+  { itemId: 270171, name: "Preternatural Antivenom", slot: "TRINKET", bossName: "The Twin Fangs", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 270170, name: "Vexhul's Everflowing Gland", slot: "TRINKET", bossName: "The Twin Fangs", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 268251, name: "Amulet of the Twin Fangs", slot: "NECK", bossName: "The Twin Fangs", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 268264, name: "Ravenous Feaster's Fang", slot: "WEAPON", bossName: "The Twin Fangs", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 268241, name: "Ornaments of the Eternal Coil", slot: "SHOULDER", bossName: "The Twin Fangs", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 268261, name: "Bespittled Slitherslippers", slot: "FEET", bossName: "The Twin Fangs", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 268223, name: "Ophidian Fangmail", slot: "CHEST", bossName: "The Twin Fangs", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 268220, name: "Scaleplate Strangulators", slot: "HAND", bossName: "The Twin Fangs", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 268225, name: "Coiled Hex Legguards", slot: "LEGS", bossName: "The Coiled Altar", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 268231, name: "Soulslither Spaulders", slot: "SHOULDER", bossName: "The Coiled Altar", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 268209, name: "Aman'muso, Warlord's Vengeance", slot: "WEAPONMAINHAND", bossName: "The Coiled Altar", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 270173, name: "Zul'jin's Guillotine Technique", slot: "TRINKET", bossName: "The Coiled Altar", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 268243, name: "Grasps of the Eternal Shadow", slot: "HAND", bossName: "The Coiled Altar", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 270169, name: "Hex Lord's Dooming Idol", slot: "TRINKET", bossName: "The Coiled Altar", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 268237, name: "Cuisses of the Uncoiled Union", slot: "LEGS", bossName: "The Coiled Altar", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 268222, name: "Reckless Spirit Breastplate", slot: "CHEST", bossName: "The Coiled Altar", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 268213, name: "Maze-roa, Warlord's Fury", slot: "TWOHWEAPON", bossName: "The Coiled Altar", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 268253, name: "Silken Voodoo Drape", slot: "CLOAK", bossName: "The Coiled Altar", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 268255, name: "Cackling Soultreads", slot: "FEET", bossName: "The Coiled Altar", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 268256, name: "Sash of the Forlorn Vessel", slot: "WAIST", bossName: "The Coiled Altar", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 268259, name: "Girdle of Toxic Regret", slot: "WAIST", bossName: "The Coiled Altar", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 268211, name: "Baleful Hexblade", slot: "WEAPON", bossName: "The Coiled Altar", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 275937, name: "Hex Lord's Visage", slot: "HEAD", bossName: "The Coiled Altar", tierSlot: null, quality: "RARE", itemLevel: 1 },
+  { itemId: 275938, name: "Hex Lord's Gaze", slot: "HEAD", bossName: "The Coiled Altar", tierSlot: null, quality: "RARE", itemLevel: 1 },
+  { itemId: 270909, name: "Slumbering Coil Curio", slot: "MISCELLANEOUS", bossName: "Ula'tek", tierSlot: "ANY", quality: "EPIC", itemLevel: 219 },
+  { itemId: 268202, name: "Jaw of the Shackled Goddess", slot: "WEAPON", bossName: "Ula'tek", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 268215, name: "Abyssal Broodfiend's Bardiche", slot: "TWOHWEAPON", bossName: "Ula'tek", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 270168, name: "Font of Venomous Rage", slot: "TRINKET", bossName: "Ula'tek", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 270175, name: "Voracious Heart of Ula'tek", slot: "TRINKET", bossName: "Ula'tek", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 268207, name: "Caustic Repose Greatbow", slot: "RANGED", bossName: "Ula'tek", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 268265, name: "Aqirbane Reliquary", slot: "NECK", bossName: "Ula'tek", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 271874, name: "Venomkeeper's Horrific Cowl", slot: "HEAD", bossName: "Ula'tek", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 271875, name: "Gaze of the Coiled Watcher", slot: "HEAD", bossName: "Ula'tek", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 271876, name: "Awoken Dreadfang Cuirass", slot: "CHEST", bossName: "Ula'tek", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 271878, name: "Chausses of Unbound Rancor", slot: "LEGS", bossName: "Ula'tek", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 271093, name: "Zatha'tek, Breath of Corruption", slot: "WEAPONMAINHAND", bossName: "Ula'tek", tierSlot: null, quality: "EPIC", itemLevel: 219 },
+  { itemId: 271092, name: "Jan'thrazet, the Soul Fang", slot: "WEAPON", bossName: "Ula'tek", tierSlot: null, quality: "EPIC", itemLevel: 219 }
 ];
 
 export const lootCatalog: LootCatalogRaid[] = [

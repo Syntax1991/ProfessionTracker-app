@@ -28,20 +28,23 @@ const slotLabels: Record<string, string> = {
   HEAD: "Head",
   NECK: "Neck",
   SHOULDER: "Shoulder",
-  BACK: "Back",
+  CLOAK: "Back",
   CHEST: "Chest",
   WRIST: "Wrist",
-  HANDS: "Hands",
+  HAND: "Hands",
   GLOVES: "Gloves",
   WAIST: "Waist",
   LEGS: "Legs",
   FEET: "Feet",
-  FINGER_1: "Finger",
+  FINGER: "Finger",
   TRINKET: "Trinket",
-  MAIN_HAND: "One-Hand",
-  OFF_HAND: "Off-Hand",
-  TWOHAND: "Two-Hand",
+  WEAPON: "One-Hand",
+  WEAPONMAINHAND: "Main Hand",
+  HOLDABLE: "Off Hand",
+  SHIELD: "Shield",
+  TWOHWEAPON: "Two-Hand",
   RANGED: "Ranged",
+  RANGEDRIGHT: "Ranged",
   MISCELLANEOUS: "Miscellaneous"
 };
 
@@ -144,7 +147,7 @@ export function LootTablePage() {
                         (item) => (
                           <tr
                             key={
-                              item.id
+                              item.itemId
                             }
                           >
                             <td>
