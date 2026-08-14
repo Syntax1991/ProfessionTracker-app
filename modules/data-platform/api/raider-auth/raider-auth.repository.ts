@@ -21,6 +21,31 @@ export class RaiderAuthRepository {
     });
   }
 
+  updateAccountToken(
+    accountId: string,
+    input: {
+      accessToken: string;
+      tokenType: string;
+      scope: string | null;
+      tokenExpiresAt: Date;
+    }
+  ) {
+    return prisma.raiderAccount.update({
+      where: {
+        id: accountId
+      },
+      data: {
+        accessToken:
+          input.accessToken,
+        tokenType:
+          input.tokenType,
+        scope: input.scope,
+        tokenExpiresAt:
+          input.tokenExpiresAt
+      }
+    });
+  }
+
   createSession(input: {
     token: string;
     raiderAccountId: string;

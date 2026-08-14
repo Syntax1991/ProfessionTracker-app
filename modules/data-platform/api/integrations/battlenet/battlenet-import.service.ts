@@ -3,7 +3,7 @@ import { mapWithConcurrency } from "../../../../../apps/api/src/shared/async/map
 import { AppError } from "../../../../../apps/api/src/shared/errors/AppError.js";
 import { CharacterRepository } from "../../../../my-syntrack/api/characters/character.repository.js";
 import { ProfessionRepository } from "../../../../professions/api/profession.repository.js";
-import { getUsableBattleNetConnection } from "./battlenet-connection.guard.js";
+import type { RaiderAccessTokenGuard } from "../../raider-auth/raider-auth.types.js";
 import { BattleNetClient } from "./battlenet.client.js";
 import {
   createBattleNetCharacterKey,
@@ -11,7 +11,6 @@ import {
   normalizeBattleNetCharacters,
   type ImportableBattleNetCharacter
 } from "./battlenet-import.mapper.js";
-import { BattleNetRepository } from "./battlenet.repository.js";
 import type {
   BattleNetCharacterPreviewResult,
   BattleNetImportFailure,
@@ -27,9 +26,6 @@ type ImportOutcome = {
 
 export class BattleNetImportService {
   constructor(
-    private readonly repository:
-      BattleNetRepository,
-
     private readonly client:
       BattleNetClient,
 
@@ -37,17 +33,23 @@ export class BattleNetImportService {
       CharacterRepository,
 
     private readonly professionRepository:
-      ProfessionRepository
+      ProfessionRepository,
+
+    private readonly raiderAuth:
+      RaiderAccessTokenGuard
   ) {}
 
-  async listCharacters():
-    Promise<BattleNetCharacterPreviewResult> {
-    const connection =
-      await this.getUsableConnection();
+  async listCharacters(
+    token: string
+  ): Promise<BattleNetCharacterPreviewResult> {
+    const { accessToken } =
+      await this.raiderAuth.requireUsableAccessToken(
+        token
+      );
 
     const accountProfile =
       await this.client.getAccountProfile(
-        connection.accessToken
+        accessToken
       );
 
     const characters =
@@ -120,14 +122,17 @@ export class BattleNetImportService {
   }
 
   async importCharacters(
+    token: string,
     characterKeys: string[]
   ): Promise<BattleNetImportResult> {
-    const connection =
-      await this.getUsableConnection();
+    const { accessToken } =
+      await this.raiderAuth.requireUsableAccessToken(
+        token
+      );
 
     const accountProfile =
       await this.client.getAccountProfile(
-        connection.accessToken
+        accessToken
       );
 
     const availableCharacters =
@@ -168,7 +173,7 @@ export class BattleNetImportService {
         async (character) =>
           this.importCharacter(
             character,
-            connection.accessToken,
+            accessToken,
             professionIdByKey
           )
       );
@@ -272,9 +277,4 @@ export class BattleNetImportService {
     );
   }
 
-  private getUsableConnection() {
-    return getUsableBattleNetConnection(
-      this.repository
-    );
-  }
 }

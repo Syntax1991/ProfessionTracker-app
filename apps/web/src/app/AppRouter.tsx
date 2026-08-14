@@ -253,14 +253,14 @@ export function AppRouter() {
             <BattleNetPage />
           }
         />
-
-        <Route
-          path="raider-login"
-          element={
-            <RaiderLoginCallbackPage />
-          }
-        />
       </Route>
+
+      <Route
+        element={
+          <RaiderLoginCallbackPage />
+        }
+        path="raider-login"
+      />
 
       <Route
         path="*"

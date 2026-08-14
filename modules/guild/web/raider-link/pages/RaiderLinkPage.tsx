@@ -27,9 +27,6 @@ export function RaiderLinkPage() {
         isLoading={
           raiderLink.isLoading
         }
-        isLoggedIn={
-          raiderLink.isLoggedIn
-        }
         onClaim={(memberId) => {
           void raiderLink.claim(
             memberId

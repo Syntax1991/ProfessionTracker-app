@@ -1,6 +1,7 @@
 import type {
   RequestHandler
 } from "express";
+import { requireBearerToken } from "../../../../apps/api/src/shared/http/bearerToken.js";
 import { GuildVerificationService } from "./verification.service.js";
 import { guildVerificationInputSchema } from "./verification.validation.js";
 
@@ -11,11 +12,16 @@ export class GuildVerificationController {
   ) {}
 
   listCandidates: RequestHandler = async (
-    _request,
+    request,
     response
   ) => {
+    const token =
+      requireBearerToken(request);
+
     const items =
-      await this.service.listCandidates();
+      await this.service.listCandidates(
+        token
+      );
 
     response.json({
       items
@@ -35,6 +41,9 @@ export class GuildVerificationController {
     request,
     response
   ) => {
+    const token =
+      requireBearerToken(request);
+
     const input =
       guildVerificationInputSchema.parse(
         request.body
@@ -42,16 +51,22 @@ export class GuildVerificationController {
 
     response.json(
       await this.service.verify(
+        token,
         input
       )
     );
   };
 
   clear: RequestHandler = async (
-    _request,
+    request,
     response
   ) => {
-    await this.service.clear();
+    const token =
+      requireBearerToken(request);
+
+    await this.service.clear(
+      token
+    );
 
     response.status(204).send();
   };

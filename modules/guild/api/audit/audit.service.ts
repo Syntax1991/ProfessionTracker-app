@@ -1,7 +1,6 @@
 import { mapWithConcurrency } from "../../../../apps/api/src/shared/async/mapWithConcurrency.js";
-import { getUsableBattleNetConnection } from "../../../data-platform/api/integrations/battlenet/battlenet-connection.guard.js";
 import type { BattleNetClient } from "../../../data-platform/api/integrations/battlenet/battlenet.client.js";
-import type { BattleNetRepository } from "../../../data-platform/api/integrations/battlenet/battlenet.repository.js";
+import type { RaiderAccessTokenGuard } from "../../../data-platform/api/raider-auth/raider-auth.types.js";
 import type { GuildVerificationGuard } from "../verification/verification.types.js";
 import { slugifyRealmName } from "./audit.realm-slug.js";
 import { computeAuditStats } from "./audit.stats.js";
@@ -15,22 +14,24 @@ export class GuildAuditService {
     private readonly repository:
       GuildAuditRepository,
 
-    private readonly battleNetRepository:
-      BattleNetRepository,
-
     private readonly battleNetClient:
       BattleNetClient,
 
     private readonly verification:
-      GuildVerificationGuard
+      GuildVerificationGuard,
+
+    private readonly raiderAuth:
+      RaiderAccessTokenGuard
   ) {}
 
-  async refreshAll(): Promise<GuildAuditRefreshResult> {
+  async refreshAll(
+    token: string
+  ): Promise<GuildAuditRefreshResult> {
     await this.verification.ensureVerified();
 
-    const connection =
-      await getUsableBattleNetConnection(
-        this.battleNetRepository
+    const { accessToken } =
+      await this.raiderAuth.requireUsableAccessToken(
+        token
       );
 
     const members =
@@ -44,7 +45,7 @@ export class GuildAuditService {
           try {
             const equipment =
               await this.battleNetClient.getCharacterEquipment(
-                connection.accessToken,
+                accessToken,
                 slugifyRealmName(
                   member.realm
                 ),

@@ -89,6 +89,20 @@ export class RaiderAuthController {
     );
   };
 
+  getSession: RequestHandler = async (
+    request,
+    response
+  ) => {
+    const token =
+      requireBearerToken(request);
+
+    response.json(
+      await this.service.getSessionStatus(
+        token
+      )
+    );
+  };
+
   logout: RequestHandler = async (
     request,
     response

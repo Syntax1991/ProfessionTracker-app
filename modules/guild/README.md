@@ -43,10 +43,17 @@ Roster, team, requirement, officer-note and attendance mutations
 (create, update, delete, addon import, membership/record changes)
 require a verified guild leadership link. Reading stays open
 everywhere. Verification works entirely through Blizzard's official
-APIs, reusing the existing Battle.net OAuth connection
-(`modules/data-platform/api/integrations/battlenet`):
+APIs, using whichever `RaiderAccount` is currently signed in via Data
+Platform's unified Raider Login
+(`modules/data-platform/api/raider-auth`) — `GuildVerificationService`
+resolves a live Blizzard access token per-request via
+`RaiderAuthService.requireUsableAccessToken(token)`, not a shared
+connection. (Until 2026-08-14 this reused a single app-owner-only
+`BattleNetConnection`; that flow was retired when the user asked for
+one login protecting the whole app instead of two parallel ones — see
+the `project_raider_login` memory.)
 
-1. The connected Battle.net account's own characters are checked
+1. The signed-in account's own characters are checked
    against Blizzard's Character Profile API for guild membership —
    no guild name has to be typed or guessed, since Blizzard does not
    support guild search.
@@ -144,8 +151,9 @@ full context). `GuildMember` carries five nullable audit fields
 `filledSocketCount`, `auditedAt`) populated by
 `POST /guild/audit/refresh` (verification-gated): it pulls every
 roster member's live equipped gear from Blizzard's Character
-Equipment Summary API (via the verified officer's Battle.net
-connection) and computes the stats in
+Equipment Summary API — using whichever `RaiderAccount` triggers the
+refresh, via the same `requireUsableAccessToken` guard verification
+uses — and computes the stats in
 `modules/guild/api/audit/audit.stats.ts`.
 
 Unlike Weekly Progress, this does **not** require a matching My

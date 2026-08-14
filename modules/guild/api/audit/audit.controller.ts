@@ -1,6 +1,7 @@
 import type {
   RequestHandler
 } from "express";
+import { requireBearerToken } from "../../../../apps/api/src/shared/http/bearerToken.js";
 import { GuildAuditService } from "./audit.service.js";
 
 export class GuildAuditController {
@@ -10,11 +11,16 @@ export class GuildAuditController {
   ) {}
 
   refreshAll: RequestHandler = async (
-    _request,
+    request,
     response
   ) => {
+    const token =
+      requireBearerToken(request);
+
     response.json(
-      await this.service.refreshAll()
+      await this.service.refreshAll(
+        token
+      )
     );
   };
 }

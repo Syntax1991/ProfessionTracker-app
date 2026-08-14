@@ -1,14 +1,3 @@
-export type BattleNetStatus = {
-  configured: boolean;
-  connected: boolean;
-  battleTag: string | null;
-  expiresAt: string | null;
-  region: string;
-  locale: string;
-  redirectUri: string;
-  importedCharacterCount: number;
-};
-
 export type BattleNetCharacterPreview = {
   key: string;
   battleNetId: string;

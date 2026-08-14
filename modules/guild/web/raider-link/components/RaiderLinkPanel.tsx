@@ -1,9 +1,7 @@
-import { getRaiderLoginUrl } from "../../../../data-platform/web/raider-auth/api/raiderAuthApi";
 import { LoadingPanel } from "../../../../../apps/web/src/shared/components/LoadingPanel";
 import type { RaiderLinkResolution } from "../types/raiderLink.types";
 
 type RaiderLinkPanelProps = {
-  isLoggedIn: boolean;
   isLoading: boolean;
   isClaiming: boolean;
   resolution: RaiderLinkResolution | null;
@@ -14,52 +12,12 @@ type RaiderLinkPanelProps = {
 };
 
 export function RaiderLinkPanel({
-  isLoggedIn,
   isLoading,
   isClaiming,
   resolution,
   onClaim,
   onLogout
 }: RaiderLinkPanelProps) {
-  if (!isLoggedIn) {
-    return (
-      <section className="panel guild-verification-panel">
-        <div className="panel-header">
-          <div>
-            <p className="eyebrow">
-              MY RAIDER LOGIN
-            </p>
-
-            <h2>
-              Sign in with Battle.net
-            </h2>
-          </div>
-        </div>
-
-        <div className="instruction-box">
-          <strong>
-            Why sign in?
-          </strong>
-
-          <p>
-            Signing in links you to your own guild roster entry, so
-            you can manage your own raid signups without an officer
-            doing it for you.
-          </p>
-        </div>
-
-        <div className="integration-actions">
-          <a
-            className="button button-primary"
-            href={getRaiderLoginUrl()}
-          >
-            Sign in with Battle.net
-          </a>
-        </div>
-      </section>
-    );
-  }
-
   if (isLoading || !resolution) {
     return <LoadingPanel />;
   }

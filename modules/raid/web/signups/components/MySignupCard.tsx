@@ -6,6 +6,7 @@ import type {
   RaidSignupStatus
 } from "../types/signup.types";
 
+
 type MySignupCardProps = {
   entries: RaidSignupEntry[];
   isSubmitting: boolean;
@@ -27,33 +28,6 @@ export function MySignupCard({
   onSetOwnStatus
 }: MySignupCardProps) {
   const raiderLink = useRaiderLink();
-
-  if (!raiderLink.isLoggedIn) {
-    return (
-      <section className="panel">
-        <div className="panel-header">
-          <div>
-            <p className="eyebrow">
-              MY SIGNUP
-            </p>
-
-            <h2>
-              Sign in to sign up
-            </h2>
-          </div>
-        </div>
-
-        <div className="integration-actions">
-          <Link
-            className="button button-primary"
-            to="/guild/raider-link"
-          >
-            Sign in with Battle.net
-          </Link>
-        </div>
-      </section>
-    );
-  }
 
   if (raiderLink.isLoading) {
     return <LoadingPanel />;

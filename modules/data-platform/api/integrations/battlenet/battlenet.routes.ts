@@ -2,15 +2,11 @@ import { Router } from "express";
 import { asyncHandler } from "../../../../../apps/api/src/shared/http/asyncHandler.js";
 import { CharacterRepository } from "../../../../my-syntrack/api/characters/character.repository.js";
 import { ProfessionRepository } from "../../../../professions/api/profession.repository.js";
-import { BattleNetAuthService } from "./battlenet-auth.service.js";
+import { raiderAuthService } from "../../raider-auth/raider-auth.routes.js";
 import { BattleNetClient } from "./battlenet.client.js";
 import { BattleNetController } from "./battlenet.controller.js";
 import { BattleNetImportService } from "./battlenet-import.service.js";
-import { BattleNetRepository } from "./battlenet.repository.js";
 import { BattleNetService } from "./battlenet.service.js";
-
-const repository =
-  new BattleNetRepository();
 
 const client =
   new BattleNetClient();
@@ -21,24 +17,16 @@ const characterRepository =
 const professionRepository =
   new ProfessionRepository();
 
-const authService =
-  new BattleNetAuthService(
-    repository,
-    client,
-    characterRepository
-  );
-
 const importService =
   new BattleNetImportService(
-    repository,
     client,
     characterRepository,
-    professionRepository
+    professionRepository,
+    raiderAuthService
   );
 
 const service =
   new BattleNetService(
-    authService,
     importService
   );
 
@@ -49,23 +37,6 @@ const controller =
 
 export const battleNetIntegrationRouter =
   Router();
-
-export const battleNetAuthRouter =
-  Router();
-
-battleNetIntegrationRouter.get(
-  "/connect",
-  asyncHandler(
-    controller.connect
-  )
-);
-
-battleNetIntegrationRouter.get(
-  "/status",
-  asyncHandler(
-    controller.getStatus
-  )
-);
 
 battleNetIntegrationRouter.get(
   "/characters",
@@ -79,16 +50,4 @@ battleNetIntegrationRouter.post(
   asyncHandler(
     controller.importCharacters
   )
-);
-
-battleNetIntegrationRouter.post(
-  "/disconnect",
-  asyncHandler(
-    controller.disconnect
-  )
-);
-
-battleNetAuthRouter.get(
-  "/callback",
-  controller.callback
 );

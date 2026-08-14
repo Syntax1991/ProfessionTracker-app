@@ -5,13 +5,19 @@ import { normalizeBattleNetCharacters } from "../integrations/battlenet/battlene
 import type { BattleNetClient } from "../integrations/battlenet/battlenet.client.js";
 import type { BattleNetRepository } from "../integrations/battlenet/battlenet.repository.js";
 import { RaiderAuthRepository } from "./raider-auth.repository.js";
-import type { RaiderSessionResult } from "./raider-auth.types.js";
+import type {
+  RaiderSessionResult,
+  RaiderSessionStatus
+} from "./raider-auth.types.js";
 
 const oauthStateLifetimeMilliseconds =
   10 * 60 * 1000;
 
 const sessionLifetimeMilliseconds =
   30 * 24 * 60 * 60 * 1000;
+
+const tokenExpiryBufferMilliseconds =
+  30 * 1000;
 
 export class RaiderAuthService {
   constructor(
@@ -108,6 +114,25 @@ export class RaiderAuthService {
         battleTag
       ));
 
+    const expiresInSeconds =
+      token.expires_in ?? 86400;
+
+    await this.repository.updateAccountToken(
+      account.id,
+      {
+        accessToken:
+          token.access_token,
+        tokenType:
+          token.token_type,
+        scope:
+          token.scope ?? null,
+        tokenExpiresAt: new Date(
+          Date.now() +
+            expiresInSeconds * 1000
+        )
+      }
+    );
+
     const sessionToken =
       randomBytes(32).toString("hex");
 
@@ -152,6 +177,72 @@ export class RaiderAuthService {
       characters: JSON.parse(
         session.charactersJson
       )
+    };
+  }
+
+  async requireUsableAccessToken(
+    token: string
+  ): Promise<{
+    accessToken: string;
+  }> {
+    const session =
+      await this.repository.findValidSession(
+        token
+      );
+
+    if (!session) {
+      throw new AppError(
+        401,
+        "Der Raider-Login ist ungültig oder abgelaufen. Bitte erneut mit Battle.net anmelden."
+      );
+    }
+
+    const account = session.account;
+
+    const tokenIsUsable = Boolean(
+      account.accessToken &&
+        account.tokenExpiresAt &&
+        account.tokenExpiresAt.getTime() -
+            tokenExpiryBufferMilliseconds >
+          Date.now()
+    );
+
+    if (
+      !tokenIsUsable ||
+      !account.accessToken
+    ) {
+      throw new AppError(
+        401,
+        "Die Battle.net-Verbindung ist abgelaufen. Bitte erneut mit Battle.net anmelden."
+      );
+    }
+
+    return {
+      accessToken:
+        account.accessToken
+    };
+  }
+
+  async getSessionStatus(
+    token: string
+  ): Promise<RaiderSessionStatus> {
+    const session =
+      await this.repository.findValidSession(
+        token
+      );
+
+    if (!session) {
+      throw new AppError(
+        401,
+        "Der Raider-Login ist ungültig oder abgelaufen. Bitte erneut mit Battle.net anmelden."
+      );
+    }
+
+    return {
+      battleTag:
+        session.account.battleTag,
+      expiresAt:
+        session.expiresAt.toISOString()
     };
   }
 

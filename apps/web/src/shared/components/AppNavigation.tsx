@@ -12,7 +12,7 @@ import {
 import type {
   MainModuleDefinition
 } from "../../app/modules/mainModules";
-import { BattleNetTopAction } from "../../../../../modules/data-platform/web/integrations/components/BattleNetTopAction";
+import { RaiderAuthTopAction } from "../../../../../modules/data-platform/web/raider-auth/components/RaiderAuthTopAction";
 import { isModuleCurrent } from "./appNavigation.helpers";
 import { SidebarModuleGroup } from "./SidebarModuleGroup";
 
@@ -191,7 +191,7 @@ export function AppNavigation() {
           <strong>SynTrack</strong>
         </NavLink>
 
-        <BattleNetTopAction />
+        <RaiderAuthTopAction />
       </header>
 
       <button
@@ -236,7 +236,7 @@ export function AppNavigation() {
           </NavLink>
 
           <div className="sidebar-header-actions">
-            <BattleNetTopAction />
+            <RaiderAuthTopAction />
 
             <button
               aria-label="Close navigation"

@@ -1,0 +1,95 @@
+.raider-auth-top-action {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.raider-auth-top-signin {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-small);
+  color: var(--text);
+  background: var(--primary);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background 150ms ease,
+    transform 150ms ease;
+}
+
+.raider-auth-top-signin:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+.raider-auth-top-account {
+  padding: 6px 6px 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-small);
+  background: var(--surface-elevated);
+}
+
+.raider-auth-top-battletag {
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.raider-auth-top-battletag:hover {
+  color: var(--text);
+}
+
+.raider-session-gate {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: var(--background);
+}
+
+.raider-session-gate-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  max-width: 360px;
+  padding: 40px 32px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-large);
+  background: rgb(18 21 29 / 92%);
+  box-shadow: var(--shadow);
+  text-align: center;
+}
+
+.raider-session-gate-card .brand-mark {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-medium);
+  color: var(--text);
+  background: var(--primary-soft);
+  font-weight: 800;
+}
+
+.raider-session-gate-card h1 {
+  margin: 0;
+  font-size: 1.3rem;
+}
+
+.raider-session-gate-card p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.raider-session-gate-card .button {
+  margin-top: 4px;
+}

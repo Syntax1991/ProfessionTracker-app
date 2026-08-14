@@ -18,10 +18,7 @@ import { raidTaskRouter } from "../../../../modules/my-syntrack/api/raid-tasks/r
 import { weeklyChecklistRouter } from "../../../../modules/my-syntrack/api/weekly-checklist/weekly-checklist.routes.js";
 import { vaultMythicPlusRouter } from "../../../../modules/my-syntrack/api/vault-mythic-plus/vault-mythic-plus.routes.js";
 import { addonImportRouter } from "../../../../modules/data-platform/api/integrations/addon/addon-import.routes.js";
-import {
-  battleNetAuthRouter,
-  battleNetIntegrationRouter
-} from "../../../../modules/data-platform/api/integrations/battlenet/battlenet.routes.js";
+import { battleNetIntegrationRouter } from "../../../../modules/data-platform/api/integrations/battlenet/battlenet.routes.js";
 import { raiderAuthRouter } from "../../../../modules/data-platform/api/raider-auth/raider-auth.routes.js";
 import { guildRaiderLinkRouter } from "../../../../modules/guild/api/raider-link/raider-link.routes.js";
 import { professionDetailRouter } from "../../../../modules/professions/api/details/profession-detail.routes.js";
@@ -161,11 +158,6 @@ apiRouter.use(
 apiRouter.use(
   "/integrations/battlenet",
   battleNetIntegrationRouter
-);
-
-apiRouter.use(
-  "/auth/battlenet",
-  battleNetAuthRouter
 );
 
 apiRouter.use(

@@ -1,10 +1,9 @@
 import { env } from "../../../../apps/api/src/config/env.js";
 import { mapWithConcurrency } from "../../../../apps/api/src/shared/async/mapWithConcurrency.js";
 import { AppError } from "../../../../apps/api/src/shared/errors/AppError.js";
-import { getUsableBattleNetConnection } from "../../../data-platform/api/integrations/battlenet/battlenet-connection.guard.js";
 import { normalizeBattleNetCharacters } from "../../../data-platform/api/integrations/battlenet/battlenet-import.mapper.js";
 import type { BattleNetClient } from "../../../data-platform/api/integrations/battlenet/battlenet.client.js";
-import type { BattleNetRepository } from "../../../data-platform/api/integrations/battlenet/battlenet.repository.js";
+import type { RaiderAccessTokenGuard } from "../../../data-platform/api/raider-auth/raider-auth.types.js";
 import { extractGuildSlugFromHref } from "./verification.guild-slug.js";
 import { GuildVerificationRepository } from "./verification.repository.js";
 import type {
@@ -29,24 +28,26 @@ export class GuildVerificationService {
     private readonly repository:
       GuildVerificationRepository,
 
-    private readonly battleNetRepository:
-      BattleNetRepository,
+    private readonly raiderAuth:
+      RaiderAccessTokenGuard,
 
     private readonly battleNetClient:
       BattleNetClient
   ) {}
 
-  async listCandidates(): Promise<
+  async listCandidates(
+    token: string
+  ): Promise<
     GuildVerificationCandidate[]
   > {
-    const connection =
-      await getUsableBattleNetConnection(
-        this.battleNetRepository
+    const { accessToken } =
+      await this.raiderAuth.requireUsableAccessToken(
+        token
       );
 
     const accountProfile =
       await this.battleNetClient.getAccountProfile(
-        connection.accessToken
+        accessToken
       );
 
     const characters =
@@ -62,7 +63,7 @@ export class GuildVerificationService {
           character,
           profile:
             await this.battleNetClient.getCharacterProfile(
-              connection.accessToken,
+              accessToken,
               character.realmSlug,
               character.name
             )
@@ -139,16 +140,17 @@ export class GuildVerificationService {
   }
 
   async verify(
+    token: string,
     input: GuildVerificationInput
   ): Promise<GuildVerificationStatus> {
-    const connection =
-      await getUsableBattleNetConnection(
-        this.battleNetRepository
+    const { accessToken } =
+      await this.raiderAuth.requireUsableAccessToken(
+        token
       );
 
     const characterProfile =
       await this.battleNetClient.getCharacterProfile(
-        connection.accessToken,
+        accessToken,
         input.characterRealmSlug,
         input.characterName
       );
@@ -177,7 +179,7 @@ export class GuildVerificationService {
 
     const roster =
       await this.battleNetClient.getGuildRoster(
-        connection.accessToken,
+        accessToken,
         guildRealmSlug,
         guildSlug
       );
@@ -276,7 +278,13 @@ export class GuildVerificationService {
     };
   }
 
-  async clear(): Promise<void> {
+  async clear(
+    token: string
+  ): Promise<void> {
+    await this.raiderAuth.requireUsableAccessToken(
+      token
+    );
+
     await this.repository.clear();
   }
 

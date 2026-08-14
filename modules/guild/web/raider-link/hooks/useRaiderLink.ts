@@ -109,8 +109,8 @@ export function useRaiderLink() {
     }
 
     clearRaiderSessionToken();
-    setIsLoggedIn(false);
-    setResolution(null);
+
+    window.location.href = "/";
   };
 
   return {

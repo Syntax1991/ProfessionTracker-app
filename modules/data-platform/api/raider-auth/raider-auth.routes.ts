@@ -42,6 +42,13 @@ raiderAuthRouter.get(
   controller.callback
 );
 
+raiderAuthRouter.get(
+  "/session",
+  asyncHandler(
+    controller.getSession
+  )
+);
+
 raiderAuthRouter.post(
   "/logout",
   asyncHandler(

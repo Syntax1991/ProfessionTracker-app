@@ -128,14 +128,6 @@ export type BattleNetCharacterEquipment = {
   equipped_items?: BattleNetEquippedItem[];
 };
 
-export type BattleNetConnectionInput = {
-  battleTag: string | null;
-  accessToken: string;
-  tokenType: string;
-  scope: string | null;
-  expiresAt: Date;
-};
-
 export type BattleNetCharacterPreview = {
   key: string;
   battleNetId: string;

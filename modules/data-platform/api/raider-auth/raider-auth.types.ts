@@ -11,3 +11,16 @@ export type RaiderSessionGuard = {
     token: string
   ): Promise<RaiderSessionResult>;
 };
+
+export type RaiderAccessTokenGuard = {
+  requireUsableAccessToken(
+    token: string
+  ): Promise<{
+    accessToken: string;
+  }>;
+};
+
+export type RaiderSessionStatus = {
+  battleTag: string | null;
+  expiresAt: string;
+};

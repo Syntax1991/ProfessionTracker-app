@@ -10,7 +10,7 @@ import "./styles/module-navigation-responsive.css";
 import "./styles/integration.css";
 import "./styles/addon-integration.css";
 import "./styles/battlenet-characters.css";
-import "./styles/battlenet-top-action.css";
+import "./styles/raider-auth.css";
 import "./styles/character-detail-summary.css";
 import "./styles/character-detail-coverage.css";
 import "./styles/my-syntrack-dashboard.css";

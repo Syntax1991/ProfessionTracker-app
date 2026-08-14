@@ -1,39 +1,21 @@
 import {
   useCallback,
-  useEffect,
   useState
 } from "react";
-import {
-  useSearchParams
-} from "react-router-dom";
-import { LoadingPanel } from "../../../../../apps/web/src/shared/components/LoadingPanel";
 import { PageHeader } from "../../../../../apps/web/src/shared/components/PageHeader";
 import { StatusMessage } from "../../../../../apps/web/src/shared/components/StatusMessage";
 import {
-  disconnectBattleNet,
   getBattleNetCharacters,
-  getBattleNetConnectUrl,
-  getBattleNetStatus,
   importBattleNetCharacters
 } from "../api/battlenetApi";
 import { BattleNetCharacterSelector } from "../components/BattleNetCharacterSelector";
 import { BattleNetImportResultCard } from "../components/BattleNetImportResult";
-import { BattleNetStatusCard } from "../components/BattleNetStatusCard";
 import type {
   BattleNetCharacterPreviewResult,
-  BattleNetImportResult,
-  BattleNetStatus
+  BattleNetImportResult
 } from "../types/battlenet.types";
 
 export function BattleNetPage() {
-  const [searchParams] =
-    useSearchParams();
-
-  const [status, setStatus] =
-    useState<BattleNetStatus | null>(
-      null
-    );
-
   const [
     characterPreview,
     setCharacterPreview
@@ -47,9 +29,6 @@ export function BattleNetPage() {
       null
     );
 
-  const [isLoading, setIsLoading] =
-    useState(true);
-
   const [
     isLoadingCharacters,
     setIsLoadingCharacters
@@ -58,36 +37,8 @@ export function BattleNetPage() {
   const [isImporting, setIsImporting] =
     useState(false);
 
-  const [
-    isDisconnecting,
-    setIsDisconnecting
-  ] = useState(false);
-
   const [error, setError] =
     useState<string | null>(null);
-
-  const loadStatus = useCallback(
-    async () => {
-      setError(null);
-
-      try {
-        setStatus(
-          await getBattleNetStatus()
-        );
-      }
-      catch (loadError) {
-        setError(
-          loadError instanceof Error
-            ? loadError.message
-            : "Battle.net status could not be loaded."
-        );
-      }
-      finally {
-        setIsLoading(false);
-      }
-    },
-    []
-  );
 
   const loadCharacters =
     useCallback(async () => {
@@ -111,10 +62,6 @@ export function BattleNetPage() {
       }
     }, []);
 
-  useEffect(() => {
-    void loadStatus();
-  }, [loadStatus]);
-
   const handleImport = async (
     characterKeys: string[]
   ) => {
@@ -130,10 +77,7 @@ export function BattleNetPage() {
 
       setImportResult(result);
 
-      await Promise.all([
-        loadStatus(),
-        loadCharacters()
-      ]);
+      await loadCharacters();
     }
     catch (importError) {
       setError(
@@ -147,45 +91,6 @@ export function BattleNetPage() {
     }
   };
 
-  const handleDisconnect = async () => {
-    const confirmed = window.confirm(
-      "Disconnect Battle.net?"
-    );
-
-    if (!confirmed) {
-      return;
-    }
-
-    setError(null);
-    setIsDisconnecting(true);
-
-    try {
-      await disconnectBattleNet();
-
-      setCharacterPreview(null);
-      setImportResult(null);
-
-      await loadStatus();
-    }
-    catch (disconnectError) {
-      setError(
-        disconnectError instanceof Error
-          ? disconnectError.message
-          : "The connection could not be disconnected."
-      );
-    }
-    finally {
-      setIsDisconnecting(false);
-    }
-  };
-
-  const callbackError =
-    searchParams.get("error");
-
-  const wasConnected =
-    searchParams.get("connected") ===
-    "1";
-
   return (
     <>
       <PageHeader
@@ -194,46 +99,31 @@ export function BattleNetPage() {
         title="Battle.net"
       />
 
-      {callbackError && (
-        <StatusMessage type="error">
-          {callbackError}
-        </StatusMessage>
-      )}
-
-      {wasConnected &&
-        !callbackError && (
-        <StatusMessage type="info">
-          Battle.net was connected successfully. Load your character list and select the crafters you need.
-        </StatusMessage>
-      )}
-
       {error && (
         <StatusMessage type="error">
           {error}
         </StatusMessage>
       )}
 
-      {isLoading || !status ? (
-        <LoadingPanel />
-      ) : (
-        <BattleNetStatusCard
-          connectUrl={
-            getBattleNetConnectUrl()
-          }
-          isDisconnecting={
-            isDisconnecting
-          }
-          isLoadingCharacters={
-            isLoadingCharacters
-          }
-          onDisconnect={() => {
-            void handleDisconnect();
-          }}
-          onLoadCharacters={() => {
-            void loadCharacters();
-          }}
-          status={status}
-        />
+      {!characterPreview && (
+        <section className="panel integration-panel">
+          <div className="integration-actions">
+            <button
+              className="button button-primary"
+              disabled={
+                isLoadingCharacters
+              }
+              onClick={() => {
+                void loadCharacters();
+              }}
+              type="button"
+            >
+              {isLoadingCharacters
+                ? "Loading characters…"
+                : "Load my characters"}
+            </button>
+          </div>
+        </section>
       )}
 
       {characterPreview && (
