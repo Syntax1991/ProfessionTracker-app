@@ -1,8 +1,10 @@
 import { apiRequest } from "../../../../../apps/web/src/shared/api/httpClient";
 import type {
+  RaidBossAbilityCastListResponse,
   RaidBossPhaseMarker,
   RaidBossPhaseMarkerInput,
   RaidBossPhaseMarkerListResponse,
+  RaidBossWarcraftLogsSyncResult,
   RaidCooldownAssignment,
   RaidCooldownAssignmentInput,
   RaidCooldownAssignmentListResponse
@@ -96,6 +98,25 @@ export function deletePhaseMarker(
     `/raid/cooldowns/phase-markers/${markerId}`,
     {
       method: "DELETE"
+    }
+  );
+}
+
+export function getAbilityCastsForBoss(
+  bossId: string
+): Promise<RaidBossAbilityCastListResponse> {
+  return apiRequest<RaidBossAbilityCastListResponse>(
+    `/raid/cooldowns/bosses/${bossId}/ability-casts`
+  );
+}
+
+export function syncBossWarcraftLogs(
+  bossId: string
+): Promise<RaidBossWarcraftLogsSyncResult> {
+  return apiRequest<RaidBossWarcraftLogsSyncResult>(
+    `/raid/cooldowns/bosses/${bossId}/sync-wcl`,
+    {
+      method: "POST"
     }
   );
 }

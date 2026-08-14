@@ -2,11 +2,10 @@ import {
   useState,
   type FormEvent
 } from "react";
+import { StatusMessage } from "../../../../../apps/web/src/shared/components/StatusMessage";
 import type { GuildMember } from "../../../../guild/web/roster/types/roster.types";
-import {
-  getAbilitiesForBoss,
-  groupAbilitiesByPhase
-} from "../../../shared/catalog/bossAbilityCatalog";
+import { getAbilitiesForBoss } from "../../../shared/catalog/bossAbilityCatalog";
+import { useBossAbilityCasts } from "../hooks/useBossAbilityCasts";
 import { usePhaseMarkers } from "../hooks/usePhaseMarkers";
 import type {
   RaidCooldownAssignment,
@@ -17,17 +16,20 @@ import {
   parseTimeInput
 } from "../utils/timelineFormat";
 import { CooldownAssignmentForm } from "./CooldownAssignmentForm";
-import { TimelineTrack } from "./TimelineTrack";
+import { PhaseMarkerForm } from "./PhaseMarkerForm";
+import { TimelineGrid } from "./TimelineGrid";
 
 type BossCooldownTimelineProps = {
   bossId: string;
   bossName: string;
   fightDurationSeconds: number | null;
+  wclSyncedAt: string | null;
   assignments: RaidCooldownAssignment[];
   rosterMembers: GuildMember[];
   onUpdateDuration: (
     seconds: number | null
   ) => Promise<void>;
+  onSyncWarcraftLogs: () => Promise<void>;
   onAddAssignment: (
     bossId: string,
     input: RaidCooldownAssignmentInput
@@ -35,20 +37,30 @@ type BossCooldownTimelineProps = {
   onRemoveAssignment: (
     assignmentId: string
   ) => void;
+  onRepositionAssignment: (
+    assignment: RaidCooldownAssignment,
+    seconds: number
+  ) => void;
 };
 
 export function BossCooldownTimeline({
   bossId,
   bossName,
   fightDurationSeconds,
+  wclSyncedAt,
   assignments,
   rosterMembers,
   onUpdateDuration,
+  onSyncWarcraftLogs,
   onAddAssignment,
-  onRemoveAssignment
+  onRemoveAssignment,
+  onRepositionAssignment
 }: BossCooldownTimelineProps) {
   const phaseMarkers =
     usePhaseMarkers(bossId);
+
+  const abilityCasts =
+    useBossAbilityCasts(bossId);
 
   const [durationInput, setDurationInput] =
     useState(
@@ -59,28 +71,19 @@ export function BossCooldownTimeline({
         : ""
     );
 
-  const [phaseLabelInput, setPhaseLabelInput] =
-    useState("");
-
-  const [phaseTimeInput, setPhaseTimeInput] =
-    useState("");
-
   const [
-    pendingTimestampSeconds,
-    setPendingTimestampSeconds
-  ] = useState<number | null>(null);
+    pendingAssignmentClick,
+    setPendingAssignmentClick
+  ] = useState<{
+    memberId: string;
+    seconds: number;
+  } | null>(null);
 
-  const memberById = new Map(
-    rosterMembers.map((member) => [
-      member.id,
-      member
-    ])
-  );
+  const [isSyncing, setIsSyncing] =
+    useState(false);
 
-  const abilityGroups =
-    groupAbilitiesByPhase(
-      getAbilitiesForBoss(bossName)
-    );
+  const [syncError, setSyncError] =
+    useState<string | null>(null);
 
   const abilitySuggestions =
     Array.from(
@@ -92,6 +95,9 @@ export function BossCooldownTimeline({
       )
     ).sort();
 
+  const bossAbilities =
+    getAbilitiesForBoss(bossName);
+
   const handleDurationSubmit = async (
     event: FormEvent<HTMLFormElement>
   ) => {
@@ -101,30 +107,24 @@ export function BossCooldownTimeline({
     );
   };
 
-  const handlePhaseSubmit = async (
-    event: FormEvent<HTMLFormElement>
-  ) => {
-    event.preventDefault();
+  const handleSync = async () => {
+    setSyncError(null);
+    setIsSyncing(true);
 
-    const startSeconds = parseTimeInput(
-      phaseTimeInput
-    );
-
-    if (
-      !phaseLabelInput.trim() ||
-      startSeconds === null
-    ) {
-      return;
+    try {
+      await onSyncWarcraftLogs();
+      await abilityCasts.reload();
     }
-
-    await phaseMarkers.addMarker({
-      label: phaseLabelInput.trim(),
-      startSeconds,
-      sortOrder: 0
-    });
-
-    setPhaseLabelInput("");
-    setPhaseTimeInput("");
+    catch (error) {
+      setSyncError(
+        error instanceof Error
+          ? error.message
+          : "Sync fehlgeschlagen."
+      );
+    }
+    finally {
+      setIsSyncing(false);
+    }
   };
 
   return (
@@ -136,121 +136,107 @@ export function BossCooldownTimeline({
           </p>
 
           <h2>{bossName}</h2>
+
+          <p className="muted-text">
+            {wclSyncedAt
+              ? `Synced from Warcraft Logs — ${new Date(wclSyncedAt).toLocaleString()}`
+              : "Not synced from Warcraft Logs yet."}
+          </p>
         </div>
 
-        <form
-          className="cooldown-duration-form"
-          onSubmit={
-            handleDurationSubmit
-          }
-        >
-          <input
-            onChange={(event) =>
-              setDurationInput(
-                event.target.value
-              )
-            }
-            placeholder="mm:ss"
-            value={durationInput}
-          />
-
+        <div className="cooldown-duration-form">
           <button
-            className="button button-secondary"
-            type="submit"
+            className="button button-primary"
+            disabled={isSyncing}
+            onClick={() =>
+              void handleSync()
+            }
+            type="button"
           >
-            Set duration
+            {isSyncing
+              ? "Syncing…"
+              : "Sync from Warcraft Logs"}
           </button>
-        </form>
-      </div>
 
-      {abilityGroups.length > 0 && (
-        <div className="cooldown-ability-legend">
-          {abilityGroups.map(
-            (group) => (
-              <div key={group.phase}>
-                <span className="cooldown-ability-legend-phase">
-                  {group.phase}
-                </span>
-
-                <div>
-                  {group.abilities.map(
-                    (ability) => (
-                      <span
-                        key={
-                          ability.name
-                        }
-                      >
-                        {
-                          ability.name
-                        }
-                      </span>
-                    )
-                  )}
-                </div>
-              </div>
-            )
-          )}
-        </div>
-      )}
-
-      {fightDurationSeconds ===
-      null ? (
-        <p className="muted-text">
-          Set a fight duration above
-          to start placing cooldowns
-          on the timeline.
-        </p>
-      ) : (
-        <>
           <form
-            className="boss-add-form"
+            className="cooldown-duration-form"
             onSubmit={
-              handlePhaseSubmit
+              handleDurationSubmit
             }
           >
             <input
-              maxLength={60}
               onChange={(event) =>
-                setPhaseLabelInput(
-                  event.target
-                    .value
-                )
-              }
-              placeholder="Phase label (e.g. Intermission)"
-              value={
-                phaseLabelInput
-              }
-            />
-
-            <input
-              onChange={(event) =>
-                setPhaseTimeInput(
+                setDurationInput(
                   event.target
                     .value
                 )
               }
               placeholder="mm:ss"
-              value={
-                phaseTimeInput
-              }
+              value={durationInput}
             />
 
             <button
               className="button button-secondary"
               type="submit"
             >
-              + Add phase marker
+              Set duration
             </button>
           </form>
+        </div>
+      </div>
 
-          <TimelineTrack
+      {syncError && (
+        <StatusMessage type="error">
+          {syncError}
+        </StatusMessage>
+      )}
+
+      {fightDurationSeconds ===
+      null ? (
+        <p className="muted-text">
+          Set a fight duration above,
+          or sync from Warcraft Logs,
+          to start showing cooldowns
+          on the timeline.
+        </p>
+      ) : (
+        <>
+          <PhaseMarkerForm
+            onSubmit={
+              phaseMarkers.addMarker
+            }
+          />
+
+          <p className="muted-text">
+            Boss ability rows are
+            synced from Warcraft Logs.
+            Click a raider's row to
+            assign their cooldown —
+            drag a placed cooldown to
+            move it.
+          </p>
+
+          <TimelineGrid
             assignments={
               assignments
+            }
+            bossAbilities={
+              bossAbilities
+            }
+            bossAbilityCasts={
+              abilityCasts.casts
             }
             fightDurationSeconds={
               fightDurationSeconds
             }
-            memberById={memberById}
+            onRaiderTrackClick={(
+              memberId,
+              seconds
+            ) =>
+              setPendingAssignmentClick(
+                { memberId, seconds }
+              )
+            }
             onRemoveAssignment={
               onRemoveAssignment
             }
@@ -261,19 +247,18 @@ export function BossCooldownTimeline({
                 markerId
               );
             }}
-            onTrackClick={(
-              seconds
-            ) =>
-              setPendingTimestampSeconds(
-                seconds
-              )
+            onRepositionAssignment={
+              onRepositionAssignment
             }
             phaseMarkers={
               phaseMarkers.markers
             }
+            rosterMembers={
+              rosterMembers
+            }
           />
 
-          {pendingTimestampSeconds !==
+          {pendingAssignmentClick !==
             null && (
             <>
               <CooldownAssignmentForm
@@ -281,8 +266,11 @@ export function BossCooldownTimeline({
                   abilitySuggestions
                 }
                 datalistId={`cooldown-timeline-abilities-${bossId}`}
+                initialMemberId={
+                  pendingAssignmentClick.memberId
+                }
                 initialTimestampSeconds={
-                  pendingTimestampSeconds
+                  pendingAssignmentClick.seconds
                 }
                 onSubmit={async (
                   input
@@ -292,7 +280,7 @@ export function BossCooldownTimeline({
                     input
                   );
 
-                  setPendingTimestampSeconds(
+                  setPendingAssignmentClick(
                     null
                   );
                 }}
@@ -304,7 +292,7 @@ export function BossCooldownTimeline({
               <button
                 className="text-button"
                 onClick={() =>
-                  setPendingTimestampSeconds(
+                  setPendingAssignmentClick(
                     null
                   )
                 }

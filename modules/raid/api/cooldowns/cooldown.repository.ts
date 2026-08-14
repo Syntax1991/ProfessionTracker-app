@@ -187,4 +187,67 @@ export class RaidCooldownRepository {
       }
     );
   }
+
+  findAbilityCastsForBoss(
+    bossId: string
+  ) {
+    return prisma.raidBossAbilityCast.findMany(
+      {
+        where: {
+          bossId
+        },
+        orderBy: {
+          timestampSeconds: "asc"
+        }
+      }
+    );
+  }
+
+  async replaceAbilityCastsFromSync(
+    bossId: string,
+    data: {
+      fightDurationSeconds: number;
+      wclReportCode: string;
+      wclFightId: number;
+      casts: Array<{
+        abilityName: string;
+        timestampSeconds: number;
+      }>;
+    }
+  ) {
+    return prisma.$transaction([
+      prisma.raidBossAbilityCast.deleteMany(
+        {
+          where: { bossId }
+        }
+      ),
+
+      prisma.raidBossAbilityCast.createMany(
+        {
+          data: data.casts.map(
+            (cast, index) => ({
+              bossId,
+              abilityName:
+                cast.abilityName,
+              timestampSeconds:
+                cast.timestampSeconds,
+              sortOrder: index
+            })
+          )
+        }
+      ),
+
+      prisma.raidBoss.update({
+        where: { id: bossId },
+        data: {
+          fightDurationSeconds:
+            data.fightDurationSeconds,
+          wclReportCode:
+            data.wclReportCode,
+          wclFightId: data.wclFightId,
+          wclSyncedAt: new Date()
+        }
+      })
+    ]);
+  }
 }

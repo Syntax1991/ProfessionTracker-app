@@ -119,7 +119,7 @@ landed:
     axis) and new `RaidBossPhaseMarker` (officer-defined phase
     dividers) added alongside `RaidCooldownAssignment.timestampSeconds`
     (nullable — Step 1's phase-label-only rows keep working unchanged).
-  - `TimelineTrack.tsx` is hand-rolled CSS (`left: calc()` percentage
+  - The timeline is hand-rolled CSS (`left: calc()` percentage
     positioning) — confirmed via research the repo has zero charting/
     timeline/drag-and-drop libraries and `RaidCalendarView`'s day-grid
     approach doesn't transfer to a continuous axis, so this needed
@@ -128,12 +128,114 @@ landed:
     computes a timestamp from the click's X position and opens the
     same `CooldownAssignmentForm` used by the List view, pre-filled;
     existing markers are small class-colored chips, click-to-remove.
+    (Superseded by Step 3 below: real per-ability rows, drag-to-
+    reposition, and Warcraft-Logs-sourced boss timing.)
   - Live-tested end to end: set a 7:00 duration, added a phase marker
     at 1:42 (rendered at exactly 24.29% — 102/420), clicked the track
     at 50% (opened the form pre-filled "at 3:30"), placed and removed
     a marker, confirmed the List toggle shows the same assignment with
     its timestamp, confirmed the Event Detail page no longer shows any
     cooldown UI at all.
+
+### Step 3 — real per-ability rows + Warcraft Logs sync (2026-08-15)
+
+The user came back to this feature directly: **"das ist noch recht
+unfertig... es ist noch keine richtige interaktive timeline vorhanden
+mit Boss timer etc"** (still quite unfinished — no real interactive
+timeline with a boss timer etc.). Verified the actual gap first rather
+than guessing: Step 2's timeline was click-to-place on a **single
+shared** boss track, with the real Blizzard-sourced ability names
+(`bossAbilityCatalog.ts`) floating as a disconnected static legend
+above the axis — nothing on the timeline showed *when* anything
+happened. Re-researched WoWUtils' real "Viserio Cooldowns" tool
+directly (the user pasted real screenshots of it): a dedicated row
+**per boss ability** (each showing every real occurrence along the
+fight) plus **one row per raider** below, not one shared track.
+
+Rebuilt the interaction model to match:
+- **One row per catalogued ability** (`TimelineGrid.tsx` loops
+  `getAbilitiesForBoss(bossName)`), each showing that ability's own
+  cast markers — `BossAbilityRow.tsx` per ability instead of one
+  shared `BossAbilityRow` for everything.
+- **One row per raider with ≥1 assignment** (`RaiderCooldownRow.tsx`),
+  so overlapping cooldowns from different people no longer collide on
+  a shared track; a "+ Add raider" select starts an empty row for
+  someone new. Clicking a row pre-fills `CooldownAssignmentForm`'s
+  character dropdown to that row (`initialMemberId` prop).
+- **Drag-to-reposition** for placed raider cooldowns
+  (`useMarkerDrag.ts` — a mousedown/mousemove/mouseup state machine
+  distinguishing click (removes, unchanged from Step 2) from drag past
+  a 4px threshold (repositions via the existing `PUT
+  /raid/cooldowns/:assignmentId`, which already accepted
+  `timestampSeconds` — no new backend endpoint needed for this part)).
+- Phase dividers now span the **full grid height** across every row
+  (`.cooldown-timeline-phase-overlay`, `position: absolute; inset: 0`
+  over the whole row stack), not just one track.
+
+**Then the user rejected officer-placed boss timing outright:
+"wir pflegen die Daten nicht selber wann Boss z.B ability X macht auf
+1:31"** (we don't maintain ourselves when boss ability X happens) —
+they first said this data should come "von Blizzard selber." Re-
+verified fresh (not from memory, per the project's standing
+data-availability rule) via two web searches: Blizzard's Game Data/
+Journal API has no per-encounter cast-timing data anywhere — that's
+architectural, not a research gap, and it's exactly why Warcraft Logs
+exists as a third-party service, and exactly what WoWUtils' own "WCL
+Top Parses" feature (found earlier) is actually sourced from. Surfaced
+this plainly; the user supplied a real Warcraft Logs API client
+(`WARCRAFTLOGS_CLIENT_ID`/`SECRET` in `.env`/`env.ts`, same
+`client_credentials` shape as `BATTLENET_CLIENT_ID`/`SECRET`) and
+picked testing against a currently-logged encounter first, accepting
+our actual target raid ("The Venomous Abyss") shows nothing until real
+kills exist (Season 2 starts 2026-08-19 — WCL's own zone list doesn't
+have this raid yet, confirmed live against the API).
+
+**Boss ability rows are now fully Warcraft-Logs-sourced, not officer-
+editable** — `BossAbilityRow.tsx` is read-only (no click handler).
+A **"Sync from Warcraft Logs"** button
+(`modules/raid/api/cooldowns/warcraftlogs.{client,transport,types}.ts`,
+`RaidCooldownService.syncBossFromWarcraftLogs`, `POST
+/raid/cooldowns/bosses/:bossId/sync-wcl`) does, per boss, in one real
+GraphQL pipeline verified directly against the live API before
+building anything:
+1. `worldData.zones(expansion_id: 7)` (7 = "Midnight", current season
+   — matches this project's scope, same as `raidCatalog.ts`) — find
+   the encounter by exact name match. 404 with a clear German message
+   if the boss isn't logged on WCL yet.
+2. `worldData.encounter(id).characterRankings(metric: hps)` — take the
+   #1 ranked real kill's `report.code`/`fightID`.
+3. `reportData.report(code).fights(fightIDs)` for real `startTime`/
+   `endTime`; `masterData.actors(type:"NPC")` filtered to
+   `subType:"Boss"` + matching name to find the boss's own actor id.
+4. `report.events(dataType:Casts, hostilityType:Enemies, sourceID:
+   <bossActorId>, startTime/endTime)` (paginated via
+   `nextPageTimestamp`) for real cast events — `timestamp -
+   fight.startTime` is the real in-fight second.
+5. One aliased `gameData` query resolves all unique `abilityGameID`s
+   to real names in a single HTTP call.
+6. Cross-references extracted names against
+   `getAbilitiesForBoss(bossName)` (only real catalogued abilities
+   survive — same principle as Loot Wishlist/Droptimizer's "only real,
+   catalogued data"), then atomically (one `$transaction`) replaces
+   all `RaidBossAbilityCast` rows for the boss and updates
+   `RaidBoss.fightDurationSeconds`/`wclReportCode`/`wclFightId`/
+   `wclSyncedAt` with the real synced values — a successful sync
+   overwrites any manually-set duration, same "real data wins" pattern
+   as `lootCatalog.ts`'s API rebuild superseding its scraped
+   predecessor. Manual duration entry stays as a fallback for bosses
+   with no WCL data yet.
+
+Live-tested the full pipeline end-to-end through the real service code
+(not just the raw API): temporarily renamed a seeded test boss to
+"Imperator Averzian" (a currently-logged encounter — our real Venomous
+Abyss bosses have no logs yet) and added one temp catalog ability to
+prove the cross-reference filter, synced, confirmed a real fight
+duration (157s), real report code/fight id, and real cast markers
+(e.g. "Dark Upheaval" at 0:06/0:55/1:31) rendered on their own row at
+the correct axis position — reverted the boss name, catalog entry, and
+synced data afterward. Confirmed the honest failure path separately on
+a real Venomous Abyss boss: clean 404 "Für diesen Boss gibt es noch
+keine Logs auf Warcraft Logs," nothing crashes.
 
 ## Signups
 

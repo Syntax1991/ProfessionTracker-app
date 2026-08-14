@@ -13,7 +13,10 @@ import type { RaidBoss } from "../../boss-rosters/types/bossRoster.types";
 import { RaidEventList } from "../../planner/components/RaidEventList";
 import { useRaidEvents } from "../../planner/hooks/useRaidEvents";
 import type { RaidEvent } from "../../planner/types/raidEvent.types";
-import { updateBossFightDuration } from "../api/cooldownApi";
+import {
+  syncBossWarcraftLogs,
+  updateBossFightDuration
+} from "../api/cooldownApi";
 import { BossCooldownView } from "../components/BossCooldownView";
 import { useCooldownAssignments } from "../hooks/useCooldownAssignments";
 
@@ -46,6 +49,7 @@ export function CooldownsLandingPage() {
     assignments,
     error: cooldownError,
     addAssignment,
+    editAssignment,
     removeAssignment
   } = useCooldownAssignments(
     selectedEvent?.id ?? null
@@ -181,6 +185,33 @@ export function CooldownsLandingPage() {
                   assignmentId
                 );
               }}
+              onRepositionAssignment={(
+                assignment,
+                seconds
+              ) => {
+                void editAssignment(
+                  assignment.id,
+                  {
+                    memberId:
+                      assignment.memberId,
+                    abilityName:
+                      assignment.abilityName,
+                    phaseLabel:
+                      assignment.phaseLabel,
+                    timestampSeconds:
+                      seconds,
+                    sortOrder:
+                      assignment.sortOrder
+                  }
+                );
+              }}
+              onSyncWarcraftLogs={async () => {
+                await syncBossWarcraftLogs(
+                  selectedBoss.id
+                );
+
+                await loadBosses();
+              }}
               onUpdateDuration={async (
                 seconds
               ) => {
@@ -193,6 +224,9 @@ export function CooldownsLandingPage() {
               }}
               rosterMembers={
                 rosterMembers
+              }
+              wclSyncedAt={
+                selectedBoss.wclSyncedAt
               }
             />
           )}

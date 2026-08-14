@@ -452,18 +452,22 @@ model RaidSignup {
 }
 
 model RaidBoss {
-  id                   String   @id @default(cuid())
+  id                   String    @id @default(cuid())
   raidEventId          String
   name                 String
-  sortOrder            Int      @default(0)
+  sortOrder            Int       @default(0)
   fightDurationSeconds Int?
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
+  wclReportCode        String?
+  wclFightId           Int?
+  wclSyncedAt          DateTime?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
 
   event               RaidEvent                @relation(fields: [raidEventId], references: [id], onDelete: Cascade)
   rosterEntries       RaidBossRosterEntry[]
   cooldownAssignments RaidCooldownAssignment[]
   phaseMarkers        RaidBossPhaseMarker[]
+  abilityCasts        RaidBossAbilityCast[]
 
   @@index([raidEventId])
 }
@@ -476,6 +480,20 @@ model RaidBossPhaseMarker {
   sortOrder    Int      @default(0)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+
+  boss RaidBoss @relation(fields: [bossId], references: [id], onDelete: Cascade)
+
+  @@index([bossId])
+}
+
+model RaidBossAbilityCast {
+  id               String   @id @default(cuid())
+  bossId           String
+  abilityName      String
+  timestampSeconds Int
+  sortOrder        Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   boss RaidBoss @relation(fields: [bossId], references: [id], onDelete: Cascade)
 

@@ -11,6 +11,7 @@ type CooldownAssignmentFormProps = {
   abilitySuggestions: string[];
   datalistId: string;
   initialTimestampSeconds?: number | null;
+  initialMemberId?: string | null;
   onSubmit: (
     input: RaidCooldownAssignmentInput
   ) => Promise<void>;
@@ -21,11 +22,14 @@ export function CooldownAssignmentForm({
   abilitySuggestions,
   datalistId,
   initialTimestampSeconds = null,
+  initialMemberId = null,
   onSubmit
 }: CooldownAssignmentFormProps) {
   const [memberId, setMemberId] =
     useState(
-      rosterMembers[0]?.id ?? ""
+      initialMemberId ??
+        rosterMembers[0]?.id ??
+        ""
     );
 
   const [abilityName, setAbilityName] =

@@ -43,3 +43,29 @@ export type RaidBossPhaseMarkerListResponse = {
   items: RaidBossPhaseMarker[];
   total: number;
 };
+
+export type RaidBossAbilityCast = {
+  id: string;
+  bossId: string;
+  abilityName: string;
+  timestampSeconds: number;
+  sortOrder: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type RaidBossAbilityCastListResponse = {
+  items: RaidBossAbilityCast[];
+  total: number;
+};
+
+export type RaidBossWarcraftLogsSyncResult = {
+  boss: {
+    id: string;
+    fightDurationSeconds: number | null;
+    wclReportCode: string | null;
+    wclFightId: number | null;
+    wclSyncedAt: string | null;
+  };
+  casts: RaidBossAbilityCast[];
+};

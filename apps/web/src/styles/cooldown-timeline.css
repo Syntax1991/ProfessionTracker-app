@@ -19,52 +19,14 @@
   color: var(--text);
 }
 
-.cooldown-ability-legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 14px;
-  margin-bottom: 16px;
-  padding: 10px 12px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--surface-elevated);
-}
-
-.cooldown-ability-legend-phase {
-  display: block;
-  margin-bottom: 4px;
-  color: var(--text-muted);
-  font-size: 0.62rem;
-  font-weight: 750;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-
-.cooldown-ability-legend > div > div {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  max-width: 260px;
-}
-
-.cooldown-ability-legend span:not(
-    .cooldown-ability-legend-phase
-  ) {
-  padding: 2px 7px;
-  border-radius: 999px;
-  background: var(--surface-hover);
-  color: var(--text-secondary);
-  font-size: 0.66rem;
-}
-
-.cooldown-timeline-wrap {
+.cooldown-timeline-grid {
   margin: 12px 0 20px;
 }
 
 .cooldown-timeline-ticks {
   position: relative;
   height: 16px;
-  margin-bottom: 4px;
+  margin: 0 0 4px 148px;
 }
 
 .cooldown-timeline-ticks span {
@@ -74,13 +36,64 @@
   font-size: 0.6rem;
 }
 
-.cooldown-timeline-track {
+.cooldown-timeline-rows {
   position: relative;
-  height: 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cooldown-timeline-phase-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.cooldown-timeline-row {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.cooldown-timeline-row-boss {
+  margin-bottom: 4px;
+}
+
+.cooldown-timeline-row-label {
+  flex: 0 0 140px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  color: var(--marker-color, var(--text-secondary));
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cooldown-timeline-row-boss .cooldown-timeline-row-label {
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.62rem;
+}
+
+.cooldown-timeline-row-track {
+  position: relative;
+  flex: 1;
+  height: 36px;
   border: 1px solid var(--border);
   border-radius: 6px;
   background: var(--surface-elevated);
   cursor: crosshair;
+}
+
+.cooldown-timeline-row-boss .cooldown-timeline-row-track {
+  background: var(--surface-hover);
+}
+
+.cooldown-timeline-row-track-readonly {
+  cursor: default;
 }
 
 .cooldown-timeline-phase {
@@ -99,6 +112,7 @@
   color: var(--text-muted);
   font-size: 0.6rem;
   cursor: pointer;
+  pointer-events: auto;
 }
 
 .cooldown-timeline-marker {
@@ -115,7 +129,31 @@
   color: var(--text);
   font-size: 0.56rem;
   font-weight: 800;
-  cursor: pointer;
+  cursor: grab;
+}
+
+.cooldown-timeline-marker.is-dragging {
+  cursor: grabbing;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.35);
+  z-index: 2;
+}
+
+.cooldown-timeline-boss-marker {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  border-color: var(--primary);
+  background: var(--primary-soft);
+  transform: translate(-50%, -50%) rotate(45deg);
+  cursor: default;
+}
+
+.cooldown-timeline-add-row {
+  margin: 8px 0 0 148px;
+}
+
+.cooldown-timeline-add-row select {
+  min-width: 180px;
 }
 
 .cooldown-timeline-placing-at {

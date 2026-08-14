@@ -64,3 +64,48 @@ export function parseTimeInput(
 
   return null;
 }
+
+export function percentOf(
+  seconds: number,
+  fightDurationSeconds: number
+): number {
+  if (fightDurationSeconds <= 0) {
+    return 0;
+  }
+
+  return Math.min(
+    100,
+    Math.max(
+      0,
+      (seconds /
+        fightDurationSeconds) *
+        100
+    )
+  );
+}
+
+export function secondsFromClickX(
+  clientX: number,
+  trackElement: HTMLElement,
+  fightDurationSeconds: number
+): number {
+  const rect =
+    trackElement.getBoundingClientRect();
+
+  if (rect.width === 0) {
+    return 0;
+  }
+
+  const ratio = Math.min(
+    1,
+    Math.max(
+      0,
+      (clientX - rect.left) /
+        rect.width
+    )
+  );
+
+  return Math.round(
+    ratio * fightDurationSeconds
+  );
+}

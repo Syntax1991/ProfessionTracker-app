@@ -29,6 +29,9 @@ export type RaidBoss = {
   name: string;
   sortOrder: number;
   fightDurationSeconds: number | null;
+  wclReportCode: string | null;
+  wclFightId: number | null;
+  wclSyncedAt: string | null;
   createdAt: string;
   updatedAt: string;
   rosterEntries: RaidBossRosterEntry[];

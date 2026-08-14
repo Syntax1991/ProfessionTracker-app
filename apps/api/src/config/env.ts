@@ -48,7 +48,17 @@ const environmentSchema = z.object({
     .url()
     .default(
       "http://localhost:4000/api/auth/raider/callback"
-    )
+    ),
+
+  WARCRAFTLOGS_CLIENT_ID: z
+    .string()
+    .trim()
+    .default(""),
+
+  WARCRAFTLOGS_CLIENT_SECRET: z
+    .string()
+    .trim()
+    .default("")
 });
 
 const parsedEnvironment = environmentSchema.safeParse(

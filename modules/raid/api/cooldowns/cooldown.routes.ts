@@ -4,13 +4,18 @@ import { guildVerificationService } from "../../../guild/api/verification/verifi
 import { RaidCooldownController } from "./cooldown.controller.js";
 import { RaidCooldownRepository } from "./cooldown.repository.js";
 import { RaidCooldownService } from "./cooldown.service.js";
+import { WarcraftLogsClient } from "./warcraftlogs.client.js";
 
 const repository =
   new RaidCooldownRepository();
 
+const warcraftLogsClient =
+  new WarcraftLogsClient();
+
 const service = new RaidCooldownService(
   repository,
-  guildVerificationService
+  guildVerificationService,
+  warcraftLogsClient
 );
 
 const controller =
@@ -72,5 +77,19 @@ raidCooldownRouter.delete(
   "/phase-markers/:markerId",
   asyncHandler(
     controller.deletePhaseMarker
+  )
+);
+
+raidCooldownRouter.get(
+  "/bosses/:bossId/ability-casts",
+  asyncHandler(
+    controller.listAbilityCasts
+  )
+);
+
+raidCooldownRouter.post(
+  "/bosses/:bossId/sync-wcl",
+  asyncHandler(
+    controller.syncBossFromWarcraftLogs
   )
 );

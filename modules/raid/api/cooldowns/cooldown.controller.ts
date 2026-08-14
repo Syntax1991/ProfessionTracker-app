@@ -201,4 +201,41 @@ export class RaidCooldownController {
 
     response.status(204).send();
   };
+
+  listAbilityCasts: RequestHandler = async (
+    request,
+    response
+  ) => {
+    const bossId =
+      raidCooldownBossIdSchema.parse(
+        request.params.bossId
+      );
+
+    const casts =
+      await this.service.listAbilityCasts(
+        bossId
+      );
+
+    response.json({
+      items: casts,
+      total: casts.length
+    });
+  };
+
+  syncBossFromWarcraftLogs: RequestHandler = async (
+    request,
+    response
+  ) => {
+    const bossId =
+      raidCooldownBossIdSchema.parse(
+        request.params.bossId
+      );
+
+    const result =
+      await this.service.syncBossFromWarcraftLogs(
+        bossId
+      );
+
+    response.json(result);
+  };
 }

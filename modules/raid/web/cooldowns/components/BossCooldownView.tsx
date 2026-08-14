@@ -11,12 +11,14 @@ type BossCooldownViewProps = {
   bossId: string;
   bossName: string;
   fightDurationSeconds: number | null;
+  wclSyncedAt: string | null;
   assignments: RaidCooldownAssignment[];
   rosterMembers: GuildMember[];
   abilitySuggestions: string[];
   onUpdateDuration: (
     seconds: number | null
   ) => Promise<void>;
+  onSyncWarcraftLogs: () => Promise<void>;
   onAddAssignment: (
     bossId: string,
     input: RaidCooldownAssignmentInput
@@ -24,18 +26,25 @@ type BossCooldownViewProps = {
   onRemoveAssignment: (
     assignmentId: string
   ) => void;
+  onRepositionAssignment: (
+    assignment: RaidCooldownAssignment,
+    seconds: number
+  ) => void;
 };
 
 export function BossCooldownView({
   bossId,
   bossName,
   fightDurationSeconds,
+  wclSyncedAt,
   assignments,
   rosterMembers,
   abilitySuggestions,
   onUpdateDuration,
+  onSyncWarcraftLogs,
   onAddAssignment,
-  onRemoveAssignment
+  onRemoveAssignment,
+  onRepositionAssignment
 }: BossCooldownViewProps) {
   const [view, setView] = useState<
     "timeline" | "list"
@@ -87,12 +96,19 @@ export function BossCooldownView({
           onRemoveAssignment={
             onRemoveAssignment
           }
+          onRepositionAssignment={
+            onRepositionAssignment
+          }
+          onSyncWarcraftLogs={
+            onSyncWarcraftLogs
+          }
           onUpdateDuration={
             onUpdateDuration
           }
           rosterMembers={
             rosterMembers
           }
+          wclSyncedAt={wclSyncedAt}
         />
       ) : (
         <CooldownBossPanel
