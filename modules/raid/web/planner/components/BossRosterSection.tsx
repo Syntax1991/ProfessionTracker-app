@@ -91,6 +91,9 @@ export function BossRosterSection({
           rosterMembers={
             rosterMembers
           }
+          signupEntries={
+            signupEntries
+          }
         />
       ) : (
         <BossRosterOverview

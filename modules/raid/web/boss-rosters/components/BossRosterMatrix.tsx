@@ -6,16 +6,19 @@ import {
   resolveRoleKey
 } from "../../../../guild/web/roster/utils/rosterRoles";
 import { BossMatrixMemberCell } from "./BossMatrixMemberCell";
+import { BossMatrixStatusCell } from "./BossMatrixStatusCell";
 import { BossForm } from "./BossForm";
 import type {
   RaidBoss,
   RaidBossInput,
   RaidBossRosterStatus
 } from "../types/bossRoster.types";
+import type { RaidSignupEntry } from "../../signups/types/signup.types";
 
 type BossRosterMatrixProps = {
   bosses: RaidBoss[];
   rosterMembers: GuildMember[];
+  signupEntries: RaidSignupEntry[];
   onAddBoss: (
     input: RaidBossInput
   ) => Promise<void>;
@@ -42,29 +45,10 @@ const cycleOrder: Array<
   "BENCH"
 ];
 
-const cellLabel: Record<
-  RaidBossRosterStatus,
-  string
-> = {
-  CONFIRMED: "✓",
-  TENTATIVE: "?",
-  BENCH: "B"
-};
-
-const cellBarClass: Record<
-  RaidBossRosterStatus,
-  string
-> = {
-  CONFIRMED:
-    "boss-matrix-bar confirmed",
-  TENTATIVE:
-    "boss-matrix-bar tentative",
-  BENCH: "boss-matrix-bar bench"
-};
-
 export function BossRosterMatrix({
   bosses,
   rosterMembers,
+  signupEntries,
   onAddBoss,
   onDeleteBoss,
   onSetStatus,
@@ -74,6 +58,19 @@ export function BossRosterMatrix({
     isAddFormOpen,
     setIsAddFormOpen
   ] = useState(false);
+
+  const presentMemberIds = new Set(
+    signupEntries
+      .filter(
+        (entry) =>
+          entry.status ===
+          "PRESENT"
+      )
+      .map(
+        (entry) =>
+          entry.member.id
+      )
+  );
 
   const handleCellClick = (
     boss: RaidBoss,
@@ -275,13 +272,32 @@ export function BossRosterMatrix({
                                     member.id
                                 );
 
-                              const status =
+                              const savedStatus =
                                 entry?.status ??
                                 null;
 
+                              const isSuggested =
+                                !savedStatus &&
+                                presentMemberIds.has(
+                                  member.id
+                                );
+
+                              const displayStatus:
+                                | RaidBossRosterStatus
+                                | null =
+                                savedStatus ??
+                                (isSuggested
+                                  ? "CONFIRMED"
+                                  : null);
+
                               return (
-                                <td
-                                  className="boss-matrix-cell"
+                                <BossMatrixStatusCell
+                                  displayStatus={
+                                    displayStatus
+                                  }
+                                  isSuggested={
+                                    isSuggested
+                                  }
                                   key={
                                     boss.id
                                   }
@@ -289,30 +305,10 @@ export function BossRosterMatrix({
                                     handleCellClick(
                                       boss,
                                       member.id,
-                                      status
+                                      displayStatus
                                     )
                                   }
-                                  role="button"
-                                  tabIndex={
-                                    0
-                                  }
-                                >
-                                  <div
-                                    className={
-                                      status
-                                        ? cellBarClass[
-                                            status
-                                          ]
-                                        : "boss-matrix-bar empty"
-                                    }
-                                  >
-                                    {status
-                                      ? cellLabel[
-                                          status
-                                        ]
-                                      : ""}
-                                  </div>
-                                </td>
+                                />
                               );
                             }
                           )}

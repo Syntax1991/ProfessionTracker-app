@@ -139,6 +139,33 @@ per-boss `RaidBossRosterEntry` assignment work. No new backend calls;
 Overview reuses the same `entries` the Signups section already
 fetches.
 
+**Matrix cells now show signup-derived defaults.** A fully-signed-up
+event otherwise opened the Edit matrix completely blank for every
+boss, since `RaidBossRosterEntry` is a separate, officer-driven data
+set that starts empty regardless of signups — the user pointed at an
+event with everyone signed up Present next to its empty matrix:
+"dort sollten schon gespeicherte Werte erscheinen falls Tank z.B
+eingeplant ist etc.." and clarified further that this means the
+**Edit/matrix view** specifically, not just the Overview: "Tank ist
+alle Bosse eingeplant also sollte man in der Boss Ansicht dann auch
+sehen, wo der Char schon confirmed, Bench etc ist." `BossRosterMatrix`
+now takes the same `signupEntries` prop as `BossRosterOverview` and,
+for any cell with no explicit `RaidBossRosterEntry`, displays a
+**suggested CONFIRMED** bar (dashed/dimmed via `.boss-matrix-bar
+.suggested`, with a tooltip explaining it's not yet confirmed for
+that specific boss) when the member is signed up `PRESENT` — purely a
+display default, never auto-persisted. Clicking a suggested cell
+starts the cycle from its displayed CONFIRMED value (moving to
+TENTATIVE next) and, once clicked, becomes a real persisted
+`RaidBossRosterEntry` like any other cell; clearing it back to unset
+falls back to showing the suggested default again rather than a truly
+empty cell, since the underlying signup hasn't changed. This keeps
+Signups and the per-boss roster as two intentionally separate data
+sets (extracted into `BossMatrixStatusCell.tsx` to stay under the
+350-line file limit) while giving officers a sensible starting point
+instead of re-deciding from scratch per boss for someone already
+known to be present.
+
 Event Edit/Delete moved from a separate "MANAGE" panel into a plain
 button row directly under the page header (`RaidEventActionsBar.tsx`)
 to match WoWAudit's inline header-button pattern, rather than a boxed

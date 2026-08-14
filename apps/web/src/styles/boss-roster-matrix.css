@@ -115,3 +115,14 @@
   color: var(--text-secondary);
   background: var(--border-strong);
 }
+
+.boss-matrix-bar.suggested {
+  opacity: 0.55;
+  background-image: repeating-linear-gradient(
+    135deg,
+    rgb(0 0 0 / 0%) 0px,
+    rgb(0 0 0 / 0%) 4px,
+    rgb(0 0 0 / 12%) 4px,
+    rgb(0 0 0 / 12%) 8px
+  );
+}
