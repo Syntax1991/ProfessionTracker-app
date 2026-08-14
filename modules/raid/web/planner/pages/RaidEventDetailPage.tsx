@@ -267,6 +267,9 @@ export function RaidEventDetailPage() {
           rosterMembers={
             rosterMembers
           }
+          signupEntries={
+            entries
+          }
         />
 
         <SignupOfficerSection

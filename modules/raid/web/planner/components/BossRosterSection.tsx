@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { LoadingPanel } from "../../../../../apps/web/src/shared/components/LoadingPanel";
 import type { GuildMember } from "../../../../guild/web/roster/types/roster.types";
 import { BossRosterMatrix } from "../../boss-rosters/components/BossRosterMatrix";
@@ -6,11 +7,14 @@ import type {
   RaidBossInput,
   RaidBossRosterStatus
 } from "../../boss-rosters/types/bossRoster.types";
+import type { RaidSignupEntry } from "../../signups/types/signup.types";
+import { BossRosterOverview } from "./BossRosterOverview";
 
 type BossRosterSectionProps = {
   bosses: RaidBoss[];
   isLoading: boolean;
   rosterMembers: GuildMember[];
+  signupEntries: RaidSignupEntry[];
   onAddBoss: (
     input: RaidBossInput
   ) => Promise<void>;
@@ -32,11 +36,15 @@ export function BossRosterSection({
   bosses,
   isLoading,
   rosterMembers,
+  signupEntries,
   onAddBoss,
   onDeleteBoss,
   onSetStatus,
   onClearStatus
 }: BossRosterSectionProps) {
+  const [isEditing, setIsEditing] =
+    useState(false);
+
   return (
     <section className="panel">
       <div className="panel-header">
@@ -49,11 +57,25 @@ export function BossRosterSection({
             {bosses.length} Bosses
           </h2>
         </div>
+
+        <button
+          className="button button-secondary"
+          onClick={() =>
+            setIsEditing(
+              (current) => !current
+            )
+          }
+          type="button"
+        >
+          {isEditing
+            ? "Done"
+            : "Edit"}
+        </button>
       </div>
 
       {isLoading ? (
         <LoadingPanel />
-      ) : (
+      ) : isEditing ? (
         <BossRosterMatrix
           bosses={bosses}
           onAddBoss={onAddBoss}
@@ -69,6 +91,10 @@ export function BossRosterSection({
           rosterMembers={
             rosterMembers
           }
+        />
+      ) : (
+        <BossRosterOverview
+          entries={signupEntries}
         />
       )}
     </section>

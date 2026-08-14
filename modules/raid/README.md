@@ -115,18 +115,29 @@ before, purely a frontend recomposition.
 Restyled twice more the same day chasing further WoWAudit screenshots
 ("nicht nur Text... sondern so aufgebaut", "die Funktionen haben wir
 ja nur das View muss noch schön gemacht werden" — same functionality,
-just needed to look right). Landed on: member cells get a small
-avatar (`BossMatrixMemberCell.tsx`) with a class-colored ring
+just needed to look right). Member cells get a small avatar
+(`BossMatrixMemberCell.tsx`) with a class-colored ring
 (`modules/guild/web/roster/utils/classColors.ts`, the standard WoW
 class palette — new, nothing else in the app had a class→color
 mapping yet) instead of a bare name, and status cells render as a
 full-width colored bar filling the cell (`.boss-matrix-bar`) rather
-than a small centered badge — closer to WoWAudit's own dense,
-color-heavy row bars. Deliberately kept the boss-columns-not-role-
-columns structure from the redesign above rather than switching to
-WoWAudit's alternate role-column "Setup" view — that would have
-undone the "see every boss at once" fix from earlier in the same
-conversation.
+than a small centered badge.
+
+**Then a further clarifying screenshot resolved the earlier
+role-columns-vs-boss-columns tension properly**: WoWAudit's default
+"Setup" view (what you see landing on an event) is a simpler
+role-column Selected/Benched summary — the per-boss colored-bar grid
+only appears once you drill in further. `BossRosterSection.tsx` now
+toggles between two views: **Overview** (default) —
+`BossRosterOverview.tsx`, four role columns (reusing
+`ROLE_ORDER`/`ROLE_LABELS`), each member sorted into "Selected"
+(signed up `PRESENT`) or "Benched" (anything else) with a
+✓/✕ badge — sourced from `RaidSignup`, not per-boss data, per
+explicit confirmation ("inkl. Signup status in dem overview als Haken
+X"). **Edit** — the existing boss-columns matrix, for the actual
+per-boss `RaidBossRosterEntry` assignment work. No new backend calls;
+Overview reuses the same `entries` the Signups section already
+fetches.
 
 Event Edit/Delete moved from a separate "MANAGE" panel into a plain
 button row directly under the page header (`RaidEventActionsBar.tsx`)
