@@ -18,10 +18,13 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--primary-soft);
 }
 
 .boss-matrix-role-header {
-  padding-top: 16px;
+  padding-top: 18px;
+  padding-bottom: 6px;
   color: var(--text-muted);
   font-size: 0.68rem;
   font-weight: 800;
@@ -29,33 +32,66 @@
   text-transform: uppercase;
 }
 
+.boss-matrix-member {
+  min-width: 170px;
+}
+
+.boss-matrix-member .character-avatar {
+  width: 30px;
+  height: 30px;
+  font-size: 0.64rem;
+}
+
+.boss-matrix-member strong {
+  font-size: 0.78rem;
+}
+
+.boss-matrix-member span {
+  font-size: 0.64rem;
+}
+
 .boss-matrix-cell {
-  min-width: 44px;
-  padding: 6px;
-  color: var(--text-muted);
+  min-width: 56px;
+  padding: 8px 6px;
   text-align: center;
   cursor: pointer;
   user-select: none;
-  transition: background 120ms ease;
 }
 
-.boss-matrix-cell:hover {
-  background: var(--surface-hover);
+.boss-matrix-badge {
+  display: inline-flex;
+  width: 26px;
+  height: 26px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  transition:
+    transform 120ms ease,
+    background 120ms ease;
 }
 
-.boss-matrix-cell.confirmed {
+.boss-matrix-cell:hover .boss-matrix-badge {
+  transform: scale(1.1);
+}
+
+.boss-matrix-badge.empty {
+  color: var(--text-muted);
+  background: var(--surface-elevated);
+}
+
+.boss-matrix-badge.confirmed {
   color: #163329;
   background: var(--success);
-  font-weight: 800;
 }
 
-.boss-matrix-cell.tentative {
+.boss-matrix-badge.tentative {
   color: #382b16;
   background: var(--warning);
-  font-weight: 800;
 }
 
-.boss-matrix-cell.bench {
+.boss-matrix-badge.bench {
   color: var(--text-secondary);
-  background: var(--surface-elevated);
+  background: var(--border-strong);
 }

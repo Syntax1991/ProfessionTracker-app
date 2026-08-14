@@ -112,6 +112,18 @@ and a small "×" in each column header. No backend or data-model
 change — same `RaidBoss`/`RaidBossRosterEntry` reads/writes as
 before, purely a frontend recomposition.
 
+Restyled once more the same day after another WoWAudit screenshot
+("nicht nur Text... sondern so aufgebaut") — member cells now reuse
+`.character-identity`/`.character-avatar` (the exact avatar markup
+Guild's `RosterTable` already uses, kept for visual consistency
+across the app) instead of a bare name, and status cells render as a
+round colored pill badge (`.boss-matrix-badge`) rather than a
+background-filled table cell with a bare text character. Deliberately
+kept the boss-columns-not-role-columns structure from the redesign
+above rather than switching to WoWAudit's alternate role-column
+"Setup" view — that would have undone the "see every boss at once"
+fix from the same conversation just a few messages earlier.
+
 Event Edit/Delete moved from a separate "MANAGE" panel into a plain
 button row directly under the page header (`RaidEventActionsBar.tsx`)
 to match WoWAudit's inline header-button pattern, rather than a boxed
