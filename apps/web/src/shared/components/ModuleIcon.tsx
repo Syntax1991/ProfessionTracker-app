@@ -38,11 +38,6 @@ const moduleIconPaths:
     ],
     automation: [
       "m13 2-9 12h7l-1 8 9-12h-7l1-8Z"
-    ],
-    "data-platform": [
-      "M4 6c0-2 3.6-4 8-4s8 2 8 4-3.6 4-8 4-8-2-8-4Z",
-      "M4 6v6c0 2 3.6 4 8 4s8-2 8-4V6",
-      "M4 12v6c0 2 3.6 4 8 4s8-2 8-4v-6"
     ]
   };
 

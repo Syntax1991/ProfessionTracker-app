@@ -74,3 +74,37 @@ that wrapped block, since it has to be reachable pre-login.
 is the single sign-in control, in the persistent nav (mirroring
 WoWUtils' top-right "Sign in with Battle.net" button per explicit
 user feedback — not embedded in individual pages).
+
+## No standalone nav presence (moved into Settings, 2026-08-14)
+
+Data Platform used to have its own top-level sidebar module ("Data
+Platform": SynTrack Addon at `/addon`, Battle.net at `/battlenet`,
+plus planned Raider.io/Warcraft Logs/SynTrack Companion entries),
+after the user asked directly: "alles was data platform ist unter
+settings umziehen" (move everything that's Data Platform under
+Settings). Clarifying which of the two built pages is personal vs.
+guild-scoped ("personal und guild"), the split landed on:
+
+- **WoW Addon Sync** (ProfessionTracker.lua import — only affects the
+  signed-in user's own profession data) moved into the personal
+  `SettingsPage` (`/settings`, Guild module) as its "WoW Addon" tab.
+- **Battle.net character sync** (loads/imports the signed-in user's
+  own Battle.net characters into My SynTrack) moved into
+  `GuildSettingsPage` (`/guild/settings`) as its "Battle.net" tab —
+  picked over the personal page specifically because it's also the
+  natural place to eventually surface guild-wide Battle.net data
+  (Gear Audit refresh already lives on Guild's Roster page), not
+  because character import itself is guild-scoped today.
+
+Both pages' business logic (hooks, API calls, sub-components) stayed
+in `modules/data-platform/web/integrations` unchanged — only the page
+shell moved. `AddonImportPage.tsx`/`BattleNetPage.tsx` were replaced
+by thin `AddonSyncTab.tsx`/`BattleNetSyncTab.tsx` components (no
+`PageHeader`, since the hosting Settings page already renders one),
+imported cross-module into Guild's two Settings pages — same
+composition pattern Raid already uses for Guild's
+`GuildVerificationGate`. `dataPlatform.definition.ts` and the
+`"data-platform"` module id were deleted entirely; `/addon` and
+`/battlenet` now redirect to `/settings` and `/guild/settings`
+respectively. `RaiderLoginCallbackPage` (the OAuth landing route) was
+left untouched — it's infrastructure, not a nav-reachable page.

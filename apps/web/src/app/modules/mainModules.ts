@@ -1,5 +1,4 @@
 import { automationModule } from "./definitions/automation.definition";
-import { dataPlatformModule } from "./definitions/dataPlatform.definition";
 import { guildModule } from "./definitions/guild.definition";
 import { lootModule } from "./definitions/loot.definition";
 import { mySynTrackModule } from "./definitions/mySynTrack.definition";
@@ -23,8 +22,7 @@ export const mainModules:
     lootModule,
     professionsModule,
     recruitmentModule,
-    automationModule,
-    dataPlatformModule
+    automationModule
   ];
 
 export function getAvailableModuleItems(

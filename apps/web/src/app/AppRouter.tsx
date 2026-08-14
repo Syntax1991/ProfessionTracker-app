@@ -20,8 +20,6 @@ import { GearReadinessPage } from "../../../../modules/my-syntrack/web/gear-read
 import { RaidTasksPage } from "../../../../modules/my-syntrack/web/raid-tasks/pages/RaidTasksPage";
 import { WeeklyChecklistPage } from "../../../../modules/my-syntrack/web/weekly-checklist/pages/WeeklyChecklistPage";
 import { VaultMythicPlusPage } from "../../../../modules/my-syntrack/web/vault-mythic-plus/pages/VaultMythicPlusPage";
-import { AddonImportPage } from "../../../../modules/data-platform/web/integrations/pages/AddonImportPage";
-import { BattleNetPage } from "../../../../modules/data-platform/web/integrations/pages/BattleNetPage";
 import { RaiderLoginCallbackPage } from "../../../../modules/data-platform/web/raider-auth/pages/RaiderLoginCallbackPage";
 import { ProfessionDetailPage } from "../../../../modules/professions/web/details/pages/ProfessionDetailPage";
 import { ProfessionCrafterFinderPage } from "../../../../modules/professions/web/pages/ProfessionCrafterFinderPage";
@@ -230,12 +228,22 @@ export function AppRouter() {
 
         <Route
           path="addon"
-          element={<AddonImportPage />}
+          element={
+            <Navigate
+              replace
+              to="/settings"
+            />
+          }
         />
 
         <Route
           path="battlenet"
-          element={<BattleNetPage />}
+          element={
+            <Navigate
+              replace
+              to="/guild/settings"
+            />
+          }
         />
       </Route>
 

@@ -2,20 +2,19 @@ import {
   useCallback,
   useState
 } from "react";
-import { PageHeader } from "../../../../../apps/web/src/shared/components/PageHeader";
 import { StatusMessage } from "../../../../../apps/web/src/shared/components/StatusMessage";
 import {
   getBattleNetCharacters,
   importBattleNetCharacters
 } from "../api/battlenetApi";
-import { BattleNetCharacterSelector } from "../components/BattleNetCharacterSelector";
-import { BattleNetImportResultCard } from "../components/BattleNetImportResult";
+import { BattleNetCharacterSelector } from "./BattleNetCharacterSelector";
+import { BattleNetImportResultCard } from "./BattleNetImportResult";
 import type {
   BattleNetCharacterPreviewResult,
   BattleNetImportResult
 } from "../types/battlenet.types";
 
-export function BattleNetPage() {
+export function BattleNetSyncTab() {
   const [
     characterPreview,
     setCharacterPreview
@@ -93,12 +92,6 @@ export function BattleNetPage() {
 
   return (
     <>
-      <PageHeader
-        description="Load your Battle.net characters, filter them and sync only the crafters you need."
-        eyebrow="INTEGRATION"
-        title="Battle.net"
-      />
-
       {error && (
         <StatusMessage type="error">
           {error}

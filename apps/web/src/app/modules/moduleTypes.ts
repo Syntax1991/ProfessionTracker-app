@@ -21,8 +21,7 @@ export type MainModuleDefinition = {
     | "loot"
     | "professions"
     | "recruitment"
-    | "automation"
-    | "data-platform";
+    | "automation";
   label: string;
   description: string;
   status: MainModuleStatus;

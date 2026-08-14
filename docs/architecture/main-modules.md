@@ -403,6 +403,18 @@ Addon:
 
 - `modules/data-platform/addons/SynTrack_Core`
 
+Data Platform no longer has its own top-level sidebar nav module or
+standalone routes (2026-08-14) — its two built web capabilities (WoW
+Addon Sync, Battle.net character sync) are composed into Guild's
+Settings pages instead (`/settings` and `/guild/settings`
+respectively), following dependency principle 3 below ("frontend
+pages may compose read models from multiple modules"). Business
+ownership is unchanged: the underlying hooks/API calls/components
+still live under `modules/data-platform/web/integrations`, just
+without their own page/route/nav entry. See
+`modules/data-platform/README.md`'s "No standalone nav presence"
+section for the full reasoning.
+
 ### Dependency rule
 
 Data Platform gathers and normalizes data.

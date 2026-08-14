@@ -114,6 +114,18 @@ full card once it's done. Matches WoWAudit's own layout, confirmed via
 a screenshot showing "Settings" as a dedicated tab in the guild's own
 nav, separate from Overview/Roster/Audit.
 
+**Gained a second tab (2026-08-14, same day):** after "alles was data
+platform ist unter settings umziehen" (move everything Data Platform
+under Settings), `GuildSettingsPage` became a 2-tab page —
+**Verification** (the content above, unchanged) and **Battle.net**
+(the character load/import flow that used to be its own standalone
+`/battlenet` page in a top-level "Data Platform" nav module, now gone
+entirely — see `modules/data-platform/README.md`'s "No standalone nav
+presence" section for the full split and reasoning). The personal
+`SettingsPage` (`/settings`, `modules/guild/web/raider-link/pages`)
+got the same treatment with a "WoW Addon" tab for the ProfessionTracker
+import flow.
+
 ## Roster
 
 `GuildMember.role` (`TANK`/`HEALER`/`MELEE`/`RANGED`, nullable) is a
