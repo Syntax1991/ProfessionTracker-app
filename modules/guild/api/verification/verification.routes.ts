@@ -34,6 +34,13 @@ guildVerificationRouter.get(
   )
 );
 
+guildVerificationRouter.post(
+  "/lookup",
+  asyncHandler(
+    controller.lookupGuild
+  )
+);
+
 guildVerificationRouter.get(
   "/status",
   asyncHandler(

@@ -6,6 +6,7 @@ import {
 import {
   getGuildVerificationCandidates,
   getGuildVerificationStatus,
+  lookupGuild,
   verifyGuild
 } from "../api/verificationApi";
 import type {
@@ -38,6 +39,11 @@ export function useGuildVerification() {
 
   const [isVerifying, setIsVerifying] =
     useState(false);
+
+  const [
+    isLookingUpGuild,
+    setIsLookingUpGuild
+  ] = useState(false);
 
   const [error, setError] =
     useState<string | null>(null);
@@ -94,6 +100,34 @@ export function useGuildVerification() {
       }
     }, []);
 
+  const lookup = async (
+    realmName: string,
+    guildName: string
+  ) => {
+    setError(null);
+    setIsLookingUpGuild(true);
+
+    try {
+      const candidate =
+        await lookupGuild({
+          realmName,
+          guildName
+        });
+
+      setCandidates([candidate]);
+    }
+    catch (lookupError) {
+      setError(
+        lookupError instanceof Error
+          ? lookupError.message
+          : "Guild could not be found."
+      );
+    }
+    finally {
+      setIsLookingUpGuild(false);
+    }
+  };
+
   const verify = async (
     characterName: string,
     characterRealmSlug: string
@@ -130,8 +164,10 @@ export function useGuildVerification() {
     isLoadingStatus,
     isLoadingCandidates,
     isVerifying,
+    isLookingUpGuild,
     error,
     loadCandidates,
+    lookup,
     verify
   };
 }

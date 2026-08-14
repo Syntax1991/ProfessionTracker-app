@@ -3,7 +3,10 @@ import type {
 } from "express";
 import { requireBearerToken } from "../../../../apps/api/src/shared/http/bearerToken.js";
 import { GuildVerificationService } from "./verification.service.js";
-import { guildVerificationInputSchema } from "./verification.validation.js";
+import {
+  guildVerificationInputSchema,
+  guildVerificationLookupInputSchema
+} from "./verification.validation.js";
 
 export class GuildVerificationController {
   constructor(
@@ -26,6 +29,26 @@ export class GuildVerificationController {
     response.json({
       items
     });
+  };
+
+  lookupGuild: RequestHandler = async (
+    request,
+    response
+  ) => {
+    const token =
+      requireBearerToken(request);
+
+    const input =
+      guildVerificationLookupInputSchema.parse(
+        request.body
+      );
+
+    response.json(
+      await this.service.lookupGuild(
+        token,
+        input
+      )
+    );
   };
 
   getStatus: RequestHandler = async (

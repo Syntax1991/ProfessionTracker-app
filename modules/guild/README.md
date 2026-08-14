@@ -53,10 +53,19 @@ connection. (Until 2026-08-14 this reused a single app-owner-only
 one login protecting the whole app instead of two parallel ones — see
 the `project_raider_login` memory.)
 
-1. The signed-in account's own characters are checked
-   against Blizzard's Character Profile API for guild membership —
-   no guild name has to be typed or guessed, since Blizzard does not
-   support guild search.
+1. The signed-in account's own characters are checked against
+   Blizzard's Character Profile API for guild membership — this is
+   the default discovery path since Blizzard doesn't support
+   free-text guild *search*. Added 2026-08-14 after a WoWUtils
+   screenshot ("Link Guild" by Region/Realm/Name): a second path,
+   `POST /guild/verification/lookup`
+   (`GuildVerificationService.lookupGuild`), looks up an exact
+   realm+guild name directly via Blizzard's Guild Roster API —
+   Blizzard *does* support this exact-name lookup, just not
+   discovery/search — then filters that guild's roster down to the
+   signed-in account's own characters. Same security model either
+   way: whichever path is used, you still pick one of *your own*
+   characters as proof in the next step, never someone else's.
 2. The chosen character's rank is looked up in Blizzard's official
    Guild Roster API.
 3. Rank `0` is always the Guild Master. Blizzard does not expose

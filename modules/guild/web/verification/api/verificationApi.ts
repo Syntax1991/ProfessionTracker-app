@@ -35,3 +35,16 @@ export function verifyGuild(input: {
   );
 }
 
+export function lookupGuild(input: {
+  realmName: string;
+  guildName: string;
+}): Promise<GuildVerificationCandidate> {
+  return apiRequest<GuildVerificationCandidate>(
+    "/guild/verification/lookup",
+    {
+      method: "POST",
+      body: JSON.stringify(input)
+    }
+  );
+}
+

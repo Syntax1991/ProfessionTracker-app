@@ -49,11 +49,23 @@ export function GuildVerificationGate({
           isLoadingCandidates={
             verification.isLoadingCandidates
           }
+          isLookingUpGuild={
+            verification.isLookingUpGuild
+          }
           isVerifying={
             verification.isVerifying
           }
           onLoadCandidates={() => {
             void verification.loadCandidates();
+          }}
+          onLookupGuild={(
+            realmName,
+            guildName
+          ) => {
+            void verification.lookup(
+              realmName,
+              guildName
+            );
           }}
           onVerify={(
             characterName,

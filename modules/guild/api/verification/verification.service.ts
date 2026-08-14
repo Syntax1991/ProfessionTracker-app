@@ -1,14 +1,18 @@
 import { env } from "../../../../apps/api/src/config/env.js";
-import { mapWithConcurrency } from "../../../../apps/api/src/shared/async/mapWithConcurrency.js";
 import { AppError } from "../../../../apps/api/src/shared/errors/AppError.js";
 import { normalizeBattleNetCharacters } from "../../../data-platform/api/integrations/battlenet/battlenet-import.mapper.js";
 import type { BattleNetClient } from "../../../data-platform/api/integrations/battlenet/battlenet.client.js";
 import type { RaiderAccessTokenGuard } from "../../../data-platform/api/raider-auth/raider-auth.types.js";
-import { extractGuildSlugFromHref } from "./verification.guild-slug.js";
+import { listGuildCandidatesFromCharacters } from "./verification.candidates.js";
+import {
+  extractGuildSlugFromHref,
+  slugify
+} from "./verification.guild-slug.js";
 import { GuildVerificationRepository } from "./verification.repository.js";
 import type {
   GuildVerificationCandidate,
   GuildVerificationInput,
+  GuildVerificationLookupInput,
   GuildVerificationStatus
 } from "./verification.types.js";
 
@@ -20,8 +24,6 @@ import type {
  * meaningless.
  */
 const LEADERSHIP_RANK_THRESHOLD = 2;
-
-const candidateFetchConcurrency = 4;
 
 export class GuildVerificationService {
   constructor(
@@ -45,98 +47,99 @@ export class GuildVerificationService {
         token
       );
 
+    return listGuildCandidatesFromCharacters(
+      this.battleNetClient,
+      accessToken
+    );
+  }
+
+  async lookupGuild(
+    token: string,
+    input: GuildVerificationLookupInput
+  ): Promise<GuildVerificationCandidate> {
+    const { accessToken } =
+      await this.raiderAuth.requireUsableAccessToken(
+        token
+      );
+
+    const realmSlug = slugify(
+      input.realmName
+    );
+
+    const guildSlug = slugify(
+      input.guildName
+    );
+
+    const roster =
+      await this.battleNetClient.getGuildRoster(
+        accessToken,
+        realmSlug,
+        guildSlug
+      );
+
+    if (!roster?.guild?.name) {
+      throw new AppError(
+        404,
+        `Gilde "${input.guildName}" auf "${input.realmName}" wurde nicht gefunden.`
+      );
+    }
+
     const accountProfile =
       await this.battleNetClient.getAccountProfile(
         accessToken
       );
 
-    const characters =
+    const myCharacters =
       normalizeBattleNetCharacters(
         accountProfile
       );
 
-    const profiles =
-      await mapWithConcurrency(
-        characters,
-        candidateFetchConcurrency,
-        async (character) => ({
-          character,
-          profile:
-            await this.battleNetClient.getCharacterProfile(
-              accessToken,
-              character.realmSlug,
-              character.name
-            )
-        })
+    const myCharactersInGuild =
+      myCharacters.filter(
+        (character) =>
+          roster.members?.some(
+            (member) =>
+              member.character
+                ?.name?.toLowerCase() ===
+                character.name.toLowerCase() &&
+              member.character
+                ?.realm?.slug ===
+                character.realmSlug
+          )
       );
 
-    const candidatesBySlug =
-      new Map<
-        string,
-        GuildVerificationCandidate
-      >();
-
-    for (
-      const { character, profile } of
-      profiles
+    if (
+      myCharactersInGuild.length ===
+      0
     ) {
-      const guild = profile?.guild;
-      const guildRealmSlug =
-        guild?.realm?.slug;
-
-      const guildSlug =
-        extractGuildSlugFromHref(
-          guild?.key?.href
-        );
-
-      if (
-        !guild?.name ||
-        !guildRealmSlug ||
-        !guildSlug
-      ) {
-        continue;
-      }
-
-      const key =
-        `${guildRealmSlug}:${guildSlug}`;
-
-      const candidateCharacter = {
-        name: character.name,
-        realmSlug:
-          character.realmSlug,
-        level: character.level
-      };
-
-      const existing =
-        candidatesBySlug.get(key);
-
-      if (existing) {
-        existing.characters.push(
-          candidateCharacter
-        );
-
-        continue;
-      }
-
-      candidatesBySlug.set(key, {
-        guildName: guild.name,
-        guildSlug,
-        realmName:
-          guild.realm?.name ??
-          guildRealmSlug,
-        realmSlug: guildRealmSlug,
-        faction:
-          guild.faction?.name ??
-          null,
-        characters: [
-          candidateCharacter
-        ]
-      });
+      throw new AppError(
+        403,
+        `Keiner deiner Battle.net-Charaktere ist Mitglied in ${roster.guild.name}.`
+      );
     }
 
-    return [
-      ...candidatesBySlug.values()
-    ];
+    return {
+      guildName: roster.guild.name,
+      guildSlug,
+      realmName:
+        roster.guild.realm?.name ??
+        input.realmName,
+      realmSlug:
+        roster.guild.realm?.slug ??
+        realmSlug,
+      faction:
+        roster.guild.faction
+          ?.name ?? null,
+      characters:
+        myCharactersInGuild.map(
+          (character) => ({
+            name: character.name,
+            realmSlug:
+              character.realmSlug,
+            level: character.level
+          })
+        )
+    };
   }
 
   async verify(

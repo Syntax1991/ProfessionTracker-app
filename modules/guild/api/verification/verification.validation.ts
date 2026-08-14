@@ -16,3 +16,20 @@ export const guildVerificationInputSchema =
         .max(60)
     })
     .strict();
+
+export const guildVerificationLookupInputSchema =
+  z
+    .object({
+      realmName: z
+        .string()
+        .trim()
+        .min(2)
+        .max(50),
+
+      guildName: z
+        .string()
+        .trim()
+        .min(2)
+        .max(50)
+    })
+    .strict();

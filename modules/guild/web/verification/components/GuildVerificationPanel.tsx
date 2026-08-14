@@ -1,10 +1,19 @@
+import {
+  useState,
+  type FormEvent
+} from "react";
 import type { GuildVerificationCandidate } from "../types/verification.types";
 
 type GuildVerificationPanelProps = {
   candidates: GuildVerificationCandidate[] | null;
   isLoadingCandidates: boolean;
+  isLookingUpGuild: boolean;
   isVerifying: boolean;
   onLoadCandidates: () => void;
+  onLookupGuild: (
+    realmName: string,
+    guildName: string
+  ) => void;
   onVerify: (
     characterName: string,
     characterRealmSlug: string
@@ -14,10 +23,36 @@ type GuildVerificationPanelProps = {
 export function GuildVerificationPanel({
   candidates,
   isLoadingCandidates,
+  isLookingUpGuild,
   isVerifying,
   onLoadCandidates,
+  onLookupGuild,
   onVerify
 }: GuildVerificationPanelProps) {
+  const [realmName, setRealmName] =
+    useState("");
+
+  const [guildName, setGuildName] =
+    useState("");
+
+  const handleLookupSubmit = (
+    event: FormEvent<HTMLFormElement>
+  ) => {
+    event.preventDefault();
+
+    if (
+      !realmName.trim() ||
+      !guildName.trim()
+    ) {
+      return;
+    }
+
+    onLookupGuild(
+      realmName.trim(),
+      guildName.trim()
+    );
+  };
+
   return (
     <section className="panel guild-verification-panel">
       <div className="panel-header">
@@ -61,11 +96,56 @@ export function GuildVerificationPanel({
         </button>
       </div>
 
+      <form
+        className="guild-verification-lookup-form"
+        onSubmit={handleLookupSubmit}
+      >
+        <span className="guild-verification-lookup-label">
+          Or find a guild directly:
+        </span>
+
+        <input
+          minLength={2}
+          onChange={(event) =>
+            setRealmName(
+              event.target.value
+            )
+          }
+          placeholder="Realm"
+          value={realmName}
+        />
+
+        <input
+          minLength={2}
+          onChange={(event) =>
+            setGuildName(
+              event.target.value
+            )
+          }
+          placeholder="Guild name"
+          value={guildName}
+        />
+
+        <button
+          className="button button-secondary"
+          disabled={
+            isLookingUpGuild ||
+            !realmName.trim() ||
+            !guildName.trim()
+          }
+          type="submit"
+        >
+          {isLookingUpGuild
+            ? "Searching…"
+            : "Find guild"}
+        </button>
+      </form>
+
       {candidates &&
         candidates.length === 0 && (
         <p className="muted-text">
-          None of your connected Battle.net characters are
-          currently in a guild.
+          None of your Battle.net characters are currently in a
+          guild.
         </p>
       )}
 
