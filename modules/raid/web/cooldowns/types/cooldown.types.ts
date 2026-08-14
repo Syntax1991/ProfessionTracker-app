@@ -48,6 +48,7 @@ export type RaidBossAbilityCast = {
   id: string;
   bossId: string;
   abilityName: string;
+  abilityIcon: string | null;
   timestampSeconds: number;
   sortOrder: number;
   createdAt: string;

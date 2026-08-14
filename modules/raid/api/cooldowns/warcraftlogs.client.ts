@@ -168,25 +168,26 @@ export class WarcraftLogsClient {
       )
     );
 
-    const abilityNames =
-      await this.resolveAbilityNames(
+    const abilityDetails =
+      await this.resolveAbilityDetails(
         token,
         abilityIds
       );
 
     const casts = events
       .map((event) => {
-        const abilityName =
-          abilityNames.get(
+        const ability =
+          abilityDetails.get(
             event.abilityGameID
           );
 
-        if (!abilityName) {
+        if (!ability) {
           return null;
         }
 
         return {
-          abilityName,
+          abilityName: ability.name,
+          abilityIcon: ability.icon,
           timestampSeconds: Math.round(
             (event.timestamp -
               fight.startTime) /
@@ -199,6 +200,7 @@ export class WarcraftLogsClient {
           cast
         ): cast is {
           abilityName: string;
+          abilityIcon: string | null;
           timestampSeconds: number;
         } => cast !== null
       );
@@ -278,10 +280,15 @@ export class WarcraftLogsClient {
     return events;
   }
 
-  private async resolveAbilityNames(
+  private async resolveAbilityDetails(
     token: string,
     abilityIds: number[]
-  ): Promise<Map<number, string>> {
+  ): Promise<
+    Map<
+      number,
+      { name: string; icon: string | null }
+    >
+  > {
     if (abilityIds.length === 0) {
       return new Map();
     }
@@ -289,23 +296,26 @@ export class WarcraftLogsClient {
     const aliasedFields = abilityIds
       .map(
         (id) =>
-          `a${id}: ability(id: ${id}) { name }`
+          `a${id}: ability(id: ${id}) { name icon }`
       )
       .join(" ");
 
     const data = await queryWarcraftLogs<{
       gameData: Record<
         string,
-        { name: string } | null
+        {
+          name: string;
+          icon: string | null;
+        } | null
       >;
     }>(
       token,
       `query { gameData { ${aliasedFields} } }`
     );
 
-    const names = new Map<
+    const details = new Map<
       number,
-      string
+      { name: string; icon: string | null }
     >();
 
     for (const id of abilityIds) {
@@ -313,10 +323,13 @@ export class WarcraftLogsClient {
         data.gameData[`a${id}`];
 
       if (ability) {
-        names.set(id, ability.name);
+        details.set(id, {
+          name: ability.name,
+          icon: ability.icon ?? null
+        });
       }
     }
 
-    return names;
+    return details;
   }
 }

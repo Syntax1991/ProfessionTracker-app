@@ -211,6 +211,7 @@ export class RaidCooldownRepository {
       wclFightId: number;
       casts: Array<{
         abilityName: string;
+        abilityIcon: string | null;
         timestampSeconds: number;
       }>;
     }
@@ -229,6 +230,8 @@ export class RaidCooldownRepository {
               bossId,
               abilityName:
                 cast.abilityName,
+              abilityIcon:
+                cast.abilityIcon,
               timestampSeconds:
                 cast.timestampSeconds,
               sortOrder: index

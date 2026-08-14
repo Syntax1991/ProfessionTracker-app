@@ -109,3 +109,15 @@ export function secondsFromClickX(
     ratio * fightDurationSeconds
   );
 }
+
+export function getWowIconUrl(
+  icon: string
+): string {
+  const fileName = icon.endsWith(
+    ".jpg"
+  )
+    ? icon
+    : `${icon}.jpg`;
+
+  return `https://wow.zamimg.com/images/wow/icons/medium/${fileName}`;
+}

@@ -63,12 +63,26 @@
   flex: 0 0 140px;
   display: flex;
   align-items: center;
+  gap: 5px;
   overflow: hidden;
   color: var(--marker-color, var(--text-secondary));
   font-size: 0.7rem;
   font-weight: 700;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.cooldown-timeline-row-label span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cooldown-timeline-row-icon {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  border: 1px solid var(--border-strong);
 }
 
 .cooldown-timeline-row-boss .cooldown-timeline-row-label {
@@ -146,6 +160,18 @@
   background: var(--primary-soft);
   transform: translate(-50%, -50%) rotate(45deg);
   cursor: default;
+}
+
+.cooldown-timeline-boss-marker-icon {
+  position: absolute;
+  top: 50%;
+  width: 26px;
+  height: 26px;
+  transform: translate(-50%, -50%);
+  border: 1px solid var(--border-strong);
+  border-radius: 4px;
+  cursor: default;
+  object-fit: cover;
 }
 
 .cooldown-timeline-add-row {

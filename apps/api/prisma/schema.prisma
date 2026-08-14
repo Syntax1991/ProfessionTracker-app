@@ -490,6 +490,7 @@ model RaidBossAbilityCast {
   id               String   @id @default(cuid())
   bossId           String
   abilityName      String
+  abilityIcon      String?
   timestampSeconds Int
   sortOrder        Int      @default(0)
   createdAt        DateTime @default(now())

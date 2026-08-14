@@ -237,6 +237,46 @@ synced data afterward. Confirmed the honest failure path separately on
 a real Venomous Abyss boss: clean 404 "Für diesen Boss gibt es noch
 keine Logs auf Warcraft Logs," nothing crashes.
 
+### Step 3b — real spell icons, boss row only (2026-08-15, same day)
+
+Direct feedback right after: **"z.B WoW Icons fehlen die Ability
+icons allg. sieht wowutils cleaner aus"** — ability icons missing,
+WoWUtils looks cleaner overall. Checked what's reliably buildable
+before adding anything: Warcraft Logs' `gameData.ability(id)` query
+already returns a real icon filename alongside the name (confirmed
+live in Step 3's own research), and Blizzard's own icon CDN
+(`wow.zamimg.com/images/wow/icons/medium/{icon}.jpg` — the same
+hosting every WoW tool uses) serves it directly, so boss-row icons are
+just a matter of not discarding a field WCL already gives us.
+
+Tried the same for **raider-placed cooldowns** (officer free-typed
+ability names) via Blizzard's spell search API
+(`/data/wow/search/spell?name.en_US=...`) to see if that path was
+buildable too — it isn't: searching "Aura Mastery" returned unrelated
+spells ("Devotion Aura", "Mastery: Ignite") with no exact match in the
+results at all, confirming free-text name search is fuzzy and
+unreliable, not exact lookup. Auto-assigning an icon from that would
+risk showing the *wrong* spell's icon, which is worse than no icon —
+so raider-row icons stay text-only for now; doing this properly would
+mean replacing the free-text ability input with a real structured
+spell picker, a separate feature, not a quick add-on to this one.
+
+New `RaidBossAbilityCast.abilityIcon` (nullable — older/manual rows
+have none), populated by `WarcraftLogsClient.getFightCasts`'s existing
+ability-resolution query (now fetches `icon` alongside `name`, no
+extra API calls). `getWowIconUrl()` (`utils/timelineFormat.ts`) builds
+the CDN URL — handles WCL's icon field already including its own
+`.jpg` extension (a real bug caught during live-testing: the first
+pass appended a second `.jpg`, producing a broken `foo.jpg.jpg` URL,
+fixed by checking for the extension first). `BossAbilityRow.tsx`
+renders a real square icon image per cast marker (falls back to the
+existing plain colored square when a row has no icon yet, e.g. before
+its first sync) plus a small icon badge next to the row's ability-name
+label. Live-tested against the same temporary "Imperator Averzian"
+re-sync used in Step 3: confirmed 4 real icon images
+(`ability_priest_voidentropy.jpg`) all loaded successfully
+(`naturalWidth: 36`, not broken), reverted afterward.
+
 ## Signups
 
 The first genuinely self-service Raid feature, built 2026-08-14 after

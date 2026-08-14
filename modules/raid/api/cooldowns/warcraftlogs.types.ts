@@ -4,6 +4,7 @@ export type WarcraftLogsFightCasts = {
   fightId: number;
   casts: Array<{
     abilityName: string;
+    abilityIcon: string | null;
     timestampSeconds: number;
   }>;
 };
