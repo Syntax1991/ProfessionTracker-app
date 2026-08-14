@@ -82,29 +82,34 @@ Platform": SynTrack Addon at `/addon`, Battle.net at `/battlenet`,
 plus planned Raider.io/Warcraft Logs/SynTrack Companion entries),
 after the user asked directly: "alles was data platform ist unter
 settings umziehen" (move everything that's Data Platform under
-Settings). Clarifying which of the two built pages is personal vs.
-guild-scoped ("personal und guild"), the split landed on:
+Settings). Both pages' business logic (hooks, API calls,
+sub-components) stayed in `modules/data-platform/web/integrations`
+unchanged throughout — only the page shell moved, replaced by thin
+`AddonSyncTab.tsx`/`BattleNetSyncTab.tsx` components (no `PageHeader`,
+since the hosting Settings page already renders one), imported
+cross-module into Guild's Settings pages — same composition pattern
+Raid already uses for Guild's `GuildVerificationGate`.
 
-- **WoW Addon Sync** (ProfessionTracker.lua import — only affects the
-  signed-in user's own profession data) moved into the personal
-  `SettingsPage` (`/settings`, Guild module) as its "WoW Addon" tab.
-- **Battle.net character sync** (loads/imports the signed-in user's
-  own Battle.net characters into My SynTrack) moved into
-  `GuildSettingsPage` (`/guild/settings`) as its "Battle.net" tab —
-  picked over the personal page specifically because it's also the
-  natural place to eventually surface guild-wide Battle.net data
-  (Gear Audit refresh already lives on Guild's Roster page), not
-  because character import itself is guild-scoped today.
-
-Both pages' business logic (hooks, API calls, sub-components) stayed
-in `modules/data-platform/web/integrations` unchanged — only the page
-shell moved. `AddonImportPage.tsx`/`BattleNetPage.tsx` were replaced
-by thin `AddonSyncTab.tsx`/`BattleNetSyncTab.tsx` components (no
-`PageHeader`, since the hosting Settings page already renders one),
-imported cross-module into Guild's two Settings pages — same
-composition pattern Raid already uses for Guild's
-`GuildVerificationGate`. `dataPlatform.definition.ts` and the
-`"data-platform"` module id were deleted entirely; `/addon` and
-`/battlenet` now redirect to `/settings` and `/guild/settings`
-respectively. `RaiderLoginCallbackPage` (the OAuth landing route) was
+Where they landed took two passes. First pass: asked which of the two
+built pages is personal vs. guild-scoped ("personal und guild"), and
+the user picked splitting **Battle.net character sync** into
+`GuildSettingsPage` (`/guild/settings`) while **WoW Addon Sync** went
+to the personal `SettingsPage` (`/settings`). This broke My SynTrack's
+own "Sync data" dashboard button, which links to `/battlenet` expecting
+a personal-account page, not a Guild-branded one — the user then drew
+the actual line explicitly: **"in personal werden Char Daten etc. Im
+guild dient nur zu Rechte-Verifizierung"** (personal gets character
+data, Guild is purely for rights/leadership verification). Final
+state: `SettingsPage` (`/settings`) has all three tabs — Account, WoW
+Addon, Battle.net; `GuildSettingsPage` (`/guild/settings`) reverted to
+single-purpose verification content, no tabs, nothing data-platform
+related. `dataPlatform.definition.ts` and the `"data-platform"` module
+id are deleted entirely; `/addon` and `/battlenet` both redirect to
+`/settings`. `RaiderLoginCallbackPage` (the OAuth landing route) was
 left untouched — it's infrastructure, not a nav-reachable page.
+
+**Durable rule going forward:** Guild Settings is reserved for
+guild-leadership/identity concerns only. Any future data-platform
+integration, even one that touches guild-adjacent data, defaults to
+the personal Settings page unless it is specifically about verifying
+or representing guild leadership itself.

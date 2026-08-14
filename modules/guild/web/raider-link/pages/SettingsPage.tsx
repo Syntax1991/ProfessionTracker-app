@@ -3,10 +3,14 @@ import { PageHeader } from "../../../../../apps/web/src/shared/components/PageHe
 import { StatusMessage } from "../../../../../apps/web/src/shared/components/StatusMessage";
 import { Tabs } from "../../../../../apps/web/src/shared/components/Tabs";
 import { AddonSyncTab } from "../../../../data-platform/web/integrations/components/AddonSyncTab";
+import { BattleNetSyncTab } from "../../../../data-platform/web/integrations/components/BattleNetSyncTab";
 import { RaiderLinkPanel } from "../components/RaiderLinkPanel";
 import { useRaiderLink } from "../hooks/useRaiderLink";
 
-type SettingsPageTab = "account" | "addon";
+type SettingsPageTab =
+  | "account"
+  | "addon"
+  | "battlenet";
 
 const tabs: Array<{
   id: SettingsPageTab;
@@ -19,6 +23,10 @@ const tabs: Array<{
   {
     id: "addon",
     label: "WoW Addon"
+  },
+  {
+    id: "battlenet",
+    label: "Battle.net"
   }
 ];
 
@@ -33,7 +41,7 @@ export function SettingsPage() {
   return (
     <div className="guild-page guild-page-narrow">
       <PageHeader
-        description="Your Battle.net identity and personal account preferences."
+        description="Your Battle.net identity, character data and personal account preferences."
         eyebrow="ACCOUNT"
         title="Settings"
       />
@@ -80,6 +88,10 @@ export function SettingsPage() {
 
         {activeTab === "addon" && (
           <AddonSyncTab />
+        )}
+
+        {activeTab === "battlenet" && (
+          <BattleNetSyncTab />
         )}
       </div>
     </div>

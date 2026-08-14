@@ -241,7 +241,7 @@ export function AppRouter() {
           element={
             <Navigate
               replace
-              to="/guild/settings"
+              to="/settings"
             />
           }
         />

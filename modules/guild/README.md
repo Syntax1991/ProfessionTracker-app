@@ -114,17 +114,24 @@ full card once it's done. Matches WoWAudit's own layout, confirmed via
 a screenshot showing "Settings" as a dedicated tab in the guild's own
 nav, separate from Overview/Roster/Audit.
 
-**Gained a second tab (2026-08-14, same day):** after "alles was data
-platform ist unter settings umziehen" (move everything Data Platform
-under Settings), `GuildSettingsPage` became a 2-tab page —
-**Verification** (the content above, unchanged) and **Battle.net**
-(the character load/import flow that used to be its own standalone
-`/battlenet` page in a top-level "Data Platform" nav module, now gone
-entirely — see `modules/data-platform/README.md`'s "No standalone nav
-presence" section for the full split and reasoning). The personal
-`SettingsPage` (`/settings`, `modules/guild/web/raider-link/pages`)
-got the same treatment with a "WoW Addon" tab for the ProfessionTracker
-import flow.
+**Briefly gained a second tab, then reverted (2026-08-14, same day).**
+After "alles was data platform ist unter settings umziehen" (move
+everything Data Platform under Settings), `GuildSettingsPage`
+temporarily became a 2-tab page with Battle.net character sync
+alongside Verification. This broke the personal My SynTrack Dashboard's
+"Sync data" button, which links to `/battlenet` expecting a
+personal-account page — it landed on a Guild-branded settings page
+instead. The user then drew the actual line explicitly: **"in personal
+werden Char Daten etc. Im guild dient nur zu Rechte-Verifizierung"**
+(personal gets character data etc., Guild is purely for rights/
+leadership verification). `GuildSettingsPage` reverted to single-purpose
+verification content, no tabs — Battle.net sync moved to the personal
+`SettingsPage` instead (see `modules/data-platform/README.md`'s "No
+standalone nav presence" section for the full history). This is now
+the durable rule for anything considered for Guild Settings: only
+guild-leadership/identity concerns belong there, never per-account
+data — even data-platform integrations that touch guild-adjacent
+Battle.net calls.
 
 ## Roster
 
