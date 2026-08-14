@@ -11,6 +11,7 @@ import { RequirementsPage } from "../../../../modules/guild/web/requirements/pag
 import { RosterPage } from "../../../../modules/guild/web/roster/pages/RosterPage";
 import { TeamsPage } from "../../../../modules/guild/web/teams/pages/TeamsPage";
 import { WeeklyProgressPage } from "../../../../modules/guild/web/weekly-progress/pages/WeeklyProgressPage";
+import { BossRostersPage } from "../../../../modules/raid/web/boss-rosters/pages/BossRostersPage";
 import { RaidPlannerPage } from "../../../../modules/raid/web/planner/pages/RaidPlannerPage";
 import { CharactersPage } from "../../../../modules/my-syntrack/web/characters/pages/CharactersPage";
 import { DashboardPage } from "../../../../modules/my-syntrack/web/dashboard/pages/DashboardPage";
@@ -212,6 +213,13 @@ export function AppRouter() {
           path="raid/planner"
           element={
             <RaidPlannerPage />
+          }
+        />
+
+        <Route
+          path="raid/boss-rosters"
+          element={
+            <BossRostersPage />
           }
         />
 

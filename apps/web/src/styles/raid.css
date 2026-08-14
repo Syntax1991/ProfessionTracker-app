@@ -1,0 +1,55 @@
+.boss-add-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.boss-add-form input[type="text"],
+.boss-add-form input:not([type]) {
+  flex: 1;
+  min-width: 160px;
+}
+
+.boss-add-form input[type="number"] {
+  width: 80px;
+}
+
+.boss-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.boss-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 4px 4px 4px 0;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.boss-list-button {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 10px 12px;
+  border: 0;
+  background: transparent;
+  text-align: left;
+}
+
+.boss-list-button span {
+  color: var(--text-muted);
+  font-size: 0.72rem;
+}
+
+.boss-list-button.selected {
+  border-radius: 8px;
+  background: var(--primary-soft);
+}

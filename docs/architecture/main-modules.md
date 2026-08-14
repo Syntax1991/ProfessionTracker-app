@@ -211,14 +211,20 @@ Raid preparation, execution and analysis.
 
 ### Owns
 
-- raid events
-- raid planner
+Refined 2026-08-14 by the full product vision (see the
+`project_syntrack_vision` memory) — supersedes the original 7-item
+list below it replaced. Warcraft Logs analysis now belongs to a
+separate, not-yet-started Progress Intelligence main module rather
+than Raid itself.
+
+- raid events (raid planner)
+- signups
 - boss rosters
+- bench management
 - assignments
 - cooldown planning
-- raid notes
-- raid attendance views
-- Warcraft Logs raid analysis
+- strategies
+- strategy acknowledgements
 
 ### Dependency rule
 
@@ -228,26 +234,37 @@ roster.
 ### Existing implementation
 
 Being built incrementally, one capability per pass, starting
-2026-08-14.
+2026-08-14 — an explicit, repeated product-owner instruction, not
+just a style choice.
 
 Web:
 
 - `modules/raid/web/planner`
+- `modules/raid/web/boss-rosters`
 
 API:
 
 - `modules/raid/api/planner`
+- `modules/raid/api/boss-rosters`
 
 The Raid Planner (`RaidEvent`: title, raid instance, difficulty,
 scheduled time, optional team link, notes) is the first capability.
 Its link to a `GuildTeam` is a loose `teamId` string rather than a
 Prisma foreign key, per the "stable identifiers" dependency
-principle. Its mutations reuse Guild's `GuildVerificationGuard` and
-its page reuses Guild's `GuildVerificationGate` and team list
-directly — raid officers are guild officers, so the same verified
-leadership link gates both. The remaining six capabilities
-(Boss Rosters, Assignments, Cooldowns, Raid Notes, Attendance, WCL
-Analysis) are deliberately not started yet.
+principle. Boss Rosters (`RaidBoss` per event, real Prisma relation
+with cascade delete since both are Raid-owned, holding
+`RaidBossRosterEntry` rows per member with a
+`CONFIRMED`/`TENTATIVE`/`BENCH` status) is the second; its
+`memberId` stays a loose cross-module reference to `GuildMember`,
+matching `RaidEvent.teamId`, enriched with member details by
+querying Guild's roster repository directly rather than a join. Both
+capabilities' mutations reuse Guild's `GuildVerificationGuard` and
+their pages reuse Guild's `GuildVerificationGate` (and, for the
+Planner, Guild's team list) directly — raid officers are guild
+officers, so the same verified leadership link gates all of it. The
+remaining six capabilities (Signups, Bench Management, Assignments,
+Cooldown Planning, Strategies, Strategy Acknowledgements) are
+deliberately not started yet.
 
 ## 4. Loot
 

@@ -421,8 +421,38 @@ model RaidEvent {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
+  bosses RaidBoss[]
+
   @@index([scheduledAt])
   @@index([teamId])
+}
+
+model RaidBoss {
+  id          String   @id @default(cuid())
+  raidEventId String
+  name        String
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  event         RaidEvent             @relation(fields: [raidEventId], references: [id], onDelete: Cascade)
+  rosterEntries RaidBossRosterEntry[]
+
+  @@index([raidEventId])
+}
+
+model RaidBossRosterEntry {
+  id        String   @id @default(cuid())
+  bossId    String
+  memberId  String
+  status    String   @default("CONFIRMED")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  boss RaidBoss @relation(fields: [bossId], references: [id], onDelete: Cascade)
+
+  @@unique([bossId, memberId])
+  @@index([memberId])
 }
 
 model GuildVerification {

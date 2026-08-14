@@ -15,7 +15,8 @@ export const raidModule: MainModuleDefinition =
       },
       {
         label: "Boss Rosters",
-        status: "planned"
+        path: "/raid/boss-rosters",
+        status: "available"
       },
       {
         label: "Assignments",
