@@ -4,7 +4,6 @@ import {
   useState
 } from "react";
 import {
-  clearGuildVerification,
   getGuildVerificationCandidates,
   getGuildVerificationStatus,
   verifyGuild
@@ -38,9 +37,6 @@ export function useGuildVerification() {
   ] = useState(false);
 
   const [isVerifying, setIsVerifying] =
-    useState(false);
-
-  const [isClearing, setIsClearing] =
     useState(false);
 
   const [error, setError] =
@@ -128,38 +124,14 @@ export function useGuildVerification() {
     }
   };
 
-  const clear = async () => {
-    setError(null);
-    setIsClearing(true);
-
-    try {
-      await clearGuildVerification();
-
-      setCandidates(null);
-      await loadStatus();
-    }
-    catch (clearError) {
-      setError(
-        clearError instanceof Error
-          ? clearError.message
-          : "Verification could not be reset."
-      );
-    }
-    finally {
-      setIsClearing(false);
-    }
-  };
-
   return {
     status,
     candidates,
     isLoadingStatus,
     isLoadingCandidates,
     isVerifying,
-    isClearing,
     error,
     loadCandidates,
-    verify,
-    clear
+    verify
   };
 }

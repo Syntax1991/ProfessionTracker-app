@@ -2,14 +2,10 @@ import type { GuildVerificationStatus } from "../types/verification.types";
 
 type GuildVerificationStatusCardProps = {
   status: GuildVerificationStatus;
-  isClearing: boolean;
-  onClear: () => void;
 };
 
 export function GuildVerificationStatusCard({
-  status,
-  isClearing,
-  onClear
+  status
 }: GuildVerificationStatusCardProps) {
   return (
     <section className="panel guild-verification-status">
@@ -39,19 +35,6 @@ export function GuildVerificationStatusCard({
         Verified via{" "}
         {status.verifiedCharacter}.
       </p>
-
-      <div className="integration-actions">
-        <button
-          className="button button-secondary"
-          disabled={isClearing}
-          onClick={onClear}
-          type="button"
-        >
-          {isClearing
-            ? "Resetting…"
-            : "Reset verification"}
-        </button>
-      </div>
     </section>
   );
 }

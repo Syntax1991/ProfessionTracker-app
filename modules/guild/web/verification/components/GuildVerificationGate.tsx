@@ -37,12 +37,6 @@ export function GuildVerificationGate({
       {verification.status
         ?.verified ? (
         <GuildVerificationStatusCard
-          isClearing={
-            verification.isClearing
-          }
-          onClear={() => {
-            void verification.clear();
-          }}
           status={
             verification.status
           }

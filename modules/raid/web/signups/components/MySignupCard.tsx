@@ -1,11 +1,9 @@
-import { Link } from "react-router-dom";
 import { useRaiderLink } from "../../../../guild/web/raider-link/hooks/useRaiderLink";
 import { LoadingPanel } from "../../../../../apps/web/src/shared/components/LoadingPanel";
 import type {
   RaidSignupEntry,
   RaidSignupStatus
 } from "../types/signup.types";
-
 
 type MySignupCardProps = {
   entries: RaidSignupEntry[];
@@ -51,14 +49,10 @@ export function MySignupCard({
           </div>
         </div>
 
-        <div className="integration-actions">
-          <Link
-            className="button button-primary"
-            to="/guild/raider-link"
-          >
-            Go to My Raider Login
-          </Link>
-        </div>
+        <p className="muted-text">
+          Pick your character under &quot;My Raider Login&quot; in the
+          Guild menu to sign up for raids yourself.
+        </p>
       </section>
     );
   }

@@ -35,12 +35,3 @@ export function verifyGuild(input: {
   );
 }
 
-export function clearGuildVerification():
-  Promise<void> {
-  return apiRequest<void>(
-    "/guild/verification/clear",
-    {
-      method: "POST"
-    }
-  );
-}

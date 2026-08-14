@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import type { GuildVerificationCandidate } from "../types/verification.types";
 
 type GuildVerificationPanelProps = {
@@ -40,21 +39,14 @@ export function GuildVerificationPanel({
 
         <p>
           Only the guild leadership can manage the roster. SynTrack
-          checks your connected Battle.net characters against
-          Blizzard&apos;s official guild roster. Blizzard does not
-          expose custom rank titles, so only the top ranks (Guild
-          Master and the next two ranks) count as leadership.
+          checks your Battle.net characters against Blizzard&apos;s
+          official guild roster. Blizzard does not expose custom rank
+          titles, so only the top ranks (Guild Master and the next
+          two ranks) count as leadership.
         </p>
       </div>
 
       <div className="integration-actions">
-        <Link
-          className="button button-secondary"
-          to="/battlenet"
-        >
-          Connect Battle.net
-        </Link>
-
         <button
           className="button button-primary"
           disabled={
