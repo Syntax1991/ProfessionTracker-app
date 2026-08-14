@@ -93,14 +93,29 @@ querying Guild's roster repository directly rather than a Prisma
 join. Mutations reuse the same `GuildVerificationGuard` as the rest
 of Raid and Guild; reading stays open.
 
-The boss list for the selected raid event renders as a visual card
-grid (`BossList.tsx`) rather than a plain list, matching WoWUtils'
-card-based CD Notes/Setups screens — each card shows the boss name
-and CONFIRMED/TENTATIVE/BENCH counts. Grouping stays scoped to the
-single selected `RaidEvent`, since a `RaidBoss` always belongs to
-exactly one raid instance+difficulty; a cross-event view spanning
-multiple raid tiers was considered but deferred as a larger, separate
-feature (would need a new aggregation API, not just a restyle).
+**Redesigned 2026-08-14 as a unified matrix** (`BossRosterMatrix.tsx`,
+replacing the old `BossList.tsx`/`BossRosterGrid.tsx` pick-one-boss
+flow), after the user pointed at WoWAudit's real event page ("die
+event detail page ist noch echt unclean guck dir mal an wie audit das
+macht"). WoWAudit shows every boss as a column and the whole
+role-grouped roster as rows in one table — SynTrack's old layout made
+you select one boss from a side list to see its roster at all, which
+was the actual "unclean" complaint. The matrix reuses Guild's
+`ROLE_ORDER`/`ROLE_LABELS`/`resolveRoleKey` (same role grouping as the
+Roster page) for row grouping, one column per `RaidBoss`, and a cell
+per member×boss showing `RaidBossRosterEntry.status` (✓/?/B/–).
+Clicking a cell cycles unset→CONFIRMED→TENTATIVE→BENCH→unset in
+place — no per-status button row per cell, which wouldn't fit next to
+more than one or two boss columns. Boss add/delete moved from a
+side-by-side panel into an inline "+ Add boss" toggle above the table
+and a small "×" in each column header. No backend or data-model
+change — same `RaidBoss`/`RaidBossRosterEntry` reads/writes as
+before, purely a frontend recomposition.
+
+Event Edit/Delete moved from a separate "MANAGE" panel into a plain
+button row directly under the page header (`RaidEventActionsBar.tsx`)
+to match WoWAudit's inline header-button pattern, rather than a boxed
+panel.
 
 ## Raid Planner
 
@@ -149,11 +164,11 @@ and `SignupsPage` are deleted along with their routes and nav
 entries; their `api`/`components`/`hooks`/`types` folders stay and
 are composed, unchanged, into the new
 `modules/raid/web/planner/pages/RaidEventDetailPage.tsx` at route
-`/raid/planner/:eventId`: header (title/instance/difficulty/time,
-Edit/Delete gated behind `GuildVerificationGate`) → `MySignupCard`
-(ungated, self-service) → boss list + `BossRosterGrid` (gated
-mutations, open reads, same as before) → officer signup overview
-grid (`SignupOfficerGrid`, gated). No new backend endpoints — every
+`/raid/planner/:eventId`: header, self-service `MySignupCard`
+(ungated), a boss roster section (gated mutations, open reads — see
+"Boss Rosters" below for the later matrix redesign), and an officer
+signup overview grid (`SignupOfficerGrid`, gated). No new backend
+endpoints — every
 piece already read by `eventId`; this is a pure frontend
 recomposition. `RaidPlannerPage` (`/raid/planner`) itself simplifies
 to create-only (the calendar-day-prefill flow stays) plus the

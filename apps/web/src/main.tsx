@@ -31,6 +31,7 @@ import "./styles/guild-workspace.css";
 import "./styles/guild-workspace-sections.css";
 import "./styles/guild-modal.css";
 import "./styles/raid.css";
+import "./styles/boss-roster-matrix.css";
 import "./styles/profession-overview.css";
 import "./styles/profession-module-workspaces.css";
 import "./styles/profession-module-workspaces-responsive.css";

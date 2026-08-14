@@ -1,0 +1,61 @@
+.boss-matrix-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 12px;
+}
+
+.boss-matrix-table {
+  border-collapse: collapse;
+}
+
+.boss-matrix-table th,
+.boss-matrix-table td {
+  white-space: nowrap;
+}
+
+.boss-matrix-column-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.boss-matrix-role-header {
+  padding-top: 16px;
+  color: var(--text-muted);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.boss-matrix-cell {
+  min-width: 44px;
+  padding: 6px;
+  color: var(--text-muted);
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+  transition: background 120ms ease;
+}
+
+.boss-matrix-cell:hover {
+  background: var(--surface-hover);
+}
+
+.boss-matrix-cell.confirmed {
+  color: #163329;
+  background: var(--success);
+  font-weight: 800;
+}
+
+.boss-matrix-cell.tentative {
+  color: #382b16;
+  background: var(--warning);
+  font-weight: 800;
+}
+
+.boss-matrix-cell.bench {
+  color: var(--text-secondary);
+  background: var(--surface-elevated);
+}

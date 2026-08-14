@@ -15,9 +15,9 @@ import { useBossRosters } from "../../boss-rosters/hooks/useBossRosters";
 import type { RaidBoss } from "../../boss-rosters/types/bossRoster.types";
 import { MySignupCard } from "../../signups/components/MySignupCard";
 import { useSignups } from "../../signups/hooks/useSignups";
+import { BossRosterSection } from "../components/BossRosterSection";
 import { RaidAttendanceSection } from "../components/RaidAttendanceSection";
-import { RaidBossManagementSection } from "../components/RaidBossManagementSection";
-import { RaidEventManagePanel } from "../components/RaidEventManagePanel";
+import { RaidEventActionsBar } from "../components/RaidEventActionsBar";
 import { SignupOfficerSection } from "../components/SignupOfficerSection";
 import { useRaidEvents } from "../hooks/useRaidEvents";
 import type { RaidEventInput } from "../types/raidEvent.types";
@@ -52,13 +52,6 @@ export function RaidEventDetailPage() {
 
   const [isEditing, setIsEditing] =
     useState(false);
-
-  const [
-    selectedBossId,
-    setSelectedBossId
-  ] = useState<string | null>(
-    null
-  );
 
   const {
     events,
@@ -154,12 +147,6 @@ export function RaidEventDetailPage() {
     }
 
     await removeBoss(boss.id);
-
-    if (
-      selectedBossId === boss.id
-    ) {
-      setSelectedBossId(null);
-    }
   };
 
   if (isLoadingEvents) {
@@ -226,27 +213,27 @@ export function RaidEventDetailPage() {
       />
 
       <GuildVerificationGate>
-        <RaidEventManagePanel
+        <RaidEventActionsBar
           event={event}
           isEditing={isEditing}
-          onCancelEdit={() =>
-            setIsEditing(false)
-          }
           onDelete={() => {
             void handleDelete();
           }}
-          onStartEdit={() =>
-            setIsEditing(true)
-          }
           onSubmit={
             handleUpdate
+          }
+          onToggleEdit={() =>
+            setIsEditing(
+              (current) =>
+                !current
+            )
           }
           teams={teams}
         />
 
-        <RaidBossManagementSection
+        <BossRosterSection
           bosses={bosses}
-          isLoadingBosses={
+          isLoading={
             isLoadingBosses
           }
           onAddBoss={addBoss}
@@ -266,9 +253,6 @@ export function RaidEventDetailPage() {
               boss
             );
           }}
-          onSelectBoss={
-            setSelectedBossId
-          }
           onSetStatus={(
             bossId,
             memberId,
@@ -282,9 +266,6 @@ export function RaidEventDetailPage() {
           }}
           rosterMembers={
             rosterMembers
-          }
-          selectedBossId={
-            selectedBossId
           }
         />
 

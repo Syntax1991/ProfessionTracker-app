@@ -283,3 +283,10 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+.raid-detail-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+}
