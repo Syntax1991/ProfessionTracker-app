@@ -7,6 +7,7 @@ import { AttendancePage } from "../../../../modules/guild/web/attendance/pages/A
 import { AuditPage } from "../../../../modules/guild/web/audit/pages/AuditPage";
 import { GuildDashboardPage } from "../../../../modules/guild/web/dashboard/pages/GuildDashboardPage";
 import { OfficerNotesPage } from "../../../../modules/guild/web/officer-notes/pages/OfficerNotesPage";
+import { RaiderLinkPage } from "../../../../modules/guild/web/raider-link/pages/RaiderLinkPage";
 import { RequirementsPage } from "../../../../modules/guild/web/requirements/pages/RequirementsPage";
 import { RosterPage } from "../../../../modules/guild/web/roster/pages/RosterPage";
 import { TeamsPage } from "../../../../modules/guild/web/teams/pages/TeamsPage";
@@ -21,6 +22,7 @@ import { WeeklyChecklistPage } from "../../../../modules/my-syntrack/web/weekly-
 import { VaultMythicPlusPage } from "../../../../modules/my-syntrack/web/vault-mythic-plus/pages/VaultMythicPlusPage";
 import { AddonImportPage } from "../../../../modules/data-platform/web/integrations/pages/AddonImportPage";
 import { BattleNetPage } from "../../../../modules/data-platform/web/integrations/pages/BattleNetPage";
+import { RaiderLoginCallbackPage } from "../../../../modules/data-platform/web/raider-auth/pages/RaiderLoginCallbackPage";
 import { ProfessionDetailPage } from "../../../../modules/professions/web/details/pages/ProfessionDetailPage";
 import { ProfessionCrafterFinderPage } from "../../../../modules/professions/web/pages/ProfessionCrafterFinderPage";
 import { ProfessionKnowledgePage } from "../../../../modules/professions/web/pages/ProfessionKnowledgePage";
@@ -210,6 +212,13 @@ export function AppRouter() {
         />
 
         <Route
+          path="guild/raider-link"
+          element={
+            <RaiderLinkPage />
+          }
+        />
+
+        <Route
           path="raid/planner"
           element={
             <RaidPlannerPage />
@@ -234,6 +243,13 @@ export function AppRouter() {
           path="battlenet"
           element={
             <BattleNetPage />
+          }
+        />
+
+        <Route
+          path="raider-login"
+          element={
+            <RaiderLoginCallbackPage />
           }
         />
       </Route>

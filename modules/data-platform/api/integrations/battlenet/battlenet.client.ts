@@ -21,7 +21,9 @@ const userInfoUrl =
 
 export class BattleNetClient {
   createAuthorizationUrl(
-    state: string
+    state: string,
+    redirectUri: string =
+      env.BATTLENET_REDIRECT_URI
   ): string {
     const url = new URL(authorizationUrl);
 
@@ -32,7 +34,7 @@ export class BattleNetClient {
 
     url.searchParams.set(
       "redirect_uri",
-      env.BATTLENET_REDIRECT_URI
+      redirectUri
     );
 
     url.searchParams.set(
@@ -54,7 +56,9 @@ export class BattleNetClient {
   }
 
   async exchangeAuthorizationCode(
-    code: string
+    code: string,
+    redirectUri: string =
+      env.BATTLENET_REDIRECT_URI
   ): Promise<BattleNetTokenResponse> {
     const basicCredentials = Buffer.from(
       `${env.BATTLENET_CLIENT_ID}:${env.BATTLENET_CLIENT_SECRET}`
@@ -73,7 +77,7 @@ export class BattleNetClient {
         grant_type: "authorization_code",
         code,
         redirect_uri:
-          env.BATTLENET_REDIRECT_URI
+          redirectUri
       })
     });
 

@@ -47,6 +47,11 @@ export const guildModule: MainModuleDefinition =
         label: "Officer Notes",
         path: "/guild/officer-notes",
         status: "available"
+      },
+      {
+        label: "My Raider Login",
+        path: "/guild/raider-link",
+        status: "available"
       }
     ]
   };

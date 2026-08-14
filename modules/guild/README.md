@@ -92,6 +92,37 @@ name (`modules/guild/web/roster/utils/rosterRoles.ts`). This restyle
 follows the WoWUtils Group Hub → Roster screen directly (see the
 `project_wowaudit_reference` memory).
 
+## Raider Login (self-service linking)
+
+`modules/guild/api/raider-link` lets a raider who signed in via Data
+Platform's `raider-auth` (see `modules/data-platform/README.md`) claim
+their own `GuildMember` roster entry — `GuildMember.linkedRaiderAccountId`
+is a loose reference into Data Platform's `RaiderAccount`, following
+the same cross-module convention as `RaidEvent.teamId`. This is
+**not** gated by `GuildVerificationGuard`: a raider can only claim a
+member whose name+realm is actually among the WoW characters on
+*their own* Battle.net account (checked against the session's
+character snapshot), which is self-authenticating without needing
+officer approval.
+
+`POST /guild/raider-link/resolve` matches the signed-in account's
+characters against the roster by name+realm (region is implicitly
+`env.BATTLENET_REGION`, since the whole app is single-region):
+exactly one match auto-links; more than one returns a candidate list
+for the raider to pick from (alts); zero matches means none of their
+characters are on the roster yet. `POST /guild/raider-link/claim`
+finalizes a pick and rejects both an unowned character and a member
+already linked to a different account. `GET /guild/raider-link/me`
+returns the current link, or `null`.
+
+This is a prerequisite for self-service raid Signups (Raid module,
+not yet built) — the next step needing "who is submitting this" now
+has an answer that doesn't require the officer to act on every
+raider's behalf. Added 2026-08-14 after direct user feedback that the
+Raid Planner/Boss Rosters were far short of WoWAudit/WoWUtils, whose
+core differentiator is exactly this kind of self-service (see the
+`project_wowaudit_reference` memory).
+
 ## Teams
 
 Teams (`GuildTeam` + `GuildTeamMembership`) group existing roster

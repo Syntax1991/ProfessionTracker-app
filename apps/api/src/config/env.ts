@@ -48,6 +48,13 @@ const environmentSchema = z.object({
     .url()
     .default(
       "http://localhost:4000/api/auth/battlenet/callback"
+    ),
+
+  BATTLENET_RAIDER_REDIRECT_URI: z
+    .string()
+    .url()
+    .default(
+      "http://localhost:4000/api/auth/raider/callback"
     )
 });
 

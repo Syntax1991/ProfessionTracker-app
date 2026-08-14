@@ -21,6 +21,8 @@ import {
   battleNetAuthRouter,
   battleNetIntegrationRouter
 } from "../../../../modules/data-platform/api/integrations/battlenet/battlenet.routes.js";
+import { raiderAuthRouter } from "../../../../modules/data-platform/api/raider-auth/raider-auth.routes.js";
+import { guildRaiderLinkRouter } from "../../../../modules/guild/api/raider-link/raider-link.routes.js";
 import { professionDetailRouter } from "../../../../modules/professions/api/details/profession-detail.routes.js";
 import { professionRouter } from "../../../../modules/professions/api/profession.routes.js";
 import { specializationRouter } from "../../../../modules/professions/api/specializations/specialization.routes.js";
@@ -158,4 +160,14 @@ apiRouter.use(
 apiRouter.use(
   "/auth/battlenet",
   battleNetAuthRouter
+);
+
+apiRouter.use(
+  "/auth/raider",
+  raiderAuthRouter
+);
+
+apiRouter.use(
+  "/guild/raider-link",
+  guildRaiderLinkRouter
 );

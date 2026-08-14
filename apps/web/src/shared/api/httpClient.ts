@@ -1,3 +1,5 @@
+import { getRaiderSessionToken } from "./raiderSession";
+
 const configuredApiBaseUrl =
   import.meta.env.VITE_API_URL ??
   "http://localhost:4000/api";
@@ -28,6 +30,9 @@ export async function apiRequest<T>(
   path: string,
   init?: RequestInit
 ): Promise<T> {
+  const raiderToken =
+    getRaiderSessionToken();
+
   const response = await fetch(
     getApiUrl(path),
     {
@@ -36,6 +41,11 @@ export async function apiRequest<T>(
         Accept: "application/json",
         "Content-Type":
           "application/json",
+        ...(raiderToken
+          ? {
+              Authorization: `Bearer ${raiderToken}`
+            }
+          : {}),
         ...init?.headers
       }
     }
