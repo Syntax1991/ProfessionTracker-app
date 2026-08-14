@@ -328,7 +328,6 @@ model GuildMember {
 
   teamMemberships GuildTeamMembership[]
   officerNotes    GuildOfficerNote[]
-  attendanceRecords GuildAttendanceRecord[]
 
   @@unique([name, realm, region])
   @@index([rankIndex])
@@ -344,35 +343,6 @@ model GuildOfficerNote {
 
   member GuildMember @relation(fields: [memberId], references: [id], onDelete: Cascade)
 
-  @@index([memberId])
-}
-
-model GuildAttendanceEvent {
-  id        String   @id @default(cuid())
-  title     String
-  eventDate DateTime
-  raidName  String?
-  notes     String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  records GuildAttendanceRecord[]
-
-  @@index([eventDate])
-}
-
-model GuildAttendanceRecord {
-  id        String   @id @default(cuid())
-  eventId   String
-  memberId  String
-  status    String   @default("PRESENT")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  event  GuildAttendanceEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  member GuildMember          @relation(fields: [memberId], references: [id], onDelete: Cascade)
-
-  @@unique([eventId, memberId])
   @@index([memberId])
 }
 
@@ -424,11 +394,26 @@ model RaidEvent {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  bosses  RaidBoss[]
-  signups RaidSignup[]
+  bosses            RaidBoss[]
+  signups           RaidSignup[]
+  attendanceRecords RaidAttendanceRecord[]
 
   @@index([scheduledAt])
   @@index([teamId])
+}
+
+model RaidAttendanceRecord {
+  id          String   @id @default(cuid())
+  raidEventId String
+  memberId    String
+  status      String   @default("PRESENT")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  event RaidEvent @relation(fields: [raidEventId], references: [id], onDelete: Cascade)
+
+  @@unique([raidEventId, memberId])
+  @@index([memberId])
 }
 
 model RaidSignup {

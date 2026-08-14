@@ -5,7 +5,7 @@ export const mySynTrackModule: MainModuleDefinition =
     id: "my-syntrack",
     label: "My SynTrack",
     description:
-      "Your characters and personal weekly progress.",
+      "Your characters and personal progress.",
     status: "active",
     items: [
       {
@@ -17,6 +17,11 @@ export const mySynTrackModule: MainModuleDefinition =
       {
         label: "My Characters",
         path: "/characters",
+        status: "available"
+      },
+      {
+        label: "Guild Link",
+        path: "/raider-link",
         status: "available"
       },
       {
@@ -38,10 +43,6 @@ export const mySynTrackModule: MainModuleDefinition =
         label: "Gear / Enchants / Gems",
         path: "/gear-readiness",
         status: "available"
-      },
-      {
-        label: "Professions",
-        status: "planned"
       }
     ]
   };

@@ -1,23 +1,23 @@
 import { Link } from "react-router-dom";
-import type { GuildMember } from "../../roster/types/roster.types";
+import type { GuildMember } from "../../../../guild/web/roster/types/roster.types";
 import type {
-  GuildAttendanceEvent,
-  GuildAttendanceStatus
+  RaidAttendanceRecord,
+  RaidAttendanceStatus
 } from "../types/attendance.types";
 
 type AttendanceRecordGridProps = {
-  event: GuildAttendanceEvent;
+  records: RaidAttendanceRecord[];
   rosterMembers: GuildMember[];
   onSetStatus: (
     memberId: string,
-    status: GuildAttendanceStatus
+    status: RaidAttendanceStatus
   ) => void;
   onClearStatus: (
     memberId: string
   ) => void;
 };
 
-const statuses: GuildAttendanceStatus[] =
+const statuses: RaidAttendanceStatus[] =
   [
     "PRESENT",
     "LATE",
@@ -26,14 +26,14 @@ const statuses: GuildAttendanceStatus[] =
   ];
 
 export function AttendanceRecordGrid({
-  event,
+  records,
   rosterMembers,
   onSetStatus,
   onClearStatus
 }: AttendanceRecordGridProps) {
   const recordByMemberId =
     new Map(
-      event.records.map(
+      records.map(
         (record) => [
           record.memberId,
           record
@@ -54,7 +54,7 @@ export function AttendanceRecordGrid({
   }
 
   const handleBulkSetStatus = (
-    status: GuildAttendanceStatus
+    status: RaidAttendanceStatus
   ) => {
     for (const member of rosterMembers) {
       onSetStatus(

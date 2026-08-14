@@ -10,13 +10,15 @@ import { StatusMessage } from "../../../../../apps/web/src/shared/components/Sta
 import { useRoster } from "../../../../guild/web/roster/hooks/useRoster";
 import { useTeams } from "../../../../guild/web/teams/hooks/useTeams";
 import { GuildVerificationGate } from "../../../../guild/web/verification/components/GuildVerificationGate";
+import { useEventAttendance } from "../../attendance/hooks/useEventAttendance";
 import { useBossRosters } from "../../boss-rosters/hooks/useBossRosters";
 import type { RaidBoss } from "../../boss-rosters/types/bossRoster.types";
 import { MySignupCard } from "../../signups/components/MySignupCard";
-import { SignupOfficerGrid } from "../../signups/components/SignupOfficerGrid";
 import { useSignups } from "../../signups/hooks/useSignups";
+import { RaidAttendanceSection } from "../components/RaidAttendanceSection";
 import { RaidBossManagementSection } from "../components/RaidBossManagementSection";
 import { RaidEventManagePanel } from "../components/RaidEventManagePanel";
+import { SignupOfficerSection } from "../components/SignupOfficerSection";
 import { useRaidEvents } from "../hooks/useRaidEvents";
 import type { RaidEventInput } from "../types/raidEvent.types";
 
@@ -91,6 +93,16 @@ export function RaidEventDetailPage() {
     setOwnStatus,
     clearMemberStatus
   } = useSignups(eventId ?? null);
+
+  const {
+    records: attendanceRecords,
+    error: attendanceError,
+    setStatus: setAttendanceStatus,
+    clearStatus:
+      clearAttendanceStatus
+  } = useEventAttendance(
+    eventId ?? null
+  );
 
   const event =
     events.find(
@@ -192,9 +204,10 @@ export function RaidEventDetailPage() {
       />
 
       {(bossError ||
-        signupError) && (
+        signupError ||
+        attendanceError) && (
         <StatusMessage type="error">
-          {`${bossError ?? signupError}`}
+          {`${bossError ?? signupError ?? attendanceError}`}
         </StatusMessage>
       )}
 
@@ -275,51 +288,51 @@ export function RaidEventDetailPage() {
           }
         />
 
-        <section className="panel">
-          <div className="panel-header">
-            <div>
-              <p className="eyebrow">
-                OFFICER OVERVIEW
-              </p>
+        <SignupOfficerSection
+          entries={entries}
+          isLoading={
+            isLoadingEntries
+          }
+          onClear={(memberId) => {
+            void clearMemberStatus(
+              memberId
+            );
+          }}
+          onSetStatus={(
+            memberId,
+            status
+          ) => {
+            void setMemberStatus(
+              memberId,
+              status
+            );
+          }}
+        />
 
-              <h2>
-                {
-                  entries.filter(
-                    (entry) =>
-                      entry.status !==
-                      null
-                  ).length
-                }{" "}
-                of {entries.length}{" "}
-                signed up
-              </h2>
-            </div>
-          </div>
-
-          {isLoadingEntries ? (
-            <LoadingPanel />
-          ) : (
-            <SignupOfficerGrid
-              entries={entries}
-              onClear={(
-                memberId
-              ) => {
-                void clearMemberStatus(
-                  memberId
-                );
-              }}
-              onSetStatus={(
-                memberId,
-                status
-              ) => {
-                void setMemberStatus(
-                  memberId,
-                  status
-                );
-              }}
-            />
-          )}
-        </section>
+        <RaidAttendanceSection
+          onClearStatus={(
+            memberId
+          ) => {
+            void clearAttendanceStatus(
+              memberId
+            );
+          }}
+          onSetStatus={(
+            memberId,
+            status
+          ) => {
+            void setAttendanceStatus(
+              memberId,
+              status
+            );
+          }}
+          records={
+            attendanceRecords
+          }
+          rosterMembers={
+            rosterMembers
+          }
+        />
       </GuildVerificationGate>
     </>
   );

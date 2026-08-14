@@ -5,29 +5,18 @@ export const raidModule: MainModuleDefinition =
     id: "raid",
     label: "Raid",
     description:
-      "Planning, assignments and raid analysis.",
+      "Raid events, attendance and analysis.",
     status: "active",
     items: [
       {
-        label: "Raid Planner",
+        label: "Events",
         path: "/raid/planner",
         status: "available"
       },
       {
-        label: "Assignments",
-        status: "planned"
-      },
-      {
-        label: "Cooldowns",
-        status: "planned"
-      },
-      {
-        label: "Raid Notes",
-        status: "planned"
-      },
-      {
         label: "Attendance",
-        status: "planned"
+        path: "/raid/attendance",
+        status: "available"
       },
       {
         label: "WCL Analysis",

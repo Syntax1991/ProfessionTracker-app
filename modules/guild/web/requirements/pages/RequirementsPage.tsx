@@ -3,6 +3,7 @@ import { LoadingPanel } from "../../../../../apps/web/src/shared/components/Load
 import { PageHeader } from "../../../../../apps/web/src/shared/components/PageHeader";
 import { StatusMessage } from "../../../../../apps/web/src/shared/components/StatusMessage";
 import { useRoster } from "../../roster/hooks/useRoster";
+import { GuildEditorModal } from "../../shared/components/GuildEditorModal";
 import { GuildVerificationGate } from "../../verification/components/GuildVerificationGate";
 import { RequirementForm } from "../components/RequirementForm";
 import { RequirementList } from "../components/RequirementList";
@@ -21,6 +22,11 @@ export function RequirementsPage() {
       null
     );
 
+  const [
+    isEditorOpen,
+    setIsEditorOpen
+  ] = useState(false);
+
   const {
     requirements,
     isLoading,
@@ -34,6 +40,26 @@ export function RequirementsPage() {
     members: rosterMembers
   } = useRoster();
 
+  const closeEditor = () => {
+    setIsEditorOpen(false);
+    setEditingRequirement(null);
+  };
+
+  const openCreateEditor = () => {
+    setEditingRequirement(null);
+    setIsEditorOpen(true);
+  };
+
+  const openEditEditor = (
+    requirement: GuildRequirement
+  ) => {
+    setEditingRequirement(
+      requirement
+    );
+
+    setIsEditorOpen(true);
+  };
+
   const handleSubmit = async (
     input: GuildRequirementInput
   ) => {
@@ -42,22 +68,22 @@ export function RequirementsPage() {
         editingRequirement.id,
         input
       );
-
-      setEditingRequirement(null);
-      return;
+    }
+    else {
+      await createRequirement(input);
     }
 
-    await createRequirement(input);
+    closeEditor();
   };
 
   const handleDelete = async (
     requirement: GuildRequirement
   ) => {
-    const confirmed = window.confirm(
-      `${requirement.title} delete?`
-    );
-
-    if (!confirmed) {
+    if (
+      !window.confirm(
+        `${requirement.title} delete?`
+      )
+    ) {
       return;
     }
 
@@ -69,14 +95,14 @@ export function RequirementsPage() {
       editingRequirement?.id ===
       requirement.id
     ) {
-      setEditingRequirement(null);
+      closeEditor();
     }
   };
 
   return (
-    <>
+    <div className="guild-page">
       <PageHeader
-        description="Define what the guild expects from its members — gear, keystones, attendance and more."
+        description="Define preparation, gear and activity rules for the roster."
         eyebrow="GUILD"
         title="Requirements"
       />
@@ -88,82 +114,92 @@ export function RequirementsPage() {
           </StatusMessage>
         )}
 
-        <div className="guild-roster-layout">
-          <section className="panel">
-            <div className="panel-header">
-              <div>
-                <p className="eyebrow">
-                  {editingRequirement
-                    ? "EDIT"
-                    : "NEW REQUIREMENT"}
-                </p>
+        <div className="guild-section-toolbar">
+          <div>
+            <span className="eyebrow">
+              REQUIREMENTS
+            </span>
 
-                <h2>
-                  {editingRequirement
-                    ? editingRequirement.title
-                    : "Add Requirement"}
-                </h2>
-              </div>
+            <h2>
+              {requirements.length}{" "}
+              Defined
+            </h2>
+          </div>
+
+          <button
+            className="button button-primary"
+            onClick={openCreateEditor}
+            type="button"
+          >
+            + Add Requirement
+          </button>
+        </div>
+
+        <section className="panel guild-content-panel">
+          <div className="panel-header">
+            <div>
+              <p className="eyebrow">
+                RULES
+              </p>
+
+              <h2>
+                Guild Requirements
+              </h2>
             </div>
+          </div>
 
-            <RequirementForm
-              key={
-                editingRequirement?.id ??
-                "new-requirement"
+          {isLoading ? (
+            <LoadingPanel />
+          ) : (
+            <RequirementList
+              onDelete={(
+                requirement
+              ) => {
+                void handleDelete(
+                  requirement
+                );
+              }}
+              onEdit={
+                openEditEditor
               }
-              onCancel={() =>
-                setEditingRequirement(
-                  null
-                )
+              requirements={
+                requirements
               }
-              onSubmit={
-                handleSubmit
-              }
-              requirement={
-                editingRequirement
+              rosterMembers={
+                rosterMembers
               }
             />
-          </section>
+          )}
+        </section>
 
-          <section className="panel">
-            <div className="panel-header">
-              <div>
-                <p className="eyebrow">
-                  OVERVIEW
-                </p>
-
-                <h2>
-                  {requirements.length}{" "}
-                  Requirements
-                </h2>
-              </div>
-            </div>
-
-            {isLoading ? (
-              <LoadingPanel />
-            ) : (
-              <RequirementList
-                onDelete={(
-                  requirement
-                ) => {
-                  void handleDelete(
-                    requirement
-                  );
-                }}
-                onEdit={
-                  setEditingRequirement
-                }
-                requirements={
-                  requirements
-                }
-                rosterMembers={
-                  rosterMembers
-                }
-              />
-            )}
-          </section>
-        </div>
+        <GuildEditorModal
+          description="Define a preparation or readiness rule."
+          eyebrow={
+            editingRequirement
+              ? "EDIT REQUIREMENT"
+              : "NEW REQUIREMENT"
+          }
+          isOpen={isEditorOpen}
+          onClose={closeEditor}
+          title={
+            editingRequirement
+              ? editingRequirement.title
+              : "Add Requirement"
+          }
+        >
+          <RequirementForm
+            key={
+              editingRequirement?.id ??
+              "new-requirement"
+            }
+            onCancel={closeEditor}
+            onSubmit={handleSubmit}
+            requirement={
+              editingRequirement
+            }
+          />
+        </GuildEditorModal>
       </GuildVerificationGate>
-    </>
+    </div>
   );
 }

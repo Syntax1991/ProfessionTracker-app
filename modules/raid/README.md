@@ -22,6 +22,7 @@ logging.
 - Raid Planner (available)
 - Signups (available)
 - Boss Rosters (available)
+- Attendance (available)
 - Bench Management (planned)
 - Assignments (planned)
 - Cooldown Planning (planned)
@@ -34,11 +35,14 @@ does not own the guild roster.
 ## Current source
 
 - API: `modules/raid/api/planner`, `modules/raid/api/boss-rosters`,
-  `modules/raid/api/signups`
-- Web: `modules/raid/web/planner` (the only routed pages — Planner
-  index + Event Detail), `modules/raid/web/boss-rosters` and
+  `modules/raid/api/signups`, `modules/raid/api/attendance`
+- Web: `modules/raid/web/planner` (routed pages — Planner index +
+  Event Detail) and `modules/raid/web/attendance` (routed page — the
+  season rollup), `modules/raid/web/boss-rosters` and
   `modules/raid/web/signups` (components/hooks/types only, composed
   into the Event Detail page, no page/route of their own anymore)
+- Shared: `modules/raid/shared/catalog/raidCatalog.ts` (Midnight raid
+  instances by season, used by both API and web)
 
 ## Signups
 
@@ -159,17 +163,43 @@ Delete column for the same reason.
 
 ## Raid attendance
 
-Attendance is event-scoped and belongs to the Raid module. The
-Attendance workspace reads the same `RaidEvent` records created by
-the Events planner and stores only per-member attendance records.
-There is no second attendance-event model and no separate event
-creation workflow.
+Migrated 2026-08-14 from a standalone `GuildAttendanceEvent`/
+`GuildAttendanceRecord` model to `RaidAttendanceRecord`, a loose
+per-member status row (`PRESENT`/`LATE`/`EXCUSED`/`ABSENT`) scoped to
+the same `RaidEvent` the Planner already creates — closing the
+duplication the user flagged directly: "Attendance erstellt aktuell
+noch eigene Guild-Attendance-Events, obwohl es dieselben Raidnächte
+bereits als RaidEvent gibt". There is no second event model and no
+separate event-creation workflow for attendance; `GuildMember` is
+referenced loosely by id, matching `RaidBossRosterEntry`/`RaidSignup`.
+
+Recording status per member happens on the Event Detail page
+(`RaidAttendanceSection.tsx`, gated behind `GuildVerificationGate`,
+same officer-only mutation pattern as Boss Rosters and the Signups
+override grid). The `/raid/attendance` page itself is a **read-only,
+season-filtered roster rollup** — Present/Late/Excused/Absent counts
+and an attendance % per member, aggregated across every `RaidEvent`
+in the selected season — not an event picker. This was an explicit
+correction from the user after seeing the first version (an
+event-list-then-per-event-grid page, mirroring the old Guild
+Attendance UI): "select event ist auch nicht so schlau. Lieber nen
+Filter default ist die ganze Season auflisten. Eigentlich so wie im
+audit Screenshot" (referencing WoWAudit's Events → Event insights
+view — season filter + one aggregate table, no per-event picker as
+the landing view). The season filter reuses
+`modules/raid/shared/catalog/raidCatalog.ts`'s season date ranges,
+defaulting to whichever season contains today's date.
 
 ## Raid content catalog
 
-Known Midnight raid instances and encounters live in
-`modules/raid/shared/catalog/raidCatalog.ts`. Event forms use this
-catalog for raid selection, while Boss Rosters use the same catalog
-server-side to ensure encounter rows exist automatically. Officers
-manage roster assignments for those encounters; they do not manually
-create or delete bosses.
+Known Midnight raid instances live in
+`modules/raid/shared/catalog/raidCatalog.ts` (season, name,
+`availableFrom` date, boss count) — `RaidEventForm` uses
+`getRaidsForScheduledAt` to turn "raid instance" into a dropdown
+scoped to whatever's live on the picked date, so officers no longer
+type the raid name by hand. **Not yet done**: the catalog only has a
+`bossCount` per raid, not actual encounter names, so it can't drive
+automatic boss-row creation yet — Boss Rosters still requires
+manually adding each boss by name. Filling in real encounter names
+(researched, not guessed) and wiring `boss-roster.service.ts` to
+seed them automatically from the catalog is the next step here.

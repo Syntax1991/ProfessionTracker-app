@@ -7,9 +7,9 @@ export function RaiderLinkPage() {
   const raiderLink = useRaiderLink();
 
   return (
-    <>
+    <div className="guild-page guild-page-narrow">
       <PageHeader
-        description="Sign in with your own Battle.net account to manage your own raid signups."
+        description="Link your Battle.net identity to your guild roster entry."
         eyebrow="GUILD"
         title="My Raider Login"
       />
@@ -19,6 +19,18 @@ export function RaiderLinkPage() {
           {raiderLink.error}
         </StatusMessage>
       )}
+
+      <div className="guild-section-toolbar">
+        <div>
+          <span className="eyebrow">
+            ACCOUNT
+          </span>
+
+          <h2>
+            Raider Identity
+          </h2>
+        </div>
+      </div>
 
       <RaiderLinkPanel
         isClaiming={
@@ -39,6 +51,6 @@ export function RaiderLinkPage() {
           raiderLink.resolution
         }
       />
-    </>
+    </div>
   );
 }

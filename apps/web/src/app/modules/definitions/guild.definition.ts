@@ -5,7 +5,7 @@ export const guildModule: MainModuleDefinition =
     id: "guild",
     label: "Guild",
     description:
-      "Guild organization, roster and progress.",
+      "Guild organization, roster and leadership.",
     status: "active",
     items: [
       {
@@ -19,22 +19,17 @@ export const guildModule: MainModuleDefinition =
         status: "available"
       },
       {
-        label: "Gear Audit",
-        path: "/guild/audit",
-        status: "available"
-      },
-      {
         label: "Teams",
         path: "/guild/teams",
         status: "available"
       },
       {
-        label: "Attendance",
-        path: "/guild/attendance",
+        label: "Gear Audit",
+        path: "/guild/audit",
         status: "available"
       },
       {
-        label: "Weekly Progress",
+        label: "Raider Progress",
         path: "/guild/weekly-progress",
         status: "available"
       },
@@ -46,11 +41,6 @@ export const guildModule: MainModuleDefinition =
       {
         label: "Officer Notes",
         path: "/guild/officer-notes",
-        status: "available"
-      },
-      {
-        label: "My Raider Login",
-        path: "/guild/raider-link",
         status: "available"
       }
     ]

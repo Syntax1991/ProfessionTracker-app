@@ -234,44 +234,6 @@
   font-size: 0.72rem;
 }
 
-.attendance-event-list {
-  display: grid;
-  gap: 10px;
-  margin: 12px 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-.attendance-event-list li {
-  padding: 10px 12px;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-}
-
-.attendance-event-button {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  padding: 0 0 8px;
-  border: 0;
-  background: transparent;
-  text-align: left;
-}
-
-.attendance-event-button span {
-  color: var(--text-muted);
-  font-size: 0.72rem;
-}
-
-.attendance-event-button.selected strong {
-  color: var(--primary);
-}
-
-.attendance-events-heading {
-  margin-top: 26px;
-}
-
 .attendance-bulk-actions {
   display: flex;
   flex-wrap: wrap;

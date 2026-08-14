@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { guildAttendanceRouter } from "../../../../modules/guild/api/attendance/attendance.routes.js";
 import { guildAuditRouter } from "../../../../modules/guild/api/audit/audit.routes.js";
 import { guildOfficerNoteRouter } from "../../../../modules/guild/api/officer-notes/officer-note.routes.js";
 import { guildRequirementRouter } from "../../../../modules/guild/api/requirements/requirement.routes.js";
@@ -8,6 +7,7 @@ import { guildRosterImportRouter } from "../../../../modules/guild/api/roster-im
 import { guildTeamRouter } from "../../../../modules/guild/api/teams/team.routes.js";
 import { guildVerificationRouter } from "../../../../modules/guild/api/verification/verification.routes.js";
 import { guildWeeklyProgressRouter } from "../../../../modules/guild/api/weekly-progress/weekly-progress.routes.js";
+import { raidAttendanceRouter } from "../../../../modules/raid/api/attendance/attendance.routes.js";
 import { raidBossRosterRouter } from "../../../../modules/raid/api/boss-rosters/boss-roster.routes.js";
 import { raidPlannerRouter } from "../../../../modules/raid/api/planner/planner.routes.js";
 import { raidSignupRouter } from "../../../../modules/raid/api/signups/signup.routes.js";
@@ -126,11 +126,6 @@ apiRouter.use(
 );
 
 apiRouter.use(
-  "/guild/attendance",
-  guildAttendanceRouter
-);
-
-apiRouter.use(
   "/guild/weekly-progress",
   guildWeeklyProgressRouter
 );
@@ -148,6 +143,11 @@ apiRouter.use(
 apiRouter.use(
   "/raid/signups",
   raidSignupRouter
+);
+
+apiRouter.use(
+  "/raid/attendance",
+  raidAttendanceRouter
 );
 
 apiRouter.use(

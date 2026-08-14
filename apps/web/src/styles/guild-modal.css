@@ -1,0 +1,120 @@
+.guild-modal-backdrop {
+  position: fixed;
+  z-index: 1100;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgb(3 5 9 / 74%);
+  backdrop-filter: blur(7px);
+}
+
+.guild-editor-modal {
+  width: min(640px, 100%);
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  border: 1px solid #2b323e;
+  border-radius: 7px;
+  background: #11151d;
+  box-shadow:
+    0 28px 90px
+    rgb(0 0 0 / 52%);
+}
+
+.guild-editor-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 14px 16px 12px;
+  border-bottom: 1px solid #292f3a;
+}
+
+.guild-editor-modal-header h2 {
+  margin-top: 3px;
+  font-size: 1.02rem;
+}
+
+.guild-editor-modal-header p:last-child {
+  max-width: 500px;
+  margin-top: 4px;
+  color: #737e90;
+  font-size: 0.67rem;
+  line-height: 1.45;
+}
+
+.guild-editor-modal-close {
+  width: 29px;
+  height: 29px;
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid #303743;
+  border-radius: 4px;
+  color: #808a99;
+  background: transparent;
+  font-size: 1.05rem;
+  line-height: 1;
+}
+
+.guild-editor-modal-close:hover {
+  color: #f0f2f6;
+  background: #1b202a;
+}
+
+.guild-editor-modal-body
+  .character-form {
+  padding: 15px 16px 16px;
+}
+
+.guild-editor-modal-body
+  .form-grid {
+  gap: 10px;
+}
+
+.guild-editor-modal-body
+  .character-form
+  label > span,
+.guild-editor-modal-body
+  .character-form legend {
+  margin-bottom: 4px;
+  font-size: 0.68rem;
+}
+
+.guild-editor-modal-body
+  .character-form input,
+.guild-editor-modal-body
+  .character-form select {
+  min-height: 35px;
+  padding: 6px 8px;
+  border-radius: 4px;
+}
+
+.guild-editor-modal-body
+  .form-actions {
+  margin-top: 15px;
+}
+
+.guild-editor-modal-body
+  .button {
+  min-height: 32px;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 0.69rem;
+}
+
+@media (max-width: 620px) {
+  .guild-modal-backdrop {
+    align-items: end;
+    padding: 0;
+  }
+
+  .guild-editor-modal {
+    width: 100%;
+    max-height: 92vh;
+    border-right: 0;
+    border-bottom: 0;
+    border-left: 0;
+    border-radius: 9px 9px 0 0;
+  }
+}

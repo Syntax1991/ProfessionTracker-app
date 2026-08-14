@@ -2,6 +2,7 @@ import { useState } from "react";
 import { LoadingPanel } from "../../../../../apps/web/src/shared/components/LoadingPanel";
 import { PageHeader } from "../../../../../apps/web/src/shared/components/PageHeader";
 import { StatusMessage } from "../../../../../apps/web/src/shared/components/StatusMessage";
+import { GuildEditorModal } from "../../shared/components/GuildEditorModal";
 import { GuildVerificationGate } from "../../verification/components/GuildVerificationGate";
 import { RosterImportPanel } from "../components/RosterImportPanel";
 import { RosterImportPreviewPanel } from "../components/RosterImportPreviewPanel";
@@ -20,7 +21,19 @@ export function RosterPage() {
   const [
     editingMember,
     setEditingMember
-  ] = useState<GuildMember | null>(null);
+  ] = useState<GuildMember | null>(
+    null
+  );
+
+  const [
+    isEditorOpen,
+    setIsEditorOpen
+  ] = useState(false);
+
+  const [
+    showImport,
+    setShowImport
+  ] = useState(false);
 
   const {
     members,
@@ -37,6 +50,23 @@ export function RosterPage() {
       void reload();
     });
 
+  const closeEditor = () => {
+    setIsEditorOpen(false);
+    setEditingMember(null);
+  };
+
+  const openCreateEditor = () => {
+    setEditingMember(null);
+    setIsEditorOpen(true);
+  };
+
+  const openEditEditor = (
+    member: GuildMember
+  ) => {
+    setEditingMember(member);
+    setIsEditorOpen(true);
+  };
+
   const handleSubmit = async (
     input: GuildMemberInput
   ) => {
@@ -45,22 +75,22 @@ export function RosterPage() {
         editingMember.id,
         input
       );
-
-      setEditingMember(null);
-      return;
+    }
+    else {
+      await createMember(input);
     }
 
-    await createMember(input);
+    closeEditor();
   };
 
   const handleDelete = async (
     member: GuildMember
   ) => {
-    const confirmed = window.confirm(
-      `${member.name} delete?`
-    );
-
-    if (!confirmed) {
+    if (
+      !window.confirm(
+        `${member.name} delete?`
+      )
+    ) {
       return;
     }
 
@@ -70,14 +100,19 @@ export function RosterPage() {
       editingMember?.id ===
       member.id
     ) {
-      setEditingMember(null);
+      closeEditor();
     }
   };
 
+  const showImportWorkspace =
+    showImport ||
+    rosterImport.preview !== null ||
+    rosterImport.result !== null;
+
   return (
-    <>
+    <div className="guild-page">
       <PageHeader
-        description="Manage the guild roster, or sync it directly from the SynTrack_Guild addon."
+        description="Maintain the active guild roster, roles and audit coverage."
         eyebrow="GUILD"
         title="Roster"
       />
@@ -98,121 +133,158 @@ export function RosterPage() {
           </StatusMessage>
         )}
 
-        <div className="guild-roster-layout">
-          <section className="panel">
+        <div className="guild-section-toolbar">
+          <div>
+            <span className="eyebrow">
+              ROSTER
+            </span>
+
+            <h2>
+              {members.length} Members
+            </h2>
+          </div>
+
+          <div className="guild-toolbar-actions">
+            <button
+              className="button button-secondary"
+              onClick={() =>
+                setShowImport(
+                  (current) =>
+                    !current
+                )
+              }
+              type="button"
+            >
+              {showImport
+                ? "Hide Import"
+                : "Import Addon Data"}
+            </button>
+
+            <button
+              className="button button-primary"
+              onClick={openCreateEditor}
+              type="button"
+            >
+              + Add Member
+            </button>
+          </div>
+        </div>
+
+        <div className="guild-roster-workspace">
+          <section className="panel guild-content-panel">
             <div className="panel-header">
               <div>
                 <p className="eyebrow">
-                  {editingMember
-                    ? "EDIT"
-                    : "NEW MEMBER"}
+                  SETUP
                 </p>
 
                 <h2>
-                  {editingMember
-                    ? editingMember.name
-                    : "Add Guild Member"}
+                  Raid Composition
                 </h2>
               </div>
             </div>
 
-            <RosterMemberForm
-              key={
-                editingMember?.id ??
-                "new-member"
-              }
-              member={editingMember}
-              onCancel={() =>
-                setEditingMember(null)
-              }
-              onSubmit={handleSubmit}
-            />
+            {isLoading ? (
+              <LoadingPanel />
+            ) : (
+              <RosterRoleGroups
+                members={members}
+                onDelete={(member) => {
+                  void handleDelete(
+                    member
+                  );
+                }}
+                onEdit={
+                  openEditEditor
+                }
+              />
+            )}
           </section>
 
-          <div className="guild-roster-content">
-            <section className="panel">
-              <div className="panel-header">
-                <div>
-                  <p className="eyebrow">
-                    OVERVIEW
-                  </p>
+          {!isLoading && (
+            <RosterSummarySidebar
+              members={members}
+            />
+          )}
+        </div>
 
-                  <h2>
-                    {members.length} Guild Members
-                  </h2>
-                </div>
-              </div>
+        {showImportWorkspace && (
+          <div className="guild-import-workspace">
+            <RosterImportPanel
+              fileName={
+                rosterImport.fileName
+              }
+              fileSize={
+                rosterImport.fileSize
+              }
+              hasPreview={
+                rosterImport.preview !==
+                null
+              }
+              hasSource={
+                rosterImport.hasSource
+              }
+              isImporting={
+                rosterImport.isImporting
+              }
+              isPreviewing={
+                rosterImport.isPreviewing
+              }
+              onFileSelected={
+                rosterImport.selectFile
+              }
+              onImport={
+                rosterImport.importSnapshot
+              }
+              onPreview={
+                rosterImport.previewSnapshot
+              }
+            />
 
-              {isLoading ? (
-                <LoadingPanel />
-              ) : (
-                <RosterRoleGroups
-                  members={members}
-                  onDelete={(member) => {
-                    void handleDelete(
-                      member
-                    );
-                  }}
-                  onEdit={setEditingMember}
-                />
-              )}
-            </section>
+            {rosterImport.preview && (
+              <RosterImportPreviewPanel
+                preview={
+                  rosterImport.preview
+                }
+              />
+            )}
 
-            {!isLoading && (
-              <RosterSummarySidebar
-                members={members}
+            {rosterImport.result && (
+              <RosterImportResultPanel
+                result={
+                  rosterImport.result
+                }
               />
             )}
           </div>
-        </div>
-
-        <RosterImportPanel
-          fileName={
-            rosterImport.fileName
-          }
-          fileSize={
-            rosterImport.fileSize
-          }
-          hasPreview={
-            rosterImport.preview !==
-            null
-          }
-          hasSource={
-            rosterImport.hasSource
-          }
-          isImporting={
-            rosterImport.isImporting
-          }
-          isPreviewing={
-            rosterImport.isPreviewing
-          }
-          onFileSelected={
-            rosterImport.selectFile
-          }
-          onImport={
-            rosterImport.importSnapshot
-          }
-          onPreview={
-            rosterImport.previewSnapshot
-          }
-        />
-
-        {rosterImport.preview && (
-          <RosterImportPreviewPanel
-            preview={
-              rosterImport.preview
-            }
-          />
         )}
 
-        {rosterImport.result && (
-          <RosterImportResultPanel
-            result={
-              rosterImport.result
+        <GuildEditorModal
+          description="Add or edit a manually managed roster entry."
+          eyebrow={
+            editingMember
+              ? "EDIT MEMBER"
+              : "NEW MEMBER"
+          }
+          isOpen={isEditorOpen}
+          onClose={closeEditor}
+          title={
+            editingMember
+              ? editingMember.name
+              : "Add Guild Member"
+          }
+        >
+          <RosterMemberForm
+            key={
+              editingMember?.id ??
+              "new-member"
             }
+            member={editingMember}
+            onCancel={closeEditor}
+            onSubmit={handleSubmit}
           />
-        )}
+        </GuildEditorModal>
       </GuildVerificationGate>
-    </>
+    </div>
   );
 }

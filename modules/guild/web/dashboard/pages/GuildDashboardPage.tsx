@@ -6,12 +6,46 @@ import { Link } from "react-router-dom";
 import { LoadingPanel } from "../../../../../apps/web/src/shared/components/LoadingPanel";
 import { PageHeader } from "../../../../../apps/web/src/shared/components/PageHeader";
 import { getGuildOfficerNoteCount } from "../../officer-notes/api/officerNoteApi";
-import { useAttendance } from "../../attendance/hooks/useAttendance";
 import { useRequirements } from "../../requirements/hooks/useRequirements";
 import { useRoster } from "../../roster/hooks/useRoster";
 import { useTeams } from "../../teams/hooks/useTeams";
+import { GuildVerificationStatusCard } from "../../verification/components/GuildVerificationStatusCard";
 import { useGuildVerification } from "../../verification/hooks/useGuildVerification";
 import { useWeeklyProgress } from "../../weekly-progress/hooks/useWeeklyProgress";
+
+type DashboardCardProps = {
+  label: string;
+  value: string | number;
+  detail: string;
+  to: string;
+};
+
+function DashboardCard({
+  label,
+  value,
+  detail,
+  to
+}: DashboardCardProps) {
+  return (
+    <Link
+      className="guild-dashboard-card"
+      to={to}
+    >
+      <span className="guild-dashboard-card-label">
+        {label}
+      </span>
+
+      <div className="guild-dashboard-card-value">
+        <strong>{value}</strong>
+        <span>{detail}</span>
+      </div>
+
+      <span className="guild-dashboard-card-action">
+        Open →
+      </span>
+    </Link>
+  );
+}
 
 export function GuildDashboardPage() {
   const verification =
@@ -31,11 +65,6 @@ export function GuildDashboardPage() {
     requirements,
     isLoading: isLoadingRequirements
   } = useRequirements();
-
-  const {
-    events,
-    isLoading: isLoadingAttendance
-  } = useAttendance();
 
   const {
     summary: weeklySummary,
@@ -82,14 +111,13 @@ export function GuildDashboardPage() {
     isLoadingRoster ||
     isLoadingTeams ||
     isLoadingRequirements ||
-    isLoadingAttendance ||
     isLoadingWeekly ||
     verification.isLoadingStatus;
 
   return (
-    <>
+    <div className="guild-page">
       <PageHeader
-        description="An overview of your guild's roster, teams and progress."
+        description="Roster health, preparation and guild operations at a glance."
         eyebrow="GUILD"
         title="Dashboard"
       />
@@ -100,169 +128,91 @@ export function GuildDashboardPage() {
         <>
           {verification.status
             ?.verified ? (
-            <section className="panel">
-              <div className="panel-header">
-                <div>
-                  <p className="eyebrow">
-                    VERIFIED GUILD
-                  </p>
-
-                  <h2>
-                    {
-                      verification
-                        .status
-                        .guildName
-                    }
-                  </h2>
-
-                  <span>
-                    {
-                      verification
-                        .status
-                        .realmName
-                    }
-                  </span>
-                </div>
-
-                <span className="integration-badge configured">
-                  {verification
-                    .status
-                    .isGuildMaster
-                    ? "Guild Master"
-                    : `Rank ${verification.status.verifiedRank}`}
-                </span>
-              </div>
-            </section>
+            <GuildVerificationStatusCard
+              status={
+                verification.status
+              }
+            />
           ) : (
-            <section className="panel">
-              <div className="panel-header">
-                <div>
-                  <p className="eyebrow">
-                    NOT VERIFIED
-                  </p>
+            <section className="guild-access-card">
+              <div>
+                <span className="eyebrow">
+                  GUILD ACCESS
+                </span>
 
-                  <h2>
-                    Verify your guild leadership
-                  </h2>
-                </div>
+                <strong>
+                  Leadership verification required
+                </strong>
+
+                <p>
+                  Verify the guild through
+                  Battle.net before using
+                  officer management tools.
+                </p>
               </div>
 
-              <p className="muted-text">
-                <Link to="/guild/roster">
-                  Verify via Battle.net
-                </Link>{" "}
-                to unlock roster, team and attendance management.
-              </p>
+              <Link
+                className="button button-primary"
+                to="/guild/roster"
+              >
+                Verify Guild
+              </Link>
             </section>
           )}
 
+          <div className="guild-section-toolbar">
+            <div>
+              <span className="eyebrow">
+                OVERVIEW
+              </span>
+
+              <h2>
+                Guild Operations
+              </h2>
+            </div>
+          </div>
+
           <div className="guild-dashboard-grid">
-            <Link
-              className="panel guild-dashboard-card"
+            <DashboardCard
+              detail="guild members"
+              label="Roster"
               to="/guild/roster"
-            >
-              <span className="eyebrow">
-                ROSTER
-              </span>
+              value={members.length}
+            />
 
-              <strong>
-                {members.length}
-              </strong>
-
-              <span>
-                guild members
-              </span>
-            </Link>
-
-            <Link
-              className="panel guild-dashboard-card"
-              to="/guild/teams"
-            >
-              <span className="eyebrow">
-                TEAMS
-              </span>
-
-              <strong>
-                {teams.length}
-              </strong>
-
-              <span>
-                persistent teams
-              </span>
-            </Link>
-
-            <Link
-              className="panel guild-dashboard-card"
-              to="/guild/attendance"
-            >
-              <span className="eyebrow">
-                ATTENDANCE
-              </span>
-
-              <strong>
-                {events.length}
-              </strong>
-
-              <span>
-                recorded raid events
-              </span>
-            </Link>
-
-            <Link
-              className="panel guild-dashboard-card"
+            <DashboardCard
+              detail="members tracked"
+              label="Weekly Progress"
               to="/guild/weekly-progress"
-            >
-              <span className="eyebrow">
-                WEEKLY PROGRESS
-              </span>
+              value={`${trackedCount}/${members.length}`}
+            />
 
-              <strong>
-                {trackedCount}/
-                {members.length}
-              </strong>
-
-              <span>
-                members tracked in My SynTrack
-              </span>
-            </Link>
-
-            <Link
-              className="panel guild-dashboard-card"
+            <DashboardCard
+              detail="defined rules"
+              label="Requirements"
               to="/guild/requirements"
-            >
-              <span className="eyebrow">
-                REQUIREMENTS
-              </span>
+              value={requirements.length}
+            />
 
-              <strong>
-                {requirements.length}
-              </strong>
+            <DashboardCard
+              detail="persistent teams"
+              label="Teams"
+              to="/guild/teams"
+              value={teams.length}
+            />
 
-              <span>
-                defined requirements
-              </span>
-            </Link>
-
-            <Link
-              className="panel guild-dashboard-card"
+            <DashboardCard
+              detail="officer notes"
+              label="Officer Notes"
               to="/guild/officer-notes"
-            >
-              <span className="eyebrow">
-                OFFICER NOTES
-              </span>
-
-              <strong>
-                {officerNoteCount ??
-                  "—"}
-              </strong>
-
-              <span>
-                notes recorded
-              </span>
-            </Link>
+              value={
+                officerNoteCount ??
+                "—"
+              }
+            />
           </div>
         </>
       )}
-    </>
+    </div>
   );
 }

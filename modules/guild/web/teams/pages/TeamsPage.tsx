@@ -3,6 +3,7 @@ import { LoadingPanel } from "../../../../../apps/web/src/shared/components/Load
 import { PageHeader } from "../../../../../apps/web/src/shared/components/PageHeader";
 import { StatusMessage } from "../../../../../apps/web/src/shared/components/StatusMessage";
 import { useRoster } from "../../roster/hooks/useRoster";
+import { GuildEditorModal } from "../../shared/components/GuildEditorModal";
 import { GuildVerificationGate } from "../../verification/components/GuildVerificationGate";
 import { TeamCard } from "../components/TeamCard";
 import { TeamForm } from "../components/TeamForm";
@@ -20,6 +21,11 @@ export function TeamsPage() {
     null
   );
 
+  const [
+    isEditorOpen,
+    setIsEditorOpen
+  ] = useState(false);
+
   const {
     teams,
     isLoading,
@@ -35,6 +41,23 @@ export function TeamsPage() {
     members: rosterMembers
   } = useRoster();
 
+  const closeEditor = () => {
+    setIsEditorOpen(false);
+    setEditingTeam(null);
+  };
+
+  const openCreateEditor = () => {
+    setEditingTeam(null);
+    setIsEditorOpen(true);
+  };
+
+  const openEditEditor = (
+    team: GuildTeam
+  ) => {
+    setEditingTeam(team);
+    setIsEditorOpen(true);
+  };
+
   const handleSubmit = async (
     input: GuildTeamInput
   ) => {
@@ -43,38 +66,39 @@ export function TeamsPage() {
         editingTeam.id,
         input
       );
-
-      setEditingTeam(null);
-      return;
+    }
+    else {
+      await createTeam(input);
     }
 
-    await createTeam(input);
+    closeEditor();
   };
 
   const handleDelete = async (
     team: GuildTeam
   ) => {
-    const confirmed = window.confirm(
-      `${team.name} delete?`
-    );
-
-    if (!confirmed) {
+    if (
+      !window.confirm(
+        `${team.name} delete?`
+      )
+    ) {
       return;
     }
 
     await deleteTeam(team.id);
 
     if (
-      editingTeam?.id === team.id
+      editingTeam?.id ===
+      team.id
     ) {
-      setEditingTeam(null);
+      closeEditor();
     }
   };
 
   return (
-    <>
+    <div className="guild-page">
       <PageHeader
-        description="Group guild members into persistent raid or activity teams."
+        description="Organize the roster into persistent raid or activity teams."
         eyebrow="GUILD"
         title="Teams"
       />
@@ -86,90 +110,105 @@ export function TeamsPage() {
           </StatusMessage>
         )}
 
-        <div className="guild-roster-layout">
-          <section className="panel">
-            <div className="panel-header">
-              <div>
-                <p className="eyebrow">
-                  {editingTeam
-                    ? "EDIT"
-                    : "NEW TEAM"}
-                </p>
+        <div className="guild-section-toolbar">
+          <div>
+            <span className="eyebrow">
+              TEAMS
+            </span>
 
-                <h2>
-                  {editingTeam
-                    ? editingTeam.name
-                    : "Create Team"}
-                </h2>
-              </div>
-            </div>
-
-            <TeamForm
-              key={
-                editingTeam?.id ??
-                "new-team"
-              }
-              onCancel={() =>
-                setEditingTeam(null)
-              }
-              onSubmit={
-                handleSubmit
-              }
-              team={editingTeam}
-            />
-          </section>
-
-          <div className="guild-teams-list">
-            {isLoading ? (
-              <LoadingPanel />
-            ) : teams.length === 0 ? (
-              <div className="empty-state">
-                No teams yet.
-              </div>
-            ) : (
-              teams.map((team) => (
-                <TeamCard
-                  key={team.id}
-                  onAddMember={(
-                    memberId,
-                    role
-                  ) => {
-                    void addMember(
-                      team.id,
-                      {
-                        memberId,
-                        role
-                      }
-                    );
-                  }}
-                  onDelete={() => {
-                    void handleDelete(
-                      team
-                    );
-                  }}
-                  onEdit={() =>
-                    setEditingTeam(
-                      team
-                    )
-                  }
-                  onRemoveMember={(
-                    memberId
-                  ) => {
-                    void removeMember(
-                      team.id,
-                      memberId
-                    );
-                  }}
-                  rosterMembers={
-                    rosterMembers
-                  }
-                  team={team}
-                />
-              ))
-            )}
+            <h2>
+              {teams.length}{" "}
+              {teams.length === 1
+                ? "Team"
+                : "Teams"}
+            </h2>
           </div>
+
+          <button
+            className="button button-primary"
+            onClick={openCreateEditor}
+            type="button"
+          >
+            + Create Team
+          </button>
         </div>
+
+        {isLoading ? (
+          <LoadingPanel />
+        ) : teams.length === 0 ? (
+          <section className="panel guild-empty-panel">
+            <div className="empty-state">
+              No teams yet.
+            </div>
+          </section>
+        ) : (
+          <div className="guild-teams-list">
+            {teams.map((team) => (
+              <TeamCard
+                key={team.id}
+                onAddMember={(
+                  memberId,
+                  role
+                ) => {
+                  void addMember(
+                    team.id,
+                    {
+                      memberId,
+                      role
+                    }
+                  );
+                }}
+                onDelete={() => {
+                  void handleDelete(
+                    team
+                  );
+                }}
+                onEdit={() => {
+                  openEditEditor(team);
+                }}
+                onRemoveMember={(
+                  memberId
+                ) => {
+                  void removeMember(
+                    team.id,
+                    memberId
+                  );
+                }}
+                rosterMembers={
+                  rosterMembers
+                }
+                team={team}
+              />
+            ))}
+          </div>
+        )}
+
+        <GuildEditorModal
+          description="Configure the team identity and ordering."
+          eyebrow={
+            editingTeam
+              ? "EDIT TEAM"
+              : "NEW TEAM"
+          }
+          isOpen={isEditorOpen}
+          onClose={closeEditor}
+          title={
+            editingTeam
+              ? editingTeam.name
+              : "Create Team"
+          }
+        >
+          <TeamForm
+            key={
+              editingTeam?.id ??
+              "new-team"
+            }
+            onCancel={closeEditor}
+            onSubmit={handleSubmit}
+            team={editingTeam}
+          />
+        </GuildEditorModal>
       </GuildVerificationGate>
-    </>
+    </div>
   );
 }

@@ -1,4 +1,7 @@
-import { useState } from "react";
+import {
+  useCallback,
+  useState
+} from "react";
 import { useNavigate } from "react-router-dom";
 import { LoadingPanel } from "../../../../../apps/web/src/shared/components/LoadingPanel";
 import { PageHeader } from "../../../../../apps/web/src/shared/components/PageHeader";
@@ -6,8 +9,8 @@ import { StatusMessage } from "../../../../../apps/web/src/shared/components/Sta
 import { useTeams } from "../../../../guild/web/teams/hooks/useTeams";
 import { GuildVerificationGate } from "../../../../guild/web/verification/components/GuildVerificationGate";
 import { RaidCalendarView } from "../components/RaidCalendarView";
-import { RaidEventForm } from "../components/RaidEventForm";
 import { RaidEventList } from "../components/RaidEventList";
+import { RaidEventModal } from "../components/RaidEventModal";
 import { useRaidEvents } from "../hooks/useRaidEvents";
 import type {
   RaidEvent,
@@ -17,29 +20,43 @@ import {
   addMonths,
   formatMonthLabel
 } from "../utils/calendarMonth";
+import "../styles/raid-planner.css";
 
-type ViewMode = "calendar" | "list";
+type ViewMode =
+  | "calendar"
+  | "list";
 
 export function RaidPlannerPage() {
   const navigate = useNavigate();
+
+  const [
+    isCreateModalOpen,
+    setIsCreateModalOpen
+  ] = useState(false);
 
   const [
     prefillDate,
     setPrefillDate
   ] = useState<Date | null>(null);
 
-  const [viewMode, setViewMode] =
-    useState<ViewMode>("calendar");
+  const [
+    viewMode,
+    setViewMode
+  ] = useState<ViewMode>(
+    "calendar"
+  );
 
-  const [monthDate, setMonthDate] =
-    useState(
-      () =>
-        new Date(
-          new Date().getFullYear(),
-          new Date().getMonth(),
-          1
-        )
-    );
+  const [
+    monthDate,
+    setMonthDate
+  ] = useState(
+    () =>
+      new Date(
+        new Date().getFullYear(),
+        new Date().getMonth(),
+        1
+      )
+  );
 
   const {
     events,
@@ -50,17 +67,24 @@ export function RaidPlannerPage() {
 
   const { teams } = useTeams();
 
+  const closeCreateModal =
+    useCallback(() => {
+      setIsCreateModalOpen(false);
+      setPrefillDate(null);
+    }, []);
+
+  const openCreateModal = (
+    date: Date | null = null
+  ) => {
+    setPrefillDate(date);
+    setIsCreateModalOpen(true);
+  };
+
   const handleSubmit = async (
     input: RaidEventInput
   ) => {
     await createEvent(input);
-    setPrefillDate(null);
-  };
-
-  const handleCreateOnDate = (
-    date: Date
-  ) => {
-    setPrefillDate(date);
+    closeCreateModal();
   };
 
   const handleSelectEvent = (
@@ -74,7 +98,7 @@ export function RaidPlannerPage() {
   return (
     <>
       <PageHeader
-        description="Schedule raid nights and link them to a guild team."
+        description="Plan raid nights, signups, rosters and encounter preparation from one event workflow."
         eyebrow="RAID"
         title="Raid Planner"
       />
@@ -86,52 +110,22 @@ export function RaidPlannerPage() {
           </StatusMessage>
         )}
 
-        <div className="guild-roster-layout">
-          <section className="panel">
-            <div className="panel-header">
-              <div>
-                <p className="eyebrow">
-                  NEW RAID
-                </p>
+        <section className="panel raid-planner-panel">
+          <div className="panel-header raid-planner-header">
+            <div>
+              <p className="eyebrow">
+                EVENTS
+              </p>
 
-                <h2>
-                  Schedule Raid
-                </h2>
-              </div>
+              <h2>
+                {events.length} Scheduled{" "}
+                {events.length === 1
+                  ? "Raid"
+                  : "Raids"}
+              </h2>
             </div>
 
-            <RaidEventForm
-              event={null}
-              key={
-                prefillDate?.toISOString() ??
-                "new-event"
-              }
-              onCancel={() =>
-                setPrefillDate(null)
-              }
-              onSubmit={
-                handleSubmit
-              }
-              prefillDate={
-                prefillDate
-              }
-              teams={teams}
-            />
-          </section>
-
-          <section className="panel">
-            <div className="panel-header">
-              <div>
-                <p className="eyebrow">
-                  OVERVIEW
-                </p>
-
-                <h2>
-                  {events.length}{" "}
-                  Scheduled Raids
-                </h2>
-              </div>
-
+            <div className="raid-planner-actions">
               <div className="raid-calendar-view-toggle">
                 <button
                   className={
@@ -167,85 +161,102 @@ export function RaidPlannerPage() {
                   List
                 </button>
               </div>
+
+              <button
+                className="button button-primary raid-schedule-button"
+                onClick={() =>
+                  openCreateModal()
+                }
+                type="button"
+              >
+                + Schedule Raid
+              </button>
             </div>
+          </div>
 
-            {viewMode ===
-              "calendar" && (
-              <div className="raid-calendar-toolbar">
-                <div className="raid-calendar-nav">
-                  <button
-                    aria-label="Previous month"
-                    className="raid-calendar-nav-button"
-                    onClick={() =>
-                      setMonthDate(
-                        (
-                          previous
-                        ) =>
-                          addMonths(
-                            previous,
-                            -1
-                          )
-                      )
-                    }
-                    type="button"
-                  >
-                    ‹
-                  </button>
+          {viewMode ===
+            "calendar" && (
+            <div className="raid-calendar-toolbar">
+              <div className="raid-calendar-nav">
+                <button
+                  aria-label="Previous month"
+                  className="raid-calendar-nav-button"
+                  onClick={() =>
+                    setMonthDate(
+                      (previous) =>
+                        addMonths(
+                          previous,
+                          -1
+                        )
+                    )
+                  }
+                  type="button"
+                >
+                  ‹
+                </button>
 
-                  <span className="raid-calendar-nav-label">
-                    {formatMonthLabel(
-                      monthDate
-                    )}
-                  </span>
+                <span className="raid-calendar-nav-label">
+                  {formatMonthLabel(
+                    monthDate
+                  )}
+                </span>
 
-                  <button
-                    aria-label="Next month"
-                    className="raid-calendar-nav-button"
-                    onClick={() =>
-                      setMonthDate(
-                        (
-                          previous
-                        ) =>
-                          addMonths(
-                            previous,
-                            1
-                          )
-                      )
-                    }
-                    type="button"
-                  >
-                    ›
-                  </button>
-                </div>
+                <button
+                  aria-label="Next month"
+                  className="raid-calendar-nav-button"
+                  onClick={() =>
+                    setMonthDate(
+                      (previous) =>
+                        addMonths(
+                          previous,
+                          1
+                        )
+                    )
+                  }
+                  type="button"
+                >
+                  ›
+                </button>
               </div>
-            )}
 
-            {isLoading ? (
-              <LoadingPanel />
-            ) : viewMode ===
-              "calendar" ? (
-              <RaidCalendarView
-                events={events}
-                monthDate={
-                  monthDate
-                }
-                onCreateOnDate={
-                  handleCreateOnDate
-                }
-                onSelectEvent={
-                  handleSelectEvent
-                }
-              />
-            ) : (
-              <RaidEventList
-                events={events}
-                onSelect={
-                  handleSelectEvent
-                }
-              />
-            )}
-          </section>
-        </div>
+              <span className="raid-calendar-hint">
+                Select a day to schedule
+                a raid.
+              </span>
+            </div>
+          )}
+
+          {isLoading ? (
+            <LoadingPanel />
+          ) : viewMode ===
+            "calendar" ? (
+            <RaidCalendarView
+              events={events}
+              monthDate={monthDate}
+              onCreateOnDate={
+                openCreateModal
+              }
+              onSelectEvent={
+                handleSelectEvent
+              }
+            />
+          ) : (
+            <RaidEventList
+              events={events}
+              onSelect={
+                handleSelectEvent
+              }
+            />
+          )}
+        </section>
+
+        <RaidEventModal
+          isOpen={isCreateModalOpen}
+          onClose={closeCreateModal}
+          onSubmit={handleSubmit}
+          prefillDate={prefillDate}
+          teams={teams}
+        />
       </GuildVerificationGate>
     </>
   );

@@ -3,7 +3,6 @@ import {
   Route,
   Routes
 } from "react-router-dom";
-import { AttendancePage } from "../../../../modules/guild/web/attendance/pages/AttendancePage";
 import { AuditPage } from "../../../../modules/guild/web/audit/pages/AuditPage";
 import { GuildDashboardPage } from "../../../../modules/guild/web/dashboard/pages/GuildDashboardPage";
 import { OfficerNotesPage } from "../../../../modules/guild/web/officer-notes/pages/OfficerNotesPage";
@@ -12,6 +11,7 @@ import { RequirementsPage } from "../../../../modules/guild/web/requirements/pag
 import { RosterPage } from "../../../../modules/guild/web/roster/pages/RosterPage";
 import { TeamsPage } from "../../../../modules/guild/web/teams/pages/TeamsPage";
 import { WeeklyProgressPage } from "../../../../modules/guild/web/weekly-progress/pages/WeeklyProgressPage";
+import { AttendancePage } from "../../../../modules/raid/web/attendance/pages/AttendancePage";
 import { RaidEventDetailPage } from "../../../../modules/raid/web/planner/pages/RaidEventDetailPage";
 import { RaidPlannerPage } from "../../../../modules/raid/web/planner/pages/RaidPlannerPage";
 import { CharactersPage } from "../../../../modules/my-syntrack/web/characters/pages/CharactersPage";
@@ -38,16 +38,12 @@ export function AppRouter() {
       <Route element={<AppLayout />}>
         <Route
           index
-          element={
-            <DashboardPage />
-          }
+          element={<DashboardPage />}
         />
 
         <Route
           path="characters"
-          element={
-            <CharactersPage />
-          }
+          element={<CharactersPage />}
         />
 
         <Route
@@ -65,45 +61,38 @@ export function AppRouter() {
         />
 
         <Route
+          path="raider-link"
+          element={<RaiderLinkPage />}
+        />
+
+        <Route
           path="weekly-checklist"
-          element={
-            <WeeklyChecklistPage />
-          }
+          element={<WeeklyChecklistPage />}
         />
 
         <Route
           path="vault-mythic-plus"
-          element={
-            <VaultMythicPlusPage />
-          }
+          element={<VaultMythicPlusPage />}
         />
 
         <Route
           path="raid-tasks"
-          element={
-            <RaidTasksPage />
-          }
+          element={<RaidTasksPage />}
         />
 
         <Route
           path="gear-readiness"
-          element={
-            <GearReadinessPage />
-          }
+          element={<GearReadinessPage />}
         />
 
         <Route
           path="professions"
-          element={
-            <ProfessionsPage />
-          }
+          element={<ProfessionsPage />}
         />
 
         <Route
           path="professions/crafters"
-          element={
-            <ProfessionCrafterFinderPage />
-          }
+          element={<ProfessionCrafterFinderPage />}
         />
 
         <Route
@@ -115,16 +104,12 @@ export function AppRouter() {
 
         <Route
           path="professions/knowledge"
-          element={
-            <ProfessionKnowledgePage />
-          }
+          element={<ProfessionKnowledgePage />}
         />
 
         <Route
           path="professions/specializations"
-          element={
-            <ProfessionSpecializationsPage />
-          }
+          element={<ProfessionSpecializationsPage />}
         />
 
         <Route
@@ -150,107 +135,92 @@ export function AppRouter() {
 
         <Route
           path="professions/:professionId"
-          element={
-            <ProfessionDetailPage />
-          }
+          element={<ProfessionDetailPage />}
         />
 
         <Route
           path="guild"
-          element={
-            <GuildDashboardPage />
-          }
+          element={<GuildDashboardPage />}
         />
 
         <Route
           path="guild/roster"
-          element={
-            <RosterPage />
-          }
+          element={<RosterPage />}
         />
 
         <Route
           path="guild/audit"
-          element={
-            <AuditPage />
-          }
+          element={<AuditPage />}
         />
 
         <Route
           path="guild/teams"
-          element={
-            <TeamsPage />
-          }
+          element={<TeamsPage />}
+        />
+
+        <Route
+          path="guild/weekly-progress"
+          element={<WeeklyProgressPage />}
+        />
+
+        <Route
+          path="guild/requirements"
+          element={<RequirementsPage />}
+        />
+
+        <Route
+          path="guild/officer-notes"
+          element={<OfficerNotesPage />}
         />
 
         <Route
           path="guild/attendance"
           element={
-            <AttendancePage />
-          }
-        />
-
-        <Route
-          path="guild/weekly-progress"
-          element={
-            <WeeklyProgressPage />
-          }
-        />
-
-        <Route
-          path="guild/requirements"
-          element={
-            <RequirementsPage />
-          }
-        />
-
-        <Route
-          path="guild/officer-notes"
-          element={
-            <OfficerNotesPage />
+            <Navigate
+              replace
+              to="/raid/attendance"
+            />
           }
         />
 
         <Route
           path="guild/raider-link"
           element={
-            <RaiderLinkPage />
+            <Navigate
+              replace
+              to="/raider-link"
+            />
           }
         />
 
         <Route
           path="raid/planner"
-          element={
-            <RaidPlannerPage />
-          }
+          element={<RaidPlannerPage />}
         />
 
         <Route
           path="raid/planner/:eventId"
-          element={
-            <RaidEventDetailPage />
-          }
+          element={<RaidEventDetailPage />}
+        />
+
+        <Route
+          path="raid/attendance"
+          element={<AttendancePage />}
         />
 
         <Route
           path="addon"
-          element={
-            <AddonImportPage />
-          }
+          element={<AddonImportPage />}
         />
 
         <Route
           path="battlenet"
-          element={
-            <BattleNetPage />
-          }
+          element={<BattleNetPage />}
         />
       </Route>
 
       <Route
-        element={
-          <RaiderLoginCallbackPage />
-        }
+        element={<RaiderLoginCallbackPage />}
         path="raider-login"
       />
 

@@ -41,9 +41,9 @@ export function OfficerNotesPage() {
     ) ?? null;
 
   return (
-    <>
+    <div className="guild-page">
       <PageHeader
-        description="Keep freeform, timestamped notes about guild members — separate from the raw WoW officer note."
+        description="Private, timestamped context for guild leadership."
         eyebrow="GUILD"
         title="Officer Notes"
       />
@@ -58,8 +58,20 @@ export function OfficerNotesPage() {
           </StatusMessage>
         )}
 
-        <div className="guild-roster-layout">
-          <section className="panel">
+        <div className="guild-section-toolbar">
+          <div>
+            <span className="eyebrow">
+              NOTES
+            </span>
+
+            <h2>
+              Member History
+            </h2>
+          </div>
+        </div>
+
+        <div className="guild-split-workspace">
+          <section className="panel guild-member-browser">
             <div className="panel-header">
               <div>
                 <p className="eyebrow">
@@ -67,8 +79,7 @@ export function OfficerNotesPage() {
                 </p>
 
                 <h2>
-                  {members.length}{" "}
-                  Guild Members
+                  {members.length} Members
                 </h2>
               </div>
             </div>
@@ -88,11 +99,11 @@ export function OfficerNotesPage() {
             )}
           </section>
 
-          <section className="panel">
+          <section className="panel guild-detail-panel">
             <div className="panel-header">
               <div>
                 <p className="eyebrow">
-                  NOTES
+                  HISTORY
                 </p>
 
                 <h2>
@@ -105,8 +116,8 @@ export function OfficerNotesPage() {
 
             {!selectedMember ? (
               <p className="muted-text">
-                Select a guild member on the left to view and add
-                officer notes.
+                Select a member to view
+                or add officer notes.
               </p>
             ) : isLoadingNotes ? (
               <LoadingPanel />
@@ -133,6 +144,6 @@ export function OfficerNotesPage() {
           </section>
         </div>
       </GuildVerificationGate>
-    </>
+    </div>
   );
 }

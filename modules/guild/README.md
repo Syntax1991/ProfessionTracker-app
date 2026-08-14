@@ -38,7 +38,7 @@ commentary, see below) is a separate feature.
 
 ## Guild leadership verification
 
-Roster, team, requirement, officer-note and attendance mutations
+Roster, team, requirement and officer-note mutations
 (create, update, delete, addon import, membership/record changes)
 require a verified guild leadership link. Reading stays open
 everywhere. Verification works entirely through Blizzard's official
@@ -78,7 +78,7 @@ the `project_raider_login` memory.)
    `GuildVerification` record. Every mutating service
    (`GuildRosterService`, `GuildRosterImportService`,
    `GuildTeamService`, `GuildRequirementService`,
-   `GuildOfficerNoteService`, `GuildAttendanceService`) calls the
+   `GuildOfficerNoteService`) calls the
    shared `GuildVerificationGuard.ensureVerified()` before mutating
    and rejects with `403` otherwise. On the web, every mutating page
    is wrapped in the shared `GuildVerificationGate` component, which
