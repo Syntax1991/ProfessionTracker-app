@@ -5,9 +5,10 @@ import {
 } from "react-router-dom";
 import { GuildDashboardPage } from "../../../../modules/guild/web/dashboard/pages/GuildDashboardPage";
 import { OfficerNotesPage } from "../../../../modules/guild/web/officer-notes/pages/OfficerNotesPage";
-import { RaiderLinkPage } from "../../../../modules/guild/web/raider-link/pages/RaiderLinkPage";
+import { SettingsPage } from "../../../../modules/guild/web/raider-link/pages/SettingsPage";
 import { RequirementsPage } from "../../../../modules/guild/web/requirements/pages/RequirementsPage";
 import { RosterPage } from "../../../../modules/guild/web/roster/pages/RosterPage";
+import { GuildSettingsPage } from "../../../../modules/guild/web/settings/pages/GuildSettingsPage";
 import { TeamsPage } from "../../../../modules/guild/web/teams/pages/TeamsPage";
 import { WeeklyProgressPage } from "../../../../modules/guild/web/weekly-progress/pages/WeeklyProgressPage";
 import { AttendancePage } from "../../../../modules/raid/web/attendance/pages/AttendancePage";
@@ -60,8 +61,18 @@ export function AppRouter() {
         />
 
         <Route
+          path="settings"
+          element={<SettingsPage />}
+        />
+
+        <Route
           path="raider-link"
-          element={<RaiderLinkPage />}
+          element={
+            <Navigate
+              replace
+              to="/settings"
+            />
+          }
         />
 
         <Route
@@ -178,6 +189,11 @@ export function AppRouter() {
         />
 
         <Route
+          path="guild/settings"
+          element={<GuildSettingsPage />}
+        />
+
+        <Route
           path="guild/attendance"
           element={
             <Navigate
@@ -192,7 +208,7 @@ export function AppRouter() {
           element={
             <Navigate
               replace
-              to="/raider-link"
+              to="/settings"
             />
           }
         />

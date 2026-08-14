@@ -92,7 +92,7 @@ export function RaiderAuthTopAction() {
     <div className="raider-auth-top-action raider-auth-top-account">
       <NavLink
         className="raider-auth-top-battletag"
-        to="/guild/raider-link"
+        to="/settings"
       >
         {status.battleTag ??
           "My Raider Login"}

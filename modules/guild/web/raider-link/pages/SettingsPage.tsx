@@ -3,15 +3,15 @@ import { StatusMessage } from "../../../../../apps/web/src/shared/components/Sta
 import { RaiderLinkPanel } from "../components/RaiderLinkPanel";
 import { useRaiderLink } from "../hooks/useRaiderLink";
 
-export function RaiderLinkPage() {
+export function SettingsPage() {
   const raiderLink = useRaiderLink();
 
   return (
     <div className="guild-page guild-page-narrow">
       <PageHeader
-        description="Link your Battle.net identity to your guild roster entry."
-        eyebrow="GUILD"
-        title="My Raider Login"
+        description="Your Battle.net identity and personal account preferences."
+        eyebrow="ACCOUNT"
+        title="Settings"
       />
 
       {raiderLink.error && (
@@ -23,11 +23,11 @@ export function RaiderLinkPage() {
       <div className="guild-section-toolbar">
         <div>
           <span className="eyebrow">
-            ACCOUNT
+            IDENTITY
           </span>
 
           <h2>
-            Raider Identity
+            Raider Login
           </h2>
         </div>
       </div>

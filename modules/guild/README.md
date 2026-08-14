@@ -85,7 +85,7 @@ the `project_raider_login` memory.)
    shared `GuildVerificationGuard.ensureVerified()` before mutating
    and rejects with `403` otherwise. On the web, every mutating page
    is wrapped in the shared `GuildVerificationGate` component, which
-   shows the candidate picker until verified and the status card
+   shows the candidate picker until verified and renders `children`
    afterward.
 
 Known limitation: because Blizzard never returns rank names, a real
@@ -93,6 +93,26 @@ officer placed below rank `2` will not pass verification until the
 threshold is revisited. There is currently no UI to change the
 threshold per guild; adjust the constant if a guild's conventions
 differ.
+
+**The verified identity card moved to Settings (2026-08-14).** The
+"guild name, verified via character X" status card
+(`GuildVerificationStatusCard`) used to repeat on every gated page
+(Roster, Teams, Requirements, Officer Notes, Weekly Progress, Raid
+Planner) plus the Dashboard, after the user asked directly to pull it
+"raus aus dem normalen views" and give it a home in Settings instead.
+`GuildVerificationGate` now only handles the gate itself (block until
+verified, render children after) — it no longer renders the status
+card at all. A new `GuildSettingsPage` (`/guild/settings`, linked from
+the Guild nav and a compact Dashboard card) owns the card exclusively:
+it calls `useGuildVerification` directly and shows the status card
+when verified, the verify-flow panel when not — this is the only
+place in the app that shows this information now. The Dashboard's old
+always-visible card/access-card block was replaced with a CTA that
+only renders when the guild is **not yet** verified (pointing at
+Settings), so verification stays discoverable without repeating the
+full card once it's done. Matches WoWAudit's own layout, confirmed via
+a screenshot showing "Settings" as a dedicated tab in the guild's own
+nav, separate from Overview/Roster/Audit.
 
 ## Roster
 
@@ -140,6 +160,13 @@ raider's behalf. Added 2026-08-14 after direct user feedback that the
 Raid Planner/Boss Rosters were far short of WoWAudit/WoWUtils, whose
 core differentiator is exactly this kind of self-service (see the
 `project_wowaudit_reference` memory).
+
+The web page for this (`RaiderLinkPanel` — "which character is you?"
++ sign out) moved from `/raider-link` to a new personal `SettingsPage`
+at `/settings` (2026-08-14, same pass as Guild Settings above) —
+listed under My SynTrack's nav as "Settings" instead of "Guild Link",
+since it's account-level, not guild-level. Old `/raider-link` and
+`/guild/raider-link` links redirect there.
 
 ## Teams
 

@@ -37,6 +37,11 @@ export const guildModule: MainModuleDefinition =
         label: "Officer Notes",
         path: "/guild/officer-notes",
         status: "available"
+      },
+      {
+        label: "Settings",
+        path: "/guild/settings",
+        status: "available"
       }
     ]
   };

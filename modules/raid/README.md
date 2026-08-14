@@ -175,16 +175,19 @@ panel.
 auch ebenfalls die Anzeige von Syngold und 'finish linking your
 character'") — `MySignupCard`, the guild-verification status card,
 `SignupOfficerSection` and `RaidAttendanceSection` no longer render
-on this page; `GuildVerificationGate` gained an optional
-`hideStatusCard` prop (default off, only this page uses it) so the
-verification *gate* still applies without the status-card chrome
-repeated on every guild page showing up here too. `MySignupCard.tsx`,
-`SignupOfficerGrid.tsx`, and the per-event `useEventAttendance` hook
-are kept (not deleted) — they're unused right now, not confirmed
-dead: self-service signup and per-event attendance recording are
-still real, working features, just not currently composed onto this
-page. If they should come back (a leaner "My status" line, attendance
-recording elsewhere) or be removed for good, that needs its own
+on this page. The status-card removal was a one-off `hideStatusCard`
+prop on `GuildVerificationGate` at first; a later pass (same day, see
+Guild's README "Settings" section) removed the card from
+`GuildVerificationGate` entirely and gave it a single home on the new
+`GuildSettingsPage` instead, so the prop is gone too — this page's
+`<GuildVerificationGate>` call takes no extra props now, same as
+every other gated page. `MySignupCard.tsx`, `SignupOfficerGrid.tsx`,
+and the per-event `useEventAttendance` hook are kept (not deleted) —
+they're unused right now, not confirmed dead: self-service signup and
+per-event attendance recording are still real, working features, just
+not currently composed onto this page. If they should come back (a
+leaner "My status" line, attendance recording elsewhere) or be
+removed for good, that needs its own
 decision, not a default from decluttering this one page.
 
 ## Raid Planner

@@ -20,8 +20,8 @@ export const mySynTrackModule: MainModuleDefinition =
         status: "available"
       },
       {
-        label: "Guild Link",
-        path: "/raider-link",
+        label: "Settings",
+        path: "/settings",
         status: "available"
       },
       {

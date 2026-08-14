@@ -178,9 +178,7 @@ export function RaidEventDetailPage() {
         </StatusMessage>
       )}
 
-      <GuildVerificationGate
-        hideStatusCard
-      >
+      <GuildVerificationGate>
         <RaidEventActionsBar
           event={event}
           isEditing={isEditing}

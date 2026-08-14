@@ -1,40 +1,38 @@
-import type { ReactNode } from "react";
+import { PageHeader } from "../../../../../apps/web/src/shared/components/PageHeader";
 import { LoadingPanel } from "../../../../../apps/web/src/shared/components/LoadingPanel";
 import { StatusMessage } from "../../../../../apps/web/src/shared/components/StatusMessage";
-import { useGuildVerification } from "../hooks/useGuildVerification";
-import { GuildVerificationPanel } from "./GuildVerificationPanel";
+import { GuildVerificationPanel } from "../../verification/components/GuildVerificationPanel";
+import { GuildVerificationStatusCard } from "../../verification/components/GuildVerificationStatusCard";
+import { useGuildVerification } from "../../verification/hooks/useGuildVerification";
 
-type GuildVerificationGateProps = {
-  children: ReactNode;
-};
-
-/**
- * Wraps any Guild capability whose mutations require a verified guild
- * leadership link (Roster, Teams, ...). Renders the verification flow
- * until a valid link exists, then renders children. The verified
- * identity itself (guild name/realm/rank) lives on the dedicated
- * Guild Settings page, not repeated on every gated page.
- */
-export function GuildVerificationGate({
-  children
-}: GuildVerificationGateProps) {
+export function GuildSettingsPage() {
   const verification =
     useGuildVerification();
 
-  if (verification.isLoadingStatus) {
-    return <LoadingPanel />;
-  }
-
   return (
-    <>
+    <div className="guild-page guild-page-narrow">
+      <PageHeader
+        description="Guild identity and leadership verification."
+        eyebrow="GUILD"
+        title="Settings"
+      />
+
       {verification.error && (
         <StatusMessage type="error">
           {verification.error}
         </StatusMessage>
       )}
 
-      {!verification.status
-        ?.verified && (
+      {verification.isLoadingStatus ? (
+        <LoadingPanel />
+      ) : verification.status
+        ?.verified ? (
+        <GuildVerificationStatusCard
+          status={
+            verification.status
+          }
+        />
+      ) : (
         <GuildVerificationPanel
           candidates={
             verification.candidates
@@ -71,9 +69,6 @@ export function GuildVerificationGate({
           }}
         />
       )}
-
-      {verification.status
-        ?.verified && children}
-    </>
+    </div>
   );
 }

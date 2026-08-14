@@ -9,7 +9,6 @@ import { getGuildOfficerNoteCount } from "../../officer-notes/api/officerNoteApi
 import { useRequirements } from "../../requirements/hooks/useRequirements";
 import { useRoster } from "../../roster/hooks/useRoster";
 import { useTeams } from "../../teams/hooks/useTeams";
-import { GuildVerificationStatusCard } from "../../verification/components/GuildVerificationStatusCard";
 import { useGuildVerification } from "../../verification/hooks/useGuildVerification";
 import { useWeeklyProgress } from "../../weekly-progress/hooks/useWeeklyProgress";
 
@@ -126,14 +125,8 @@ export function GuildDashboardPage() {
         <LoadingPanel />
       ) : (
         <>
-          {verification.status
-            ?.verified ? (
-            <GuildVerificationStatusCard
-              status={
-                verification.status
-              }
-            />
-          ) : (
+          {!verification.status
+            ?.verified && (
             <section className="guild-access-card">
               <div>
                 <span className="eyebrow">
@@ -153,7 +146,7 @@ export function GuildDashboardPage() {
 
               <Link
                 className="button button-primary"
-                to="/guild/roster"
+                to="/guild/settings"
               >
                 Verify Guild
               </Link>
@@ -208,6 +201,22 @@ export function GuildDashboardPage() {
               value={
                 officerNoteCount ??
                 "—"
+              }
+            />
+
+            <DashboardCard
+              detail={
+                verification.status
+                  ?.guildName ??
+                "guild identity"
+              }
+              label="Settings"
+              to="/guild/settings"
+              value={
+                verification.status
+                  ?.verified
+                  ? "Verified"
+                  : "Unverified"
               }
             />
           </div>
