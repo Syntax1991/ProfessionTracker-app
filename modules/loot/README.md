@@ -6,7 +6,7 @@ Loot planning and distribution.
 
 - Loot Table (built 2026-08-14 — see below)
 - Wishlist (built 2026-08-15 — see below)
-- Droptimizer (planned, next)
+- Droptimizer (built 2026-08-15 — see below)
 - Loot Council (planned)
 - Loot History (planned)
 - Tier / Token Planning (planned)
@@ -124,14 +124,55 @@ dropdowns (Not set/Preferred/Avoid) and 3 trinket-rank dropdowns (Not
 set + every real trinket from the catalog, labelled `Item — Boss`).
 `loot.definition.ts`'s "Wishlist" nav item flipped to "available".
 
+## Droptimizer (Step 3 of the WoWAudit-derived roadmap, built 2026-08-15)
+
+Step 1 left sim upload pending because Raidbots' report JSON shape
+couldn't be confirmed from documentation. Unblocked when the user
+pasted a real report URL and said **"weiter damit"** (continue with
+this). The report page turned out to load from a plain public
+endpoint, `https://www.raidbots.com/reports/{reportId}/data.json` (no
+auth, confirmed with a direct `curl`) — real shape, no guessing:
+`simbot.simType` (`"droptimizer"` vs. other sim types, lets non-
+droptimizer URLs be rejected), `simbot.meta.itemLibrary[]` (item
+metadata keyed by the same real Blizzard item ids already in
+`lootCatalog.ts` — cross-checked directly), `sim.players[0]
+.collected_data.dps.mean` (baseline DPS with current gear), and
+`sim.profilesets.results[]` (one entry per simmed item swap; `.name`
+is `{instanceId}/{encounterId}/{difficulty}/{itemId}/{itemLevel}/...`
+slash-delimited, `.mean` is the resulting DPS). Upgrade % is simply
+`(result.mean - baseline) / baseline * 100`. Hand-verified against the
+real report before building anything: e.g. item 268205 at 311 ilvl
+computed to +5277 dps / +61.78%, a real best-in-slot weapon upgrade.
+
+Self-service, same pattern as Wishlist — `modules/loot/api/
+droptimizer/` resolves the caller's own `GuildMember` via
+`guildRaiderLinkService.getLinkedMember(token)`, no
+`GuildVerificationGuard`. "Upload" is pasting the report URL, not a
+file attachment — `raidbots.client.ts` (mirrors `BattleNetClient`'s
+plain-class-with-`AppError`-on-failure shape) fetches the report
+server-side. One `LootSimReport` row per member (latest report only,
+matching WoWAudit's own droptimizer view — not a sim history);
+`upgradesJson` holds a pre-filtered (only items that exist in
+`lootCatalog.ts`), deduped (best profileset per real item id),
+sorted-by-gain array, stored as a JSON text column the same way
+`RaiderSession.charactersJson` already does for read-only fetched
+data that's replaced wholesale rather than edited field-by-field.
+Routes mounted at `/loot/droptimizer`: `GET`/`PUT`/`DELETE /me`.
+
+`DroptimizerPage.tsx` (`/loot/droptimizer`) is a URL input + submit,
+then (once a report exists) the report title/class/spec/baseline-dps
+and an upgrade table (Item/Slot/Boss/Ilvl/DPS Gain/Gain %).
+`loot.definition.ts`'s "Droptimizer" nav item flipped to "available".
+
+One bug caught during live-testing with the real report: the first
+pass displayed the catalog's base item level (219, the Item API's
+template level) for every row instead of the actual per-difficulty
+level (305/308/311/315) the sim varied. Fixed by parsing `itemLevel`
+out of each profileset's own `.name` string (`parts[4]`) rather than
+using the catalog's static `itemLevel` field.
+
 ## Roadmap (explicit next steps, not vague future work)
 
-1. **Sim upload (Droptimizer)** — a `RaidbotsClient` mirroring
-   `BattleNetClient`'s pattern (plain class, module-level base URL,
-   `AppError` on failure), fetching a pasted Raidbots/QE report URL
-   and parsing upgrade-% per item — pending a live test fetch against
-   a real report to confirm the actual JSON shape, since Raidbots'
-   documentation couldn't be resolved during Step 1's research pass.
-2. Loot Council, Loot History (RCLootCouncil-style awarding/sync),
-   Tier/Token Planning, and Split Planning remain unstarted — each is
-   its own future slice, same scale as the item above.
+Loot Council, Loot History (RCLootCouncil-style awarding/sync),
+Tier/Token Planning, and Split Planning remain unstarted — each is its
+own future slice, same scale as Steps 1–3 above.

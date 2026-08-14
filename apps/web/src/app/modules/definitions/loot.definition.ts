@@ -20,7 +20,8 @@ export const lootModule: MainModuleDefinition =
       },
       {
         label: "Droptimizer",
-        status: "planned"
+        path: "/loot/droptimizer",
+        status: "available"
       },
       {
         label: "Loot Council",

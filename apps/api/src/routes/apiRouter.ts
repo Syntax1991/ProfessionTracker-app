@@ -11,6 +11,7 @@ import { raidAttendanceRouter } from "../../../../modules/raid/api/attendance/at
 import { raidBossRosterRouter } from "../../../../modules/raid/api/boss-rosters/boss-roster.routes.js";
 import { raidCooldownRouter } from "../../../../modules/raid/api/cooldowns/cooldown.routes.js";
 import { lootWishlistRouter } from "../../../../modules/loot/api/wishlist/wishlist.routes.js";
+import { lootDroptimizerRouter } from "../../../../modules/loot/api/droptimizer/droptimizer.routes.js";
 import { raidPlannerRouter } from "../../../../modules/raid/api/planner/planner.routes.js";
 import { raidSignupRouter } from "../../../../modules/raid/api/signups/signup.routes.js";
 import { characterRouter } from "../../../../modules/my-syntrack/api/characters/character.routes.js";
@@ -160,6 +161,11 @@ apiRouter.use(
 apiRouter.use(
   "/loot/wishlist",
   lootWishlistRouter
+);
+
+apiRouter.use(
+  "/loot/droptimizer",
+  lootDroptimizerRouter
 );
 
 apiRouter.use(
