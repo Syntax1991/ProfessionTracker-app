@@ -459,8 +459,9 @@ model RaidBoss {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  event         RaidEvent             @relation(fields: [raidEventId], references: [id], onDelete: Cascade)
-  rosterEntries RaidBossRosterEntry[]
+  event               RaidEvent                @relation(fields: [raidEventId], references: [id], onDelete: Cascade)
+  rosterEntries       RaidBossRosterEntry[]
+  cooldownAssignments RaidCooldownAssignment[]
 
   @@index([raidEventId])
 }
@@ -476,6 +477,22 @@ model RaidBossRosterEntry {
   boss RaidBoss @relation(fields: [bossId], references: [id], onDelete: Cascade)
 
   @@unique([bossId, memberId])
+  @@index([memberId])
+}
+
+model RaidCooldownAssignment {
+  id          String   @id @default(cuid())
+  bossId      String
+  memberId    String
+  abilityName String
+  phaseLabel  String?
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  boss RaidBoss @relation(fields: [bossId], references: [id], onDelete: Cascade)
+
+  @@index([bossId])
   @@index([memberId])
 }
 

@@ -23,9 +23,9 @@ logging.
 - Signups (available)
 - Boss Rosters (available)
 - Attendance (available)
+- Cooldown Planning (available — see below)
 - Bench Management (planned)
 - Assignments (planned)
-- Cooldown Planning (planned)
 - Strategies (planned)
 - Strategy Acknowledgements (planned)
 
@@ -35,14 +35,56 @@ does not own the guild roster.
 ## Current source
 
 - API: `modules/raid/api/planner`, `modules/raid/api/boss-rosters`,
-  `modules/raid/api/signups`, `modules/raid/api/attendance`
+  `modules/raid/api/signups`, `modules/raid/api/attendance`,
+  `modules/raid/api/cooldowns`
 - Web: `modules/raid/web/planner` (routed pages — Planner index +
   Event Detail) and `modules/raid/web/attendance` (routed page — the
-  season rollup), `modules/raid/web/boss-rosters` and
-  `modules/raid/web/signups` (components/hooks/types only, composed
-  into the Event Detail page, no page/route of their own anymore)
+  season rollup), `modules/raid/web/boss-rosters`,
+  `modules/raid/web/signups` and `modules/raid/web/cooldowns`
+  (components/hooks/types only, composed into the Event Detail page,
+  no page/route of their own)
 - Shared: `modules/raid/shared/catalog/raidCatalog.ts` (Midnight raid
   instances by season, used by both API and web)
+
+## Cooldown Planning (step 1 — structured list, not the timeline yet)
+
+Built 2026-08-14 after the user asked directly where "Raid Planner"
+went (it hadn't — the nav label had just been renamed to "Events") and
+then clarified what they actually meant: **"den Teil für Healing CDs
+etc"** — Cooldown Planning, listed as "(planned)" in this file but not
+even present in `raid.definition.ts`'s nav items. Chose "build it now"
+as the next Raid slice.
+
+Scoped deliberately smaller than the full WoWUtils-style interactive
+timeline this file's own design note points at: `GuildMember` has no
+spec field (only `className`), and fabricating a "which cooldown does
+each spec have" reference table, or precise per-boss ability-cast
+timing data, isn't something to guess at responsibly. `abilityName`
+and `phaseLabel` on `RaidCooldownAssignment` are plain officer-typed
+text (a `<datalist>` autocomplete suggests previously-typed ability
+names across the event — real prior input, not fabricated data), not
+gated to a fixed catalog. New same-module `RaidCooldownAssignment`
+(real FK to `RaidBoss`, cascade delete, mirrors
+`RaidBossRosterEntry`'s pattern; loose `memberId` cross-module
+reference, same convention as `RaidBossRosterEntry.memberId`) — unlike
+Boss Roster's one-entry-per-boss×member upsert, a character can hold
+several assignments per boss (different moments), so this is plain
+CRUD by id. `CooldownPlanSection.tsx` renders one panel per boss
+(reusing the `bosses` array `RaidEventDetailPage` already loads, no
+duplicate fetch), composed directly below `BossRosterSection` inside
+the same `GuildVerificationGate`. No new top-level nav route — same
+reasoning that already keeps Boss Rosters and Signups off the sidebar
+and composed into the Event Detail page instead.
+
+**Immediately followed by a bigger ask** (same session): the user
+shared a WoWUtils "Viserio Cooldowns" screenshot — a full interactive
+fight timeline (horizontal time axis with phase dividers, boss-ability
+rows with real per-boss cast timestamps, cooldown category filters,
+drag/click assignment) and said this structured list isn't the target,
+they want CDs planned on that timeline. That's a real, much larger
+follow-up — precise per-boss ability timing data for all 8 bosses, a
+timeline UI component — planned as its own pass, not built by
+silently expanding this one.
 
 ## Signups
 

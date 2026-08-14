@@ -6,7 +6,8 @@
 }
 
 .boss-add-form input[type="text"],
-.boss-add-form input:not([type]) {
+.boss-add-form input:not([type]),
+.boss-add-form select {
   flex: 1;
   min-width: 160px;
 }
