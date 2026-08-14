@@ -3,7 +3,10 @@ import type { BattleNetClient } from "../../../data-platform/api/integrations/ba
 import type { RaiderAccessTokenGuard } from "../../../data-platform/api/raider-auth/raider-auth.types.js";
 import type { GuildVerificationGuard } from "../verification/verification.types.js";
 import { slugifyRealmName } from "./audit.realm-slug.js";
-import { computeAuditStats } from "./audit.stats.js";
+import {
+  computeAuditStats,
+  computeGearSlots
+} from "./audit.stats.js";
 import { GuildAuditRepository } from "./audit.repository.js";
 import type { GuildAuditRefreshResult } from "./audit.types.js";
 
@@ -63,6 +66,13 @@ export class GuildAuditService {
               )
             );
 
+            await this.repository.replaceGearSlots(
+              member.id,
+              computeGearSlots(
+                equipment
+              )
+            );
+
             return true;
           }
           catch {
@@ -84,5 +94,9 @@ export class GuildAuditService {
         members.length -
         auditedMembers
     };
+  }
+
+  listGearSlots() {
+    return this.repository.findAllGearSlots();
   }
 }

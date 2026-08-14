@@ -1,6 +1,7 @@
 import {
   useState
 } from "react";
+import { Tabs } from "../../../../../apps/web/src/shared/components/Tabs";
 import type {
   ProfessionDetail
 } from "../types/professionDetail.types";
@@ -160,48 +161,15 @@ export function ProfessionDetailWorkspace({
         </article>
       </section>
 
-      <nav
-        aria-label="Professionsdetail"
-        className="panel profession-detail-tabs"
-        role="tablist"
-      >
-        {tabs.map(
-          (tab) => (
-            <button
-              aria-selected={
-                activeTab ===
-                tab.id
-              }
-              className={
-                activeTab ===
-                tab.id
-                  ? "profession-detail-tab active"
-                  : "profession-detail-tab"
-              }
-              key={tab.id}
-              onClick={
-                () =>
-                  setActiveTab(
-                    tab.id
-                  )
-              }
-              role="tab"
-              type="button"
-            >
-              <span>
-                {tab.label}
-              </span>
-
-              <strong>
-                {tab.count}
-              </strong>
-            </button>
-          )
-        )}
-      </nav>
+      <Tabs
+        activeTab={activeTab}
+        ariaLabel="Professionsdetail"
+        onChange={setActiveTab}
+        tabs={tabs}
+      />
 
       <div
-        className="profession-detail-tab-content"
+        className="app-tab-content"
         role="tabpanel"
       >
         {activeTab ===

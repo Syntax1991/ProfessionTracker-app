@@ -24,11 +24,6 @@ export const guildModule: MainModuleDefinition =
         status: "available"
       },
       {
-        label: "Gear Audit",
-        path: "/guild/audit",
-        status: "available"
-      },
-      {
         label: "Raider Progress",
         path: "/guild/weekly-progress",
         status: "available"

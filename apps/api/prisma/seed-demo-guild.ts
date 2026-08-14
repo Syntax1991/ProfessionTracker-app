@@ -15,7 +15,17 @@ const prisma = new PrismaClient({
   adapter
 });
 
-const REALM = "Draenor";
+/**
+ * Deliberately not a real Blizzard realm slug. Guild Audit's
+ * "Refresh from Blizzard" iterates every roster member and looks up
+ * live equipment by name+realm - on a real, populated realm (Draenor
+ * was tried first) a fabricated demo name can coincidentally match
+ * an unrelated real player and silently overwrite the demo stats
+ * with that stranger's actual gear. This realm name can never
+ * resolve to a real character, so refresh always 404s and skips
+ * these members, leaving the seeded stats stable.
+ */
+const REALM = "Draenor (Demo)";
 const REGION = "eu";
 
 type DemoMember = {

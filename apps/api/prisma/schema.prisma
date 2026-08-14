@@ -328,10 +328,31 @@ model GuildMember {
 
   teamMemberships GuildTeamMembership[]
   officerNotes    GuildOfficerNote[]
+  gearSlots       GuildMemberGearSlot[]
 
   @@unique([name, realm, region])
   @@index([rankIndex])
   @@index([source])
+}
+
+model GuildMemberGearSlot {
+  id                String   @id @default(cuid())
+  memberId          String
+  slotKey           String
+  itemName          String?
+  itemLevel         Int?
+  quality           String?
+  enchantStatus     String   @default("NOT_APPLICABLE")
+  socketCount       Int      @default(0)
+  filledSocketCount Int      @default(0)
+  upgradeCurrent    Int?
+  upgradeMax        Int?
+  updatedAt         DateTime @updatedAt
+
+  member GuildMember @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@unique([memberId, slotKey])
+  @@index([memberId])
 }
 
 model GuildOfficerNote {

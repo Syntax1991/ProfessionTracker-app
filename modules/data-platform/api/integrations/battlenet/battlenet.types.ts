@@ -117,11 +117,24 @@ export type BattleNetEquippedItemSocket = {
   };
 };
 
+export type BattleNetEquippedItemQuality = {
+  type?: string;
+  name?: string;
+};
+
+export type BattleNetEquippedItemUpgrade = {
+  value?: number;
+  max_value?: number;
+};
+
 export type BattleNetEquippedItem = {
+  name?: string;
   slot?: BattleNetEquippedItemSlot;
   level?: BattleNetEquippedItemLevel;
+  quality?: BattleNetEquippedItemQuality;
   enchantments?: unknown[];
   sockets?: BattleNetEquippedItemSocket[];
+  upgrades?: BattleNetEquippedItemUpgrade;
 };
 
 export type BattleNetCharacterEquipment = {

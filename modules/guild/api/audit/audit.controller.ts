@@ -23,4 +23,17 @@ export class GuildAuditController {
       )
     );
   };
+
+  listGearSlots: RequestHandler = async (
+    _request,
+    response
+  ) => {
+    const items =
+      await this.service.listGearSlots();
+
+    response.json({
+      items,
+      total: items.length
+    });
+  };
 }

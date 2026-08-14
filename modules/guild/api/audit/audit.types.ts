@@ -10,3 +10,18 @@ export type GuildAuditRefreshResult = {
   auditedMembers: number;
   skippedMembers: number;
 };
+
+export type GuildMemberGearSlotStats = {
+  slotKey: string;
+  itemName: string | null;
+  itemLevel: number | null;
+  quality: string | null;
+  enchantStatus:
+    | "READY"
+    | "MISSING"
+    | "NOT_APPLICABLE";
+  socketCount: number;
+  filledSocketCount: number;
+  upgradeCurrent: number | null;
+  upgradeMax: number | null;
+};

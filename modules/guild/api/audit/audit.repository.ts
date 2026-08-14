@@ -1,5 +1,8 @@
 import { prisma } from "../../../../apps/api/src/infrastructure/database/prismaClient.js";
-import type { GuildMemberAuditStats } from "./audit.types.js";
+import type {
+  GuildMemberAuditStats,
+  GuildMemberGearSlotStats
+} from "./audit.types.js";
 
 export class GuildAuditRepository {
   findAllMembers() {
@@ -26,5 +29,33 @@ export class GuildAuditRepository {
         auditedAt: new Date()
       }
     });
+  }
+
+  async replaceGearSlots(
+    memberId: string,
+    slots: GuildMemberGearSlotStats[]
+  ) {
+    await prisma.guildMemberGearSlot.deleteMany({
+      where: {
+        memberId
+      }
+    });
+
+    if (slots.length === 0) {
+      return;
+    }
+
+    await prisma.guildMemberGearSlot.createMany({
+      data: slots.map(
+        (slot) => ({
+          memberId,
+          ...slot
+        })
+      )
+    });
+  }
+
+  findAllGearSlots() {
+    return prisma.guildMemberGearSlot.findMany();
   }
 }

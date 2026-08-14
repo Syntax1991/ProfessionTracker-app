@@ -1,5 +1,8 @@
 import { apiRequest } from "../../../../../apps/web/src/shared/api/httpClient";
-import type { GuildAuditRefreshResult } from "../types/audit.types";
+import type {
+  GuildAuditRefreshResult,
+  GuildMemberGearSlotListResponse
+} from "../types/audit.types";
 
 export function refreshGuildAudit():
   Promise<GuildAuditRefreshResult> {
@@ -8,5 +11,12 @@ export function refreshGuildAudit():
     {
       method: "POST"
     }
+  );
+}
+
+export function getGuildGearSlots():
+  Promise<GuildMemberGearSlotListResponse> {
+  return apiRequest<GuildMemberGearSlotListResponse>(
+    "/guild/audit/gear-slots"
   );
 }

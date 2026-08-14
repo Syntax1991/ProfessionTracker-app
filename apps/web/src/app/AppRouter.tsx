@@ -3,7 +3,6 @@ import {
   Route,
   Routes
 } from "react-router-dom";
-import { AuditPage } from "../../../../modules/guild/web/audit/pages/AuditPage";
 import { GuildDashboardPage } from "../../../../modules/guild/web/dashboard/pages/GuildDashboardPage";
 import { OfficerNotesPage } from "../../../../modules/guild/web/officer-notes/pages/OfficerNotesPage";
 import { RaiderLinkPage } from "../../../../modules/guild/web/raider-link/pages/RaiderLinkPage";
@@ -150,7 +149,12 @@ export function AppRouter() {
 
         <Route
           path="guild/audit"
-          element={<AuditPage />}
+          element={
+            <Navigate
+              replace
+              to="/guild/roster"
+            />
+          }
         />
 
         <Route

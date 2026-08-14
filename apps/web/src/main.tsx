@@ -5,6 +5,7 @@ import "./styles/tokens.css";
 import "./styles/base.css";
 import "./styles/layout.css";
 import "./styles/components.css";
+import "./styles/tabs.css";
 import "./styles/module-navigation.css";
 import "./styles/module-navigation-responsive.css";
 import "./styles/integration.css";

@@ -35,3 +35,10 @@ guildAuditRouter.post(
     controller.refreshAll
   )
 );
+
+guildAuditRouter.get(
+  "/gear-slots",
+  asyncHandler(
+    controller.listGearSlots
+  )
+);

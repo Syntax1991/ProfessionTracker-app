@@ -1,5 +1,8 @@
 import type { BattleNetCharacterEquipment } from "../../../data-platform/api/integrations/battlenet/battlenet.types.js";
-import type { GuildMemberAuditStats } from "./audit.types.js";
+import type {
+  GuildMemberAuditStats,
+  GuildMemberGearSlotStats
+} from "./audit.types.js";
 
 /**
  * Slots that reliably carry an enchant across current WoW content.
@@ -83,4 +86,76 @@ export function computeAuditStats(
     totalSocketCount,
     filledSocketCount
   };
+}
+
+export function computeGearSlots(
+  equipment: BattleNetCharacterEquipment
+): GuildMemberGearSlotStats[] {
+  const items =
+    equipment.equipped_items ??
+    [];
+
+  const slots: GuildMemberGearSlotStats[] =
+    [];
+
+  for (const item of items) {
+    const slotType =
+      item.slot?.type;
+
+    if (!slotType) {
+      continue;
+    }
+
+    const isEnchantable =
+      enchantableSlotTypes.has(
+        slotType
+      );
+
+    const hasEnchant =
+      Array.isArray(
+        item.enchantments
+      ) &&
+      item.enchantments.length >
+        0;
+
+    let socketCount = 0;
+    let filledSocketCount = 0;
+
+    for (const socket of item.sockets ??
+      []) {
+      socketCount += 1;
+
+      if (socket.item) {
+        filledSocketCount += 1;
+      }
+    }
+
+    slots.push({
+      slotKey: slotType,
+      itemName:
+        item.name ?? null,
+      itemLevel:
+        item.level?.value ??
+        null,
+      quality:
+        item.quality?.type ??
+        null,
+      enchantStatus:
+        !isEnchantable
+          ? "NOT_APPLICABLE"
+          : hasEnchant
+            ? "READY"
+            : "MISSING",
+      socketCount,
+      filledSocketCount,
+      upgradeCurrent:
+        item.upgrades?.value ??
+        null,
+      upgradeMax:
+        item.upgrades
+          ?.max_value ?? null
+    });
+  }
+
+  return slots;
 }

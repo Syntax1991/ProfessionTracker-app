@@ -4,13 +4,13 @@ Guild organization and persistent guild state.
 
 ## Capabilities
 
-All seven originally planned capabilities are implemented, plus a
-Gear Audit added afterward as a deliberate WoWAudit-inspired
-extension (see below):
+All seven originally planned capabilities are implemented. Gear Audit
+was added afterward as a WoWAudit-inspired extension, then merged
+into Roster as a tabbed "Audit" experience (see below) — it is no
+longer a separate nav entry:
 
 - Dashboard (available)
-- Roster (available)
-- Gear Audit (available)
+- Roster (available, includes Gear Audit as tabs)
 - Teams (available)
 - Weekly Progress (available)
 - Requirements (available)
@@ -23,11 +23,14 @@ extension (see below):
   `modules/guild/api/requirements`, `modules/guild/api/officer-notes`,
   `modules/guild/api/weekly-progress`,
   `modules/guild/api/audit`
-- Web: `modules/guild/web/roster`, `modules/guild/web/verification`,
-  `modules/guild/web/teams`, `modules/guild/web/requirements`,
-  `modules/guild/web/officer-notes`,
-  `modules/guild/web/weekly-progress`, `modules/guild/web/dashboard`,
-  `modules/guild/web/audit`
+- Web: `modules/guild/web/roster` (the only routed page — `RosterPage`
+  is a 4-tab container), `modules/guild/web/audit` (tab content +
+  hooks/api, composed into Roster, no route of its own),
+  `modules/guild/web/verification`, `modules/guild/web/teams`,
+  `modules/guild/web/requirements`, `modules/guild/web/officer-notes`,
+  `modules/guild/web/weekly-progress`, `modules/guild/web/dashboard`
+- Shared: `apps/web/src/shared/components/Tabs.tsx` (generic tab bar,
+  also used by Professions' detail page)
 - Addon: `modules/guild/addons/SynTrack_Guild`
 
 Roster members can be managed manually or synced from the
@@ -179,6 +182,51 @@ The enchantable-slot list intentionally excludes head/shoulder, since
 whether those carry an enchant depends on expansion-specific systems
 (renown, crests, ...) that come and go; including them risked false
 "missing enchant" flags.
+
+**Merged into Roster as tabs (2026-08-14)**, matching a WoWAudit
+screenshot of its real multi-tab "Audit" page the user shared, after
+research established Roster and Gear Audit were already one data
+model (`GuildMember` carries both roster and audit fields — the split
+was purely two separate pages) with no reusable tab UI in the app
+yet. `RosterPage.tsx` is now a 4-tab container (`Summary` / `Gear
+overview` / `Gear upgrades` / `Gear enchants`) using the new shared
+`apps/web/src/shared/components/Tabs.tsx` (extracted from the
+Professions detail page's bespoke tab bar, which now reuses it too).
+`AuditPage.tsx` is gone; `/guild/audit` redirects to `/guild/roster`.
+
+The refresh call already fetched every equipped item's full payload
+(name, quality, per-slot enchant/socket/upgrade data) — `audit.stats.ts`
+was only keeping four aggregate scalars and discarding the rest.
+`computeGearSlots()` now also persists one `GuildMemberGearSlot` row
+per equipped slot (unique on `[memberId, slotKey]`, full-replaced
+every refresh via `replaceGearSlots`), which is what backs the new
+Gear upgrades (`upgradeCurrent`/`upgradeMax`, from Blizzard's item
+upgrade-track data — confirmed against a real payload, e.g. a
+Heirloom showing `3/6`) and Gear enchants (per-slot ✓/✗, same
+enchantable-slot rule as the aggregate count) tabs — **zero new
+Blizzard calls**, same one-request-per-member refresh as before.
+
+This surfaced a real hazard worth documenting: `GuildAuditService.refreshAll`
+iterates *every* roster row and looks up live equipment by
+`name`+`realm`, with no way to tell a real member from a manually
+entered placeholder. A first version of the demo-guild seed
+(`apps/api/prisma/seed-demo-guild.ts`) used the real "Draenor" EU
+realm, and a refresh run during testing silently overwrote several
+fabricated demo members' stats with unrelated real players' actual
+gear — coincidental name collisions on a real, populated realm. Fixed
+by seeding demo characters on `"Draenor (Demo)"` instead, which
+`slugifyRealmName` turns into `draenor-demo` — not a real Blizzard
+realm slug, so refresh always 404s and skips them cleanly. Anyone
+adding fixture/demo `GuildMember` rows by hand should use an
+obviously-fake realm for the same reason, not a real populated one.
+
+**Still WoWAudit's full "Audit" tab set, not started**: Vault, Raids
+(this week/overall/timeline), Dungeons (weekly/season), Collections,
+Reputations, PvP. Nothing tracks any of these for guild members
+today — see the `project_wowaudit_reference` memory for the
+researched endpoint list and why each is its own future slice (new
+`BattleNetClient` method + Prisma model + refresh/read endpoints +
+tab, same shape as this Gear Audit build).
 
 ## Requirements
 
