@@ -110,3 +110,14 @@ verified leadership link as Guild's own features; the event list
 remains open to read. The web page reuses Guild's
 `GuildVerificationGate` and `useTeams` hook directly (cross-module
 frontend composition, not duplicated logic).
+
+The overview panel has a Calendar/List toggle (`RaidCalendarView.tsx`,
+defaults to Calendar), matching WoWAudit's Events page — a fixed 6x7
+Monday-first month grid (`modules/raid/web/planner/utils/calendarMonth.ts`)
+with events rendered as small cards color-coded by difficulty
+(left-border accent). Clicking an empty day prefills the existing
+create form with that date at a default 20:00 start time
+(`RaidEventForm`'s `prefillDate` prop) rather than opening a separate
+flow — reuses the exact same form/validation/submit path as manual
+creation, just seeds the date field. Clicking an event card opens
+that event for editing, same as the List view's Edit action.

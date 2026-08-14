@@ -4,6 +4,7 @@ import { PageHeader } from "../../../../../apps/web/src/shared/components/PageHe
 import { StatusMessage } from "../../../../../apps/web/src/shared/components/StatusMessage";
 import { useTeams } from "../../../../guild/web/teams/hooks/useTeams";
 import { GuildVerificationGate } from "../../../../guild/web/verification/components/GuildVerificationGate";
+import { RaidCalendarView } from "../components/RaidCalendarView";
 import { RaidEventForm } from "../components/RaidEventForm";
 import { RaidEventList } from "../components/RaidEventList";
 import { useRaidEvents } from "../hooks/useRaidEvents";
@@ -11,6 +12,12 @@ import type {
   RaidEvent,
   RaidEventInput
 } from "../types/raidEvent.types";
+import {
+  addMonths,
+  formatMonthLabel
+} from "../utils/calendarMonth";
+
+type ViewMode = "calendar" | "list";
 
 export function RaidPlannerPage() {
   const [
@@ -19,6 +26,24 @@ export function RaidPlannerPage() {
   ] = useState<RaidEvent | null>(
     null
   );
+
+  const [
+    prefillDate,
+    setPrefillDate
+  ] = useState<Date | null>(null);
+
+  const [viewMode, setViewMode] =
+    useState<ViewMode>("calendar");
+
+  const [monthDate, setMonthDate] =
+    useState(
+      () =>
+        new Date(
+          new Date().getFullYear(),
+          new Date().getMonth(),
+          1
+        )
+    );
 
   const {
     events,
@@ -45,6 +70,7 @@ export function RaidPlannerPage() {
     }
 
     await createEvent(input);
+    setPrefillDate(null);
   };
 
   const handleDelete = async (
@@ -66,6 +92,20 @@ export function RaidPlannerPage() {
     ) {
       setEditingEvent(null);
     }
+  };
+
+  const handleCreateOnDate = (
+    date: Date
+  ) => {
+    setEditingEvent(null);
+    setPrefillDate(date);
+  };
+
+  const handleEditEvent = (
+    event: RaidEvent
+  ) => {
+    setPrefillDate(null);
+    setEditingEvent(event);
   };
 
   return (
@@ -107,15 +147,23 @@ export function RaidPlannerPage() {
               }
               key={
                 editingEvent?.id ??
+                prefillDate?.toISOString() ??
                 "new-event"
               }
-              onCancel={() =>
+              onCancel={() => {
                 setEditingEvent(
                   null
-                )
-              }
+                );
+
+                setPrefillDate(
+                  null
+                );
+              }}
               onSubmit={
                 handleSubmit
+              }
+              prefillDate={
+                prefillDate
               }
               teams={teams}
             />
@@ -133,10 +181,111 @@ export function RaidPlannerPage() {
                   Scheduled Raids
                 </h2>
               </div>
+
+              <div className="raid-calendar-view-toggle">
+                <button
+                  className={
+                    viewMode ===
+                    "calendar"
+                      ? "selected"
+                      : ""
+                  }
+                  onClick={() =>
+                    setViewMode(
+                      "calendar"
+                    )
+                  }
+                  type="button"
+                >
+                  Calendar
+                </button>
+
+                <button
+                  className={
+                    viewMode ===
+                    "list"
+                      ? "selected"
+                      : ""
+                  }
+                  onClick={() =>
+                    setViewMode(
+                      "list"
+                    )
+                  }
+                  type="button"
+                >
+                  List
+                </button>
+              </div>
             </div>
+
+            {viewMode ===
+              "calendar" && (
+              <div className="raid-calendar-toolbar">
+                <div className="raid-calendar-nav">
+                  <button
+                    aria-label="Previous month"
+                    className="raid-calendar-nav-button"
+                    onClick={() =>
+                      setMonthDate(
+                        (
+                          previous
+                        ) =>
+                          addMonths(
+                            previous,
+                            -1
+                          )
+                      )
+                    }
+                    type="button"
+                  >
+                    ‹
+                  </button>
+
+                  <span className="raid-calendar-nav-label">
+                    {formatMonthLabel(
+                      monthDate
+                    )}
+                  </span>
+
+                  <button
+                    aria-label="Next month"
+                    className="raid-calendar-nav-button"
+                    onClick={() =>
+                      setMonthDate(
+                        (
+                          previous
+                        ) =>
+                          addMonths(
+                            previous,
+                            1
+                          )
+                      )
+                    }
+                    type="button"
+                  >
+                    ›
+                  </button>
+                </div>
+              </div>
+            )}
 
             {isLoading ? (
               <LoadingPanel />
+            ) : viewMode ===
+              "calendar" ? (
+              <RaidCalendarView
+                events={events}
+                monthDate={
+                  monthDate
+                }
+                onCreateOnDate={
+                  handleCreateOnDate
+                }
+                onEditEvent={
+                  handleEditEvent
+                }
+              />
             ) : (
               <RaidEventList
                 events={events}
@@ -148,7 +297,7 @@ export function RaidPlannerPage() {
                   );
                 }}
                 onEdit={
-                  setEditingEvent
+                  handleEditEvent
                 }
               />
             )}

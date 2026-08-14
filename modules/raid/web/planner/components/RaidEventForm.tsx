@@ -11,6 +11,7 @@ import type {
 
 type RaidEventFormProps = {
   event: RaidEvent | null;
+  prefillDate: Date | null;
   teams: GuildTeam[];
   onCancel: () => void;
   onSubmit: (
@@ -39,8 +40,33 @@ function toDateTimeInputValue(
     .slice(0, 16);
 }
 
+function toPrefillDateTimeInputValue(
+  date: Date
+): string {
+  const withDefaultTime = new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+    20,
+    0
+  );
+
+  const offsetMilliseconds =
+    withDefaultTime.getTimezoneOffset() *
+    60 *
+    1000;
+
+  return new Date(
+    withDefaultTime.getTime() -
+      offsetMilliseconds
+  )
+    .toISOString()
+    .slice(0, 16);
+}
+
 function createInitialState(
-  event: RaidEvent | null
+  event: RaidEvent | null,
+  prefillDate: Date | null
 ): RaidEventFormState {
   return {
     title: event?.title ?? "",
@@ -49,10 +75,15 @@ function createInitialState(
     difficulty:
       event?.difficulty ??
       "HEROIC",
-    scheduledAt:
-      toDateTimeInputValue(
-        event?.scheduledAt
-      ),
+    scheduledAt: event
+      ? toDateTimeInputValue(
+          event.scheduledAt
+        )
+      : prefillDate
+        ? toPrefillDateTimeInputValue(
+            prefillDate
+          )
+        : "",
     teamId: event?.teamId ?? "",
     notes: event?.notes ?? ""
   };
@@ -60,12 +91,17 @@ function createInitialState(
 
 export function RaidEventForm({
   event,
+  prefillDate,
   teams,
   onCancel,
   onSubmit
 }: RaidEventFormProps) {
   const [form, setForm] = useState(
-    () => createInitialState(event)
+    () =>
+      createInitialState(
+        event,
+        prefillDate
+      )
   );
 
   const [isSubmitting, setIsSubmitting] =
