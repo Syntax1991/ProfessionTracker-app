@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { GuildMember } from "../../../../guild/web/roster/types/roster.types";
 import { BossMatrixMemberCell } from "../../boss-rosters/components/BossMatrixMemberCell";
 import type { RaidCooldownAssignment, RaidCooldownAssignmentInput } from "../types/cooldown.types";
+import { formatSeconds } from "../utils/timelineFormat";
 import { CooldownAssignmentForm } from "./CooldownAssignmentForm";
 
 type CooldownBossPanelProps = {
@@ -139,6 +140,17 @@ export function CooldownBossPanel({
                       <td>
                         {assignment.phaseLabel ??
                           "—"}
+                        {assignment.timestampSeconds !==
+                          null && (
+                          <span className="muted-text">
+                            {" "}
+                            (
+                            {formatSeconds(
+                              assignment.timestampSeconds
+                            )}
+                            )
+                          </span>
+                        )}
                       </td>
 
                       <td>

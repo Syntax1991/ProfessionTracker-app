@@ -1,0 +1,128 @@
+.cooldown-duration-form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cooldown-duration-form input {
+  width: 90px;
+}
+
+.cooldown-view-toggle {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.cooldown-view-toggle .active {
+  border-color: var(--primary);
+  color: var(--text);
+}
+
+.cooldown-ability-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 16px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface-elevated);
+}
+
+.cooldown-ability-legend-phase {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--text-muted);
+  font-size: 0.62rem;
+  font-weight: 750;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.cooldown-ability-legend > div > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  max-width: 260px;
+}
+
+.cooldown-ability-legend span:not(
+    .cooldown-ability-legend-phase
+  ) {
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--surface-hover);
+  color: var(--text-secondary);
+  font-size: 0.66rem;
+}
+
+.cooldown-timeline-wrap {
+  margin: 12px 0 20px;
+}
+
+.cooldown-timeline-ticks {
+  position: relative;
+  height: 16px;
+  margin-bottom: 4px;
+}
+
+.cooldown-timeline-ticks span {
+  position: absolute;
+  transform: translateX(-50%);
+  color: var(--text-muted);
+  font-size: 0.6rem;
+}
+
+.cooldown-timeline-track {
+  position: relative;
+  height: 64px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface-elevated);
+  cursor: crosshair;
+}
+
+.cooldown-timeline-phase {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  border-left: 1px dashed var(--border-strong);
+}
+
+.cooldown-timeline-phase span {
+  position: absolute;
+  top: -18px;
+  left: 4px;
+  white-space: nowrap;
+  color: var(--text-muted);
+  font-size: 0.6rem;
+  cursor: pointer;
+}
+
+.cooldown-timeline-marker {
+  position: absolute;
+  top: 50%;
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  transform: translate(-50%, -50%);
+  border: 2px solid var(--marker-color, var(--border-strong));
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.56rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.cooldown-timeline-placing-at {
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: var(--primary-soft);
+  color: var(--text);
+  font-size: 0.68rem;
+  font-weight: 700;
+}

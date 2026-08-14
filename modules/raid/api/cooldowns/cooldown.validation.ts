@@ -20,12 +20,56 @@ export const raidCooldownAssignmentInputSchema =
         .nullable()
         .optional(),
 
+      timestampSeconds: z.coerce
+        .number()
+        .int()
+        .min(0)
+        .max(7200)
+        .nullable()
+        .optional(),
+
       sortOrder: z.coerce
         .number()
         .int()
         .min(0)
         .max(999)
         .default(0)
+    })
+    .strict();
+
+export const raidBossPhaseMarkerInputSchema =
+  z
+    .object({
+      label: z
+        .string()
+        .trim()
+        .min(1)
+        .max(60),
+
+      startSeconds: z.coerce
+        .number()
+        .int()
+        .min(0)
+        .max(7200),
+
+      sortOrder: z.coerce
+        .number()
+        .int()
+        .min(0)
+        .max(999)
+        .default(0)
+    })
+    .strict();
+
+export const raidBossFightDurationInputSchema =
+  z
+    .object({
+      fightDurationSeconds: z.coerce
+        .number()
+        .int()
+        .min(0)
+        .max(7200)
+        .nullable()
     })
     .strict();
 
@@ -36,4 +80,7 @@ export const raidCooldownBossIdSchema =
   z.string().min(1);
 
 export const raidCooldownAssignmentIdSchema =
+  z.string().min(1);
+
+export const raidBossPhaseMarkerIdSchema =
   z.string().min(1);

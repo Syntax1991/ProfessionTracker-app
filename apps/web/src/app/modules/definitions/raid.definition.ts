@@ -19,6 +19,11 @@ export const raidModule: MainModuleDefinition =
         status: "available"
       },
       {
+        label: "Cooldowns",
+        path: "/raid/cooldowns",
+        status: "available"
+      },
+      {
         label: "WCL Analysis",
         status: "planned"
       }

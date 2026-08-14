@@ -39,14 +39,17 @@ does not own the guild roster.
   `modules/raid/api/cooldowns`
 - Web: `modules/raid/web/planner` (routed pages — Planner index +
   Event Detail) and `modules/raid/web/attendance` (routed page — the
-  season rollup), `modules/raid/web/boss-rosters`,
-  `modules/raid/web/signups` and `modules/raid/web/cooldowns`
-  (components/hooks/types only, composed into the Event Detail page,
-  no page/route of their own)
+  season rollup), `modules/raid/web/boss-rosters` and
+  `modules/raid/web/signups` (components/hooks/types only, composed
+  into the Event Detail page, no page/route of their own),
+  `modules/raid/web/cooldowns` (its own routed page,
+  `/raid/cooldowns` — see below, not composed into Event Detail)
 - Shared: `modules/raid/shared/catalog/raidCatalog.ts` (Midnight raid
   instances by season, used by both API and web)
 
-## Cooldown Planning (step 1 — structured list, not the timeline yet)
+## Cooldown Planning
+
+### Step 1 — structured list (superseded by Step 2's timeline, kept as a fallback view)
 
 Built 2026-08-14 after the user asked directly where "Raid Planner"
 went (it hadn't — the nav label had just been renamed to "Events") and
@@ -69,22 +72,68 @@ gated to a fixed catalog. New same-module `RaidCooldownAssignment`
 reference, same convention as `RaidBossRosterEntry.memberId`) — unlike
 Boss Roster's one-entry-per-boss×member upsert, a character can hold
 several assignments per boss (different moments), so this is plain
-CRUD by id. `CooldownPlanSection.tsx` renders one panel per boss
-(reusing the `bosses` array `RaidEventDetailPage` already loads, no
-duplicate fetch), composed directly below `BossRosterSection` inside
-the same `GuildVerificationGate`. No new top-level nav route — same
-reasoning that already keeps Boss Rosters and Signups off the sidebar
-and composed into the Event Detail page instead.
+CRUD by id. Originally composed into the Event Detail page below
+`BossRosterSection`; this composition was removed in Step 2 (see
+below) — the table view itself (`CooldownBossPanel.tsx`) survives as
+the "List" side of a Timeline/List toggle on the new dedicated page.
 
-**Immediately followed by a bigger ask** (same session): the user
-shared a WoWUtils "Viserio Cooldowns" screenshot — a full interactive
-fight timeline (horizontal time axis with phase dividers, boss-ability
-rows with real per-boss cast timestamps, cooldown category filters,
-drag/click assignment) and said this structured list isn't the target,
-they want CDs planned on that timeline. That's a real, much larger
-follow-up — precise per-boss ability timing data for all 8 bosses, a
-timeline UI component — planned as its own pass, not built by
-silently expanding this one.
+### Step 2 — dedicated page + real timeline (2026-08-14, same day)
+
+Right after Step 1 shipped, the user pushed further on two points:
+**"Guck dir an wie es bei WOWutils läuft wir brauchen eine
+Möglichkeit über diese Timeline cds einzuplanen"** (look at how
+WoWUtils does it, we need to plan CDs on that timeline) and
+**"außerdem wollen wir ne extra Nav punkt dafür haben das gehört
+jetzt nich direkt in den Anmeldungen etc"** (also we want a dedicated
+nav entry, this doesn't belong inside the Event Detail page). Both
+landed:
+
+- **Dedicated page.** `<CooldownPlanSection>` removed entirely from
+  `RaidEventDetailPage.tsx`. New `"Cooldowns"` nav item in
+  `raid.definition.ts` → `CooldownsLandingPage.tsx` (`/raid/cooldowns`,
+  its own route, not composed into any other page) — pick an event
+  (reuses `RaidEventList`/`useRaidEvents`), pick a boss (tabs, reuses
+  the shared `Tabs` component), see that boss's `BossCooldownView`
+  (Timeline/List toggle wrapping the new `BossCooldownTimeline` and
+  the kept `CooldownBossPanel` from Step 1).
+- **Real timeline, honestly scoped.** I initially assumed no real
+  per-boss ability/timing data could exist pre-launch and asked how to
+  handle that — the user corrected this twice: **"es gibt ja schon
+  daten aus PTR logs usw."** (PTR data already exists) and
+  **"Außerdem ist der Patch schon da nur die Season startet erst
+  nächste Woche"** (the patch/raid zone is already live, only the
+  ranked Season starts next week). Re-researched properly: pulled real
+  encounter data directly from **Blizzard's own Game Data API**
+  (`journal-instance`/`journal-encounter` endpoints, app-level OAuth
+  token via `BATTLENET_CLIENT_ID`/`SECRET` — more authoritative than
+  scraping guide sites) for all 8 Venomous Abyss bosses. Landed in
+  `modules/raid/shared/catalog/bossAbilityCatalog.ts` (same
+  static-TS-catalog pattern as `raidCatalog.ts`/`lootCatalog.ts`):
+  each boss's top-level named mechanics, deduped and grouped by the
+  stage/phase title the encounter journal itself uses. Still
+  deliberately **excludes exact cast timestamps** — the journal
+  doesn't expose them, and even Method.gg's own PTR guide (cross-
+  checked) states timers aren't confirmed pre-launch — so this is a
+  read-only reference legend, not an auto-placed schedule.
+  - `RaidBoss.fightDurationSeconds` (officer-set estimate, scales the
+    axis) and new `RaidBossPhaseMarker` (officer-defined phase
+    dividers) added alongside `RaidCooldownAssignment.timestampSeconds`
+    (nullable — Step 1's phase-label-only rows keep working unchanged).
+  - `TimelineTrack.tsx` is hand-rolled CSS (`left: calc()` percentage
+    positioning) — confirmed via research the repo has zero charting/
+    timeline/drag-and-drop libraries and `RaidCalendarView`'s day-grid
+    approach doesn't transfer to a continuous axis, so this needed
+    genuinely new CSS (`cooldown-timeline.css`), not a new dependency.
+    **Click-to-place, not drag-to-place** — clicking empty track space
+    computes a timestamp from the click's X position and opens the
+    same `CooldownAssignmentForm` used by the List view, pre-filled;
+    existing markers are small class-colored chips, click-to-remove.
+  - Live-tested end to end: set a 7:00 duration, added a phase marker
+    at 1:42 (rendered at exactly 24.29% — 102/420), clicked the track
+    at 50% (opened the form pre-filled "at 3:30"), placed and removed
+    a marker, confirmed the List toggle shows the same assignment with
+    its timestamp, confirmed the Event Detail page no longer shows any
+    cooldown UI at all.
 
 ## Signups
 

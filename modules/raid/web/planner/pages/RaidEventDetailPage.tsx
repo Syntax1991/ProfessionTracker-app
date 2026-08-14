@@ -12,8 +12,6 @@ import { useTeams } from "../../../../guild/web/teams/hooks/useTeams";
 import { GuildVerificationGate } from "../../../../guild/web/verification/components/GuildVerificationGate";
 import { useBossRosters } from "../../boss-rosters/hooks/useBossRosters";
 import type { RaidBoss } from "../../boss-rosters/types/bossRoster.types";
-import { CooldownPlanSection } from "../../cooldowns/components/CooldownPlanSection";
-import { useCooldownAssignments } from "../../cooldowns/hooks/useCooldownAssignments";
 import { useSignups } from "../../signups/hooks/useSignups";
 import { BossRosterSection } from "../components/BossRosterSection";
 import { RaidEventActionsBar } from "../components/RaidEventActionsBar";
@@ -79,15 +77,6 @@ export function RaidEventDetailPage() {
     entries,
     error: signupError
   } = useSignups(eventId ?? null);
-
-  const {
-    assignments: cooldownAssignments,
-    error: cooldownError,
-    addAssignment,
-    removeAssignment
-  } = useCooldownAssignments(
-    eventId ?? null
-  );
 
   const event =
     events.find(
@@ -183,10 +172,9 @@ export function RaidEventDetailPage() {
       />
 
       {(bossError ||
-        signupError ||
-        cooldownError) && (
+        signupError) && (
         <StatusMessage type="error">
-          {`${bossError ?? signupError ?? cooldownError}`}
+          {`${bossError ?? signupError}`}
         </StatusMessage>
       )}
 
@@ -247,24 +235,6 @@ export function RaidEventDetailPage() {
           }
           signupEntries={
             entries
-          }
-        />
-
-        <CooldownPlanSection
-          assignments={
-            cooldownAssignments
-          }
-          bosses={bosses}
-          onAdd={addAssignment}
-          onRemove={(
-            assignmentId
-          ) => {
-            void removeAssignment(
-              assignmentId
-            );
-          }}
-          rosterMembers={
-            rosterMembers
           }
         />
       </GuildVerificationGate>

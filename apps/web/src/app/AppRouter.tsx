@@ -12,6 +12,7 @@ import { GuildSettingsPage } from "../../../../modules/guild/web/settings/pages/
 import { TeamsPage } from "../../../../modules/guild/web/teams/pages/TeamsPage";
 import { WeeklyProgressPage } from "../../../../modules/guild/web/weekly-progress/pages/WeeklyProgressPage";
 import { AttendancePage } from "../../../../modules/raid/web/attendance/pages/AttendancePage";
+import { CooldownsLandingPage } from "../../../../modules/raid/web/cooldowns/pages/CooldownsLandingPage";
 import { RaidEventDetailPage } from "../../../../modules/raid/web/planner/pages/RaidEventDetailPage";
 import { RaidPlannerPage } from "../../../../modules/raid/web/planner/pages/RaidPlannerPage";
 import { CharactersPage } from "../../../../modules/my-syntrack/web/characters/pages/CharactersPage";
@@ -225,6 +226,11 @@ export function AppRouter() {
         <Route
           path="raid/attendance"
           element={<AttendancePage />}
+        />
+
+        <Route
+          path="raid/cooldowns"
+          element={<CooldownsLandingPage />}
         />
 
         <Route

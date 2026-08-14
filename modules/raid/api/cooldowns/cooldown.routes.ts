@@ -46,3 +46,31 @@ raidCooldownRouter.delete(
     controller.deleteAssignment
   )
 );
+
+raidCooldownRouter.put(
+  "/bosses/:bossId/duration",
+  asyncHandler(
+    controller.updateFightDuration
+  )
+);
+
+raidCooldownRouter.get(
+  "/bosses/:bossId/phase-markers",
+  asyncHandler(
+    controller.listPhaseMarkers
+  )
+);
+
+raidCooldownRouter.post(
+  "/bosses/:bossId/phase-markers",
+  asyncHandler(
+    controller.createPhaseMarker
+  )
+);
+
+raidCooldownRouter.delete(
+  "/phase-markers/:markerId",
+  asyncHandler(
+    controller.deletePhaseMarker
+  )
+);

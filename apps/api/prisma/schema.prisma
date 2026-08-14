@@ -133,12 +133,12 @@ model Profession {
 }
 
 model CharacterProfession {
-  id                    String @id @default(cuid())
+  id                    String  @id @default(cuid())
   characterId           String
   professionId          String
-  skill                 Int    @default(0)
-  skillModifier         Int    @default(0)
-  knowledgePoints       Int    @default(0)
+  skill                 Int     @default(0)
+  skillModifier         Int     @default(0)
+  knowledgePoints       Int     @default(0)
   specializationSummary String?
 
   character  Character  @relation(fields: [characterId], references: [id], onDelete: Cascade)
@@ -152,13 +152,13 @@ model CharacterProfession {
 }
 
 model ProfessionSpecializationTree {
-  id           String @id @default(cuid())
+  id           String  @id @default(cuid())
   professionId String
-  expansion    String @default("MIDNIGHT")
+  expansion    String  @default("MIDNIGHT")
   key          String
   name         String
   description  String?
-  sortOrder    Int    @default(0)
+  sortOrder    Int     @default(0)
 
   profession Profession                     @relation(fields: [professionId], references: [id], onDelete: Cascade)
   nodes      ProfessionSpecializationNode[]
@@ -168,7 +168,7 @@ model ProfessionSpecializationTree {
 }
 
 model ProfessionSpecializationNode {
-  id               String @id @default(cuid())
+  id               String  @id @default(cuid())
   treeId           String
   parentNodeId     String?
   key              String
@@ -176,11 +176,11 @@ model ProfessionSpecializationNode {
   description      String?
   maxRank          Int?
   knowledgeMaxRank Int?
-  sortOrder        Int    @default(0)
+  sortOrder        Int     @default(0)
 
-  tree     ProfessionSpecializationTree   @relation(fields: [treeId], references: [id], onDelete: Cascade)
-  parent   ProfessionSpecializationNode?  @relation("SpecializationNodeHierarchy", fields: [parentNodeId], references: [id], onDelete: SetNull)
-  children ProfessionSpecializationNode[] @relation("SpecializationNodeHierarchy")
+  tree     ProfessionSpecializationTree      @relation(fields: [treeId], references: [id], onDelete: Cascade)
+  parent   ProfessionSpecializationNode?     @relation("SpecializationNodeHierarchy", fields: [parentNodeId], references: [id], onDelete: SetNull)
+  children ProfessionSpecializationNode[]    @relation("SpecializationNodeHierarchy")
   progress CharacterProfessionNodeProgress[]
 
   @@unique([treeId, key])
@@ -208,15 +208,15 @@ model CharacterProfessionNodeProgress {
 }
 
 model CraftCapability {
-  id           String @id @default(cuid())
+  id           String  @id @default(cuid())
   professionId String
-  expansion    String @default("MIDNIGHT")
+  expansion    String  @default("MIDNIGHT")
   key          String
   name         String
   type         String
   slotKey      String?
   description  String?
-  sortOrder    Int    @default(0)
+  sortOrder    Int     @default(0)
 
   profession Profession              @relation(fields: [professionId], references: [id], onDelete: Cascade)
   recipes    CraftRecipeCapability[]
@@ -243,7 +243,7 @@ model CraftRecipe {
   createdAt            DateTime  @default(now())
   updatedAt            DateTime  @updatedAt
 
-  profession   Profession               @relation(fields: [professionId], references: [id], onDelete: Cascade)
+  profession   Profession              @relation(fields: [professionId], references: [id], onDelete: Cascade)
   capabilities CraftRecipeCapability[]
   characters   CharacterCraftRecipe[]
 
@@ -324,7 +324,7 @@ model GuildMember {
   filledSocketCount   Int?
   auditedAt           DateTime?
 
-  linkedRaiderAccountId String?    @unique
+  linkedRaiderAccountId String? @unique
 
   teamMemberships GuildTeamMembership[]
   officerNotes    GuildOfficerNote[]
@@ -452,18 +452,34 @@ model RaidSignup {
 }
 
 model RaidBoss {
-  id          String   @id @default(cuid())
-  raidEventId String
-  name        String
-  sortOrder   Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id                   String   @id @default(cuid())
+  raidEventId          String
+  name                 String
+  sortOrder            Int      @default(0)
+  fightDurationSeconds Int?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
 
   event               RaidEvent                @relation(fields: [raidEventId], references: [id], onDelete: Cascade)
   rosterEntries       RaidBossRosterEntry[]
   cooldownAssignments RaidCooldownAssignment[]
+  phaseMarkers        RaidBossPhaseMarker[]
 
   @@index([raidEventId])
+}
+
+model RaidBossPhaseMarker {
+  id           String   @id @default(cuid())
+  bossId       String
+  label        String
+  startSeconds Int
+  sortOrder    Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  boss RaidBoss @relation(fields: [bossId], references: [id], onDelete: Cascade)
+
+  @@index([bossId])
 }
 
 model RaidBossRosterEntry {
@@ -481,14 +497,15 @@ model RaidBossRosterEntry {
 }
 
 model RaidCooldownAssignment {
-  id          String   @id @default(cuid())
-  bossId      String
-  memberId    String
-  abilityName String
-  phaseLabel  String?
-  sortOrder   Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id               String   @id @default(cuid())
+  bossId           String
+  memberId         String
+  abilityName      String
+  phaseLabel       String?
+  timestampSeconds Int?
+  sortOrder        Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   boss RaidBoss @relation(fields: [bossId], references: [id], onDelete: Cascade)
 

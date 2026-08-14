@@ -28,6 +28,7 @@ export type RaidBoss = {
   raidEventId: string;
   name: string;
   sortOrder: number;
+  fightDurationSeconds: number | null;
   createdAt: string;
   updatedAt: string;
   rosterEntries: RaidBossRosterEntry[];

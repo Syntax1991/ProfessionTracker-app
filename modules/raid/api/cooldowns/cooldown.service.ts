@@ -1,7 +1,11 @@
 import { AppError } from "../../../../apps/api/src/shared/errors/AppError.js";
 import type { GuildVerificationGuard } from "../../../guild/api/verification/verification.types.js";
 import { RaidCooldownRepository } from "./cooldown.repository.js";
-import type { RaidCooldownAssignmentInput } from "./cooldown.types.js";
+import type {
+  RaidBossFightDurationInput,
+  RaidBossPhaseMarkerInput,
+  RaidCooldownAssignmentInput
+} from "./cooldown.types.js";
 
 export class RaidCooldownService {
   constructor(
@@ -24,17 +28,9 @@ export class RaidCooldownService {
   ) {
     await this.verification.ensureVerified();
 
-    const boss =
-      await this.repository.findBossById(
-        bossId
-      );
-
-    if (!boss) {
-      throw new AppError(
-        404,
-        "Boss nicht gefunden."
-      );
-    }
+    const boss = await this.requireBoss(
+      bossId
+    );
 
     const member =
       await this.repository.findMemberById(
@@ -49,7 +45,7 @@ export class RaidCooldownService {
     }
 
     return this.repository.createAssignment(
-      bossId,
+      boss.id,
       this.normalize(input)
     );
   }
@@ -110,6 +106,83 @@ export class RaidCooldownService {
     await this.repository.deleteAssignment(
       assignmentId
     );
+  }
+
+  async updateFightDuration(
+    bossId: string,
+    input: RaidBossFightDurationInput
+  ) {
+    await this.verification.ensureVerified();
+
+    await this.requireBoss(bossId);
+
+    return this.repository.updateFightDuration(
+      bossId,
+      input
+    );
+  }
+
+  listPhaseMarkers(bossId: string) {
+    return this.repository.findPhaseMarkersForBoss(
+      bossId
+    );
+  }
+
+  async createPhaseMarker(
+    bossId: string,
+    input: RaidBossPhaseMarkerInput
+  ) {
+    await this.verification.ensureVerified();
+
+    await this.requireBoss(bossId);
+
+    return this.repository.createPhaseMarker(
+      bossId,
+      {
+        ...input,
+        label: input.label.trim()
+      }
+    );
+  }
+
+  async deletePhaseMarker(
+    markerId: string
+  ) {
+    await this.verification.ensureVerified();
+
+    const marker =
+      await this.repository.findPhaseMarkerById(
+        markerId
+      );
+
+    if (!marker) {
+      throw new AppError(
+        404,
+        "Phasen-Marker nicht gefunden."
+      );
+    }
+
+    await this.repository.deletePhaseMarker(
+      markerId
+    );
+  }
+
+  private async requireBoss(
+    bossId: string
+  ) {
+    const boss =
+      await this.repository.findBossById(
+        bossId
+      );
+
+    if (!boss) {
+      throw new AppError(
+        404,
+        "Boss nicht gefunden."
+      );
+    }
+
+    return boss;
   }
 
   private normalize(

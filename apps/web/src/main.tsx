@@ -33,6 +33,7 @@ import "./styles/guild-modal.css";
 import "./styles/raid.css";
 import "./styles/boss-roster-matrix.css";
 import "./styles/boss-roster-overview.css";
+import "./styles/cooldown-timeline.css";
 import "./styles/profession-overview.css";
 import "./styles/profession-module-workspaces.css";
 import "./styles/profession-module-workspaces-responsive.css";

@@ -1,5 +1,9 @@
 import { prisma } from "../../../../apps/api/src/infrastructure/database/prismaClient.js";
-import type { RaidCooldownAssignmentInput } from "./cooldown.types.js";
+import type {
+  RaidBossFightDurationInput,
+  RaidBossPhaseMarkerInput,
+  RaidCooldownAssignmentInput
+} from "./cooldown.types.js";
 
 export class RaidCooldownRepository {
   findBossById(bossId: string) {
@@ -67,6 +71,8 @@ export class RaidCooldownRepository {
             input.abilityName,
           phaseLabel:
             input.phaseLabel,
+          timestampSeconds:
+            input.timestampSeconds,
           sortOrder:
             input.sortOrder
         }
@@ -89,6 +95,8 @@ export class RaidCooldownRepository {
             input.abilityName,
           phaseLabel:
             input.phaseLabel,
+          timestampSeconds:
+            input.timestampSeconds,
           sortOrder:
             input.sortOrder
         }
@@ -103,6 +111,78 @@ export class RaidCooldownRepository {
       {
         where: {
           id: assignmentId
+        }
+      }
+    );
+  }
+
+  updateFightDuration(
+    bossId: string,
+    input: RaidBossFightDurationInput
+  ) {
+    return prisma.raidBoss.update({
+      where: {
+        id: bossId
+      },
+      data: {
+        fightDurationSeconds:
+          input.fightDurationSeconds
+      }
+    });
+  }
+
+  findPhaseMarkersForBoss(
+    bossId: string
+  ) {
+    return prisma.raidBossPhaseMarker.findMany(
+      {
+        where: {
+          bossId
+        },
+        orderBy: {
+          startSeconds: "asc"
+        }
+      }
+    );
+  }
+
+  findPhaseMarkerById(
+    markerId: string
+  ) {
+    return prisma.raidBossPhaseMarker.findUnique(
+      {
+        where: {
+          id: markerId
+        }
+      }
+    );
+  }
+
+  createPhaseMarker(
+    bossId: string,
+    input: RaidBossPhaseMarkerInput
+  ) {
+    return prisma.raidBossPhaseMarker.create(
+      {
+        data: {
+          bossId,
+          label: input.label,
+          startSeconds:
+            input.startSeconds,
+          sortOrder:
+            input.sortOrder
+        }
+      }
+    );
+  }
+
+  deletePhaseMarker(
+    markerId: string
+  ) {
+    return prisma.raidBossPhaseMarker.delete(
+      {
+        where: {
+          id: markerId
         }
       }
     );

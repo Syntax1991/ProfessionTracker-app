@@ -1,5 +1,8 @@
 import { apiRequest } from "../../../../../apps/web/src/shared/api/httpClient";
 import type {
+  RaidBossPhaseMarker,
+  RaidBossPhaseMarkerInput,
+  RaidBossPhaseMarkerListResponse,
   RaidCooldownAssignment,
   RaidCooldownAssignmentInput,
   RaidCooldownAssignmentListResponse
@@ -44,6 +47,53 @@ export function deleteCooldownAssignment(
 ): Promise<void> {
   return apiRequest<void>(
     `/raid/cooldowns/${assignmentId}`,
+    {
+      method: "DELETE"
+    }
+  );
+}
+
+export function updateBossFightDuration(
+  bossId: string,
+  fightDurationSeconds: number | null
+): Promise<unknown> {
+  return apiRequest(
+    `/raid/cooldowns/bosses/${bossId}/duration`,
+    {
+      method: "PUT",
+      body: JSON.stringify({
+        fightDurationSeconds
+      })
+    }
+  );
+}
+
+export function getPhaseMarkersForBoss(
+  bossId: string
+): Promise<RaidBossPhaseMarkerListResponse> {
+  return apiRequest<RaidBossPhaseMarkerListResponse>(
+    `/raid/cooldowns/bosses/${bossId}/phase-markers`
+  );
+}
+
+export function createPhaseMarker(
+  bossId: string,
+  input: RaidBossPhaseMarkerInput
+): Promise<RaidBossPhaseMarker> {
+  return apiRequest<RaidBossPhaseMarker>(
+    `/raid/cooldowns/bosses/${bossId}/phase-markers`,
+    {
+      method: "POST",
+      body: JSON.stringify(input)
+    }
+  );
+}
+
+export function deletePhaseMarker(
+  markerId: string
+): Promise<void> {
+  return apiRequest<void>(
+    `/raid/cooldowns/phase-markers/${markerId}`,
     {
       method: "DELETE"
     }
