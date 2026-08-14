@@ -513,6 +513,30 @@ model RaidCooldownAssignment {
   @@index([memberId])
 }
 
+model LootTierPreference {
+  id        String   @id @default(cuid())
+  memberId  String
+  tierSlot  String
+  status    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([memberId, tierSlot])
+  @@index([memberId])
+}
+
+model LootTrinketChoice {
+  id        String   @id @default(cuid())
+  memberId  String
+  rank      Int
+  itemId    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([memberId, rank])
+  @@index([memberId])
+}
+
 model GuildVerification {
   id                  String   @id
   guildName           String

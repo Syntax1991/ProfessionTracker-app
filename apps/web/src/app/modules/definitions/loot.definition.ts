@@ -15,7 +15,8 @@ export const lootModule: MainModuleDefinition =
       },
       {
         label: "Wishlist",
-        status: "planned"
+        path: "/loot/wishlist",
+        status: "available"
       },
       {
         label: "Droptimizer",

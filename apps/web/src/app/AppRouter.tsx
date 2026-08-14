@@ -23,6 +23,7 @@ import { WeeklyChecklistPage } from "../../../../modules/my-syntrack/web/weekly-
 import { VaultMythicPlusPage } from "../../../../modules/my-syntrack/web/vault-mythic-plus/pages/VaultMythicPlusPage";
 import { RaiderLoginCallbackPage } from "../../../../modules/data-platform/web/raider-auth/pages/RaiderLoginCallbackPage";
 import { LootTablePage } from "../../../../modules/loot/web/catalog/pages/LootTablePage";
+import { WishlistPage } from "../../../../modules/loot/web/wishlist/pages/WishlistPage";
 import { ProfessionDetailPage } from "../../../../modules/professions/web/details/pages/ProfessionDetailPage";
 import { ProfessionCrafterFinderPage } from "../../../../modules/professions/web/pages/ProfessionCrafterFinderPage";
 import { ProfessionKnowledgePage } from "../../../../modules/professions/web/pages/ProfessionKnowledgePage";
@@ -236,6 +237,11 @@ export function AppRouter() {
         <Route
           path="loot"
           element={<LootTablePage />}
+        />
+
+        <Route
+          path="loot/wishlist"
+          element={<WishlistPage />}
         />
 
         <Route
