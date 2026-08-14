@@ -47,6 +47,16 @@ export const guildMemberInputSchema =
         .max(20)
         .default(0),
 
+      role: z
+        .enum([
+          "TANK",
+          "HEALER",
+          "MELEE",
+          "RANGED"
+        ])
+        .nullable()
+        .default(null),
+
       note: z
         .string()
         .trim()

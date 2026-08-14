@@ -23,6 +23,7 @@ type RosterMemberFormState = {
   level: string;
   rank: string;
   rankIndex: string;
+  role: string;
   note: string;
   officerNote: string;
 };
@@ -40,6 +41,7 @@ function createInitialState(
     rankIndex: String(
       member?.rankIndex ?? 0
     ),
+    role: member?.role ?? "",
     note: member?.note ?? "",
     officerNote:
       member?.officerNote ?? ""
@@ -75,6 +77,7 @@ export function RosterMemberForm({
         rankIndex: Number(
           form.rankIndex
         ),
+        role: form.role || null,
         note:
           form.note.trim() || null,
         officerNote:
@@ -205,6 +208,35 @@ export function RosterMemberForm({
             type="number"
             value={form.rankIndex}
           />
+        </label>
+
+        <label>
+          <span>Role</span>
+          <select
+            onChange={(event) =>
+              setForm({
+                ...form,
+                role: event.target.value
+              })
+            }
+            value={form.role}
+          >
+            <option value="">
+              Unassigned
+            </option>
+            <option value="TANK">
+              Tank
+            </option>
+            <option value="HEALER">
+              Healer
+            </option>
+            <option value="MELEE">
+              Melee DPS
+            </option>
+            <option value="RANGED">
+              Ranged DPS
+            </option>
+          </select>
         </label>
       </div>
 

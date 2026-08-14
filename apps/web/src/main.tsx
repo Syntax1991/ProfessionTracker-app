@@ -25,6 +25,7 @@ import "./styles/gear-readiness.css";
 import "./styles/gear-readiness-slots.css";
 import "./styles/gear-readiness-responsive.css";
 import "./styles/guild.css";
+import "./styles/guild-roster-summary.css";
 import "./styles/raid.css";
 import "./styles/profession-overview.css";
 import "./styles/profession-module-workspaces.css";

@@ -7,7 +7,8 @@ import { RosterImportPanel } from "../components/RosterImportPanel";
 import { RosterImportPreviewPanel } from "../components/RosterImportPreviewPanel";
 import { RosterImportResultPanel } from "../components/RosterImportResultPanel";
 import { RosterMemberForm } from "../components/RosterMemberForm";
-import { RosterTable } from "../components/RosterTable";
+import { RosterRoleGroups } from "../components/RosterRoleGroups";
+import { RosterSummarySidebar } from "../components/RosterSummarySidebar";
 import { useRoster } from "../hooks/useRoster";
 import { useRosterImport } from "../hooks/useRosterImport";
 import type {
@@ -128,33 +129,41 @@ export function RosterPage() {
             />
           </section>
 
-          <section className="panel">
-            <div className="panel-header">
-              <div>
-                <p className="eyebrow">
-                  OVERVIEW
-                </p>
+          <div className="guild-roster-content">
+            <section className="panel">
+              <div className="panel-header">
+                <div>
+                  <p className="eyebrow">
+                    OVERVIEW
+                  </p>
 
-                <h2>
-                  {members.length} Guild Members
-                </h2>
+                  <h2>
+                    {members.length} Guild Members
+                  </h2>
+                </div>
               </div>
-            </div>
 
-            {isLoading ? (
-              <LoadingPanel />
-            ) : (
-              <RosterTable
+              {isLoading ? (
+                <LoadingPanel />
+              ) : (
+                <RosterRoleGroups
+                  members={members}
+                  onDelete={(member) => {
+                    void handleDelete(
+                      member
+                    );
+                  }}
+                  onEdit={setEditingMember}
+                />
+              )}
+            </section>
+
+            {!isLoading && (
+              <RosterSummarySidebar
                 members={members}
-                onDelete={(member) => {
-                  void handleDelete(
-                    member
-                  );
-                }}
-                onEdit={setEditingMember}
               />
             )}
-          </section>
+          </div>
         </div>
 
         <RosterImportPanel

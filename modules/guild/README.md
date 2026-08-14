@@ -76,6 +76,22 @@ threshold is revisited. There is currently no UI to change the
 threshold per guild; adjust the constant if a guild's conventions
 differ.
 
+## Roster
+
+`GuildMember.role` (`TANK`/`HEALER`/`MELEE`/`RANGED`, nullable) is a
+manually officer-set field — WoW exposes no reliable read API for a
+character's actual raid role without deep spec/talent inspection, so
+this follows the same pattern as `rank`: an officer sets it by hand
+rather than SynTrack guessing wrong. The Roster page groups members
+into role sections (Tanks/Healers/Melee DPS/Ranged DPS/Unassigned,
+`modules/guild/web/roster/components/RosterRoleGroups.tsx`) and adds
+a "Raid Summary" sidebar (`RosterSummarySidebar.tsx`) showing role
+composition, guild-wide average item level (from the Gear Audit
+fields), and an armor-type breakdown derived from each member's class
+name (`modules/guild/web/roster/utils/rosterRoles.ts`). This restyle
+follows the WoWUtils Group Hub → Roster screen directly (see the
+`project_wowaudit_reference` memory).
+
 ## Teams
 
 Teams (`GuildTeam` + `GuildTeamMembership`) group existing roster

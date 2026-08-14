@@ -49,6 +49,7 @@ export class GuildRosterRepository {
         level: input.level,
         rank: input.rank,
         rankIndex: input.rankIndex,
+        role: input.role,
         note: input.note,
         officerNote: input.officerNote
       }
@@ -71,6 +72,7 @@ export class GuildRosterRepository {
         level: input.level,
         rank: input.rank,
         rankIndex: input.rankIndex,
+        role: input.role,
         note: input.note,
         officerNote: input.officerNote
       }

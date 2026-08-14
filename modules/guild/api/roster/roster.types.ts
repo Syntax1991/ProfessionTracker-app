@@ -6,6 +6,7 @@ export type GuildMemberInput = {
   level: number;
   rank: string;
   rankIndex: number;
+  role: string | null;
   note: string | null;
   officerNote: string | null;
 };

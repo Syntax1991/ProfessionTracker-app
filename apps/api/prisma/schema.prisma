@@ -310,6 +310,7 @@ model GuildMember {
   level        Int       @default(80)
   rank         String
   rankIndex    Int       @default(0)
+  role         String?
   note         String?
   officerNote  String?
   source       String    @default("MANUAL")
