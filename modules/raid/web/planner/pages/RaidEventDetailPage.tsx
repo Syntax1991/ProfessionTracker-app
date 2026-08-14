@@ -10,15 +10,11 @@ import { StatusMessage } from "../../../../../apps/web/src/shared/components/Sta
 import { useRoster } from "../../../../guild/web/roster/hooks/useRoster";
 import { useTeams } from "../../../../guild/web/teams/hooks/useTeams";
 import { GuildVerificationGate } from "../../../../guild/web/verification/components/GuildVerificationGate";
-import { useEventAttendance } from "../../attendance/hooks/useEventAttendance";
 import { useBossRosters } from "../../boss-rosters/hooks/useBossRosters";
 import type { RaidBoss } from "../../boss-rosters/types/bossRoster.types";
-import { MySignupCard } from "../../signups/components/MySignupCard";
 import { useSignups } from "../../signups/hooks/useSignups";
 import { BossRosterSection } from "../components/BossRosterSection";
-import { RaidAttendanceSection } from "../components/RaidAttendanceSection";
 import { RaidEventActionsBar } from "../components/RaidEventActionsBar";
-import { SignupOfficerSection } from "../components/SignupOfficerSection";
 import { useRaidEvents } from "../hooks/useRaidEvents";
 import type { RaidEventInput } from "../types/raidEvent.types";
 
@@ -79,23 +75,8 @@ export function RaidEventDetailPage() {
 
   const {
     entries,
-    isLoading: isLoadingEntries,
-    isSubmitting,
-    error: signupError,
-    setMemberStatus,
-    setOwnStatus,
-    clearMemberStatus
+    error: signupError
   } = useSignups(eventId ?? null);
-
-  const {
-    records: attendanceRecords,
-    error: attendanceError,
-    setStatus: setAttendanceStatus,
-    clearStatus:
-      clearAttendanceStatus
-  } = useEventAttendance(
-    eventId ?? null
-  );
 
   const event =
     events.find(
@@ -191,28 +172,15 @@ export function RaidEventDetailPage() {
       />
 
       {(bossError ||
-        signupError ||
-        attendanceError) && (
+        signupError) && (
         <StatusMessage type="error">
-          {`${bossError ?? signupError ?? attendanceError}`}
+          {`${bossError ?? signupError}`}
         </StatusMessage>
       )}
 
-      <MySignupCard
-        entries={entries}
-        isSubmitting={
-          isSubmitting
-        }
-        onSetOwnStatus={(
-          status
-        ) => {
-          void setOwnStatus(
-            status
-          );
-        }}
-      />
-
-      <GuildVerificationGate>
+      <GuildVerificationGate
+        hideStatusCard
+      >
         <RaidEventActionsBar
           event={event}
           isEditing={isEditing}
@@ -269,52 +237,6 @@ export function RaidEventDetailPage() {
           }
           signupEntries={
             entries
-          }
-        />
-
-        <SignupOfficerSection
-          entries={entries}
-          isLoading={
-            isLoadingEntries
-          }
-          onClear={(memberId) => {
-            void clearMemberStatus(
-              memberId
-            );
-          }}
-          onSetStatus={(
-            memberId,
-            status
-          ) => {
-            void setMemberStatus(
-              memberId,
-              status
-            );
-          }}
-        />
-
-        <RaidAttendanceSection
-          onClearStatus={(
-            memberId
-          ) => {
-            void clearAttendanceStatus(
-              memberId
-            );
-          }}
-          onSetStatus={(
-            memberId,
-            status
-          ) => {
-            void setAttendanceStatus(
-              memberId,
-              status
-            );
-          }}
-          records={
-            attendanceRecords
-          }
-          rosterMembers={
-            rosterMembers
           }
         />
       </GuildVerificationGate>

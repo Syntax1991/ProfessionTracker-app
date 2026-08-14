@@ -7,6 +7,7 @@ import { GuildVerificationStatusCard } from "./GuildVerificationStatusCard";
 
 type GuildVerificationGateProps = {
   children: ReactNode;
+  hideStatusCard?: boolean;
 };
 
 /**
@@ -17,7 +18,8 @@ type GuildVerificationGateProps = {
  * need to be blocked.
  */
 export function GuildVerificationGate({
-  children
+  children,
+  hideStatusCard
 }: GuildVerificationGateProps) {
   const verification =
     useGuildVerification();
@@ -36,11 +38,13 @@ export function GuildVerificationGate({
 
       {verification.status
         ?.verified ? (
-        <GuildVerificationStatusCard
-          status={
-            verification.status
-          }
-        />
+        !hideStatusCard && (
+          <GuildVerificationStatusCard
+            status={
+              verification.status
+            }
+          />
+        )
       ) : (
         <GuildVerificationPanel
           candidates={

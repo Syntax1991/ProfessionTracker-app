@@ -144,6 +144,22 @@ button row directly under the page header (`RaidEventActionsBar.tsx`)
 to match WoWAudit's inline header-button pattern, rather than a boxed
 panel.
 
+**Decluttered further** ("Officer overview kann raus und attendance
+auch ebenfalls die Anzeige von Syngold und 'finish linking your
+character'") — `MySignupCard`, the guild-verification status card,
+`SignupOfficerSection` and `RaidAttendanceSection` no longer render
+on this page; `GuildVerificationGate` gained an optional
+`hideStatusCard` prop (default off, only this page uses it) so the
+verification *gate* still applies without the status-card chrome
+repeated on every guild page showing up here too. `MySignupCard.tsx`,
+`SignupOfficerGrid.tsx`, and the per-event `useEventAttendance` hook
+are kept (not deleted) — they're unused right now, not confirmed
+dead: self-service signup and per-event attendance recording are
+still real, working features, just not currently composed onto this
+page. If they should come back (a leaner "My status" line, attendance
+recording elsewhere) or be removed for good, that needs its own
+decision, not a default from decluttering this one page.
+
 ## Raid Planner
 
 `RaidEvent` (title, raid instance, difficulty, scheduled date/time,
