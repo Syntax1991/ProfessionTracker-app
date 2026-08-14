@@ -1,0 +1,5 @@
+export type RaiderLinkGuard = {
+  getLinkedMember(
+    token: string
+  ): Promise<{ id: string } | null>;
+};

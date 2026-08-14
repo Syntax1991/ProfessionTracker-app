@@ -10,6 +10,7 @@ import { guildVerificationRouter } from "../../../../modules/guild/api/verificat
 import { guildWeeklyProgressRouter } from "../../../../modules/guild/api/weekly-progress/weekly-progress.routes.js";
 import { raidBossRosterRouter } from "../../../../modules/raid/api/boss-rosters/boss-roster.routes.js";
 import { raidPlannerRouter } from "../../../../modules/raid/api/planner/planner.routes.js";
+import { raidSignupRouter } from "../../../../modules/raid/api/signups/signup.routes.js";
 import { characterRouter } from "../../../../modules/my-syntrack/api/characters/character.routes.js";
 import { dashboardRouter } from "../../../../modules/my-syntrack/api/dashboard/dashboard.routes.js";
 import { gearReadinessRouter } from "../../../../modules/my-syntrack/api/gear-readiness/gear-readiness.routes.js";
@@ -145,6 +146,11 @@ apiRouter.use(
 apiRouter.use(
   "/raid/boss-rosters",
   raidBossRosterRouter
+);
+
+apiRouter.use(
+  "/raid/signups",
+  raidSignupRouter
 );
 
 apiRouter.use(

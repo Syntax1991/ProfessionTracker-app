@@ -12,7 +12,7 @@ const repository =
 const rosterRepository =
   new GuildRosterRepository();
 
-const service =
+export const guildRaiderLinkService =
   new GuildRaiderLinkService(
     repository,
     rosterRepository,
@@ -21,7 +21,7 @@ const service =
 
 const controller =
   new GuildRaiderLinkController(
-    service
+    guildRaiderLinkService
   );
 
 export const guildRaiderLinkRouter =

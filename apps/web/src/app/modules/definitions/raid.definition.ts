@@ -19,6 +19,11 @@ export const raidModule: MainModuleDefinition =
         status: "available"
       },
       {
+        label: "Signups",
+        path: "/raid/signups",
+        status: "available"
+      },
+      {
         label: "Assignments",
         status: "planned"
       },

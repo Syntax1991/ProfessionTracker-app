@@ -20,7 +20,7 @@ attendance is now framed as pre-raid Signups rather than post-hoc
 logging.
 
 - Raid Planner (available)
-- Signups (planned)
+- Signups (available)
 - Boss Rosters (available)
 - Bench Management (planned)
 - Assignments (planned)
@@ -33,8 +33,44 @@ does not own the guild roster.
 
 ## Current source
 
-- API: `modules/raid/api/planner`, `modules/raid/api/boss-rosters`
-- Web: `modules/raid/web/planner`, `modules/raid/web/boss-rosters`
+- API: `modules/raid/api/planner`, `modules/raid/api/boss-rosters`,
+  `modules/raid/api/signups`
+- Web: `modules/raid/web/planner`, `modules/raid/web/boss-rosters`,
+  `modules/raid/web/signups`
+
+## Signups
+
+The first genuinely self-service Raid feature, built 2026-08-14 after
+the user pushed back that Raid Planner/Boss Rosters were far short of
+WoWAudit/WoWUtils — their core differentiator is raiders signing
+themselves up rather than an officer doing it for everyone. This is
+the direct payoff of Guild's new `raider-link` capability (see
+`modules/guild/README.md`): `RaidSignup` (real Prisma relation to
+`RaidEvent`, cascade delete, like `RaidBoss`) has one row per
+member per event with a status (`PRESENT`/`TENTATIVE`/`ABSENT`,
+matching WoWUtils' own wording); a member with no row shows as
+"not signed up" rather than any implicit default.
+
+Two separate write paths land on the same table:
+
+- **Self-service** (`PUT /raid/signups/events/:eventId/me`): gated by
+  a raider-link bearer token, not `GuildVerificationGuard`.
+  `RaidSignupService.setOwnSignup` resolves the token to a
+  `GuildMember` via `GuildRaiderLinkService.getLinkedMember` (imported
+  directly, Raid → Guild → Data Platform, the same dependency chain
+  Boss Rosters already uses) and only ever writes that raider's own
+  row — there's no `memberId` in the request body, so a raider cannot
+  set anyone else's status even by accident.
+- **Officer override** (`PUT /raid/signups/events/:eventId/members/:memberId`):
+  gated by the existing `GuildVerificationGuard`, can set or clear any
+  member's status, confirmed explicitly by the user ("der Raidlead
+  kann den Status von jeder Anmeldung umsetzen").
+
+The web page deliberately does **not** wrap the whole page in
+`GuildVerificationGate` the way Boss Rosters/Planner do — those pages
+are officer-only tools, but Signups' whole point is that regular
+raiders use it too. Only the officer override grid is gated; the
+event picker and the raider's own signup card stay outside the gate.
 
 ## Boss Rosters
 

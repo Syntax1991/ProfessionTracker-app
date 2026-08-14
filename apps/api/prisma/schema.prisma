@@ -424,10 +424,25 @@ model RaidEvent {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  bosses RaidBoss[]
+  bosses  RaidBoss[]
+  signups RaidSignup[]
 
   @@index([scheduledAt])
   @@index([teamId])
+}
+
+model RaidSignup {
+  id          String   @id @default(cuid())
+  raidEventId String
+  memberId    String
+  status      String   @default("TENTATIVE")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  event RaidEvent @relation(fields: [raidEventId], references: [id], onDelete: Cascade)
+
+  @@unique([raidEventId, memberId])
+  @@index([memberId])
 }
 
 model RaidBoss {
