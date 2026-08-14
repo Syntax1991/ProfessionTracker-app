@@ -156,3 +156,20 @@ to create-only (the calendar-day-prefill flow stays) plus the
 Calendar/List overview, since editing/deleting an existing event now
 lives entirely on its detail page — `RaidEventList` dropped its own
 Delete column for the same reason.
+
+## Raid attendance
+
+Attendance is event-scoped and belongs to the Raid module. The
+Attendance workspace reads the same `RaidEvent` records created by
+the Events planner and stores only per-member attendance records.
+There is no second attendance-event model and no separate event
+creation workflow.
+
+## Raid content catalog
+
+Known Midnight raid instances and encounters live in
+`modules/raid/shared/catalog/raidCatalog.ts`. Event forms use this
+catalog for raid selection, while Boss Rosters use the same catalog
+server-side to ensure encounter rows exist automatically. Officers
+manage roster assignments for those encounters; they do not manually
+create or delete bosses.

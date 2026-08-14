@@ -12,7 +12,6 @@ extension (see below):
 - Roster (available)
 - Gear Audit (available)
 - Teams (available)
-- guild-level Attendance (available)
 - Weekly Progress (available)
 - Requirements (available)
 - Officer Notes (available)
@@ -22,11 +21,11 @@ extension (see below):
 - API: `modules/guild/api/roster`, `modules/guild/api/roster-import`,
   `modules/guild/api/verification`, `modules/guild/api/teams`,
   `modules/guild/api/requirements`, `modules/guild/api/officer-notes`,
-  `modules/guild/api/attendance`, `modules/guild/api/weekly-progress`,
+  `modules/guild/api/weekly-progress`,
   `modules/guild/api/audit`
 - Web: `modules/guild/web/roster`, `modules/guild/web/verification`,
   `modules/guild/web/teams`, `modules/guild/web/requirements`,
-  `modules/guild/web/officer-notes`, `modules/guild/web/attendance`,
+  `modules/guild/web/officer-notes`,
   `modules/guild/web/weekly-progress`, `modules/guild/web/dashboard`,
   `modules/guild/web/audit`
 - Addon: `modules/guild/addons/SynTrack_Guild`
@@ -204,20 +203,6 @@ the verified officer's character name server-side
 `GuildVerificationService.getStatus()`) — the author is never taken
 from client input, so notes can't be attributed to someone who didn't
 actually create them.
-
-## Attendance
-
-`GuildAttendanceEvent` (a raid night) has many
-`GuildAttendanceRecord` entries (one per member who was tracked,
-status `PRESENT`/`LATE`/`EXCUSED`/`ABSENT`). Only members with an
-explicit record for an event count toward that event; there's no
-implicit "everyone not marked is absent". The per-member attendance
-percentage shown on the Attendance page is computed client-side from
-all events: `EXCUSED` records count toward neither attended nor
-missed, so a sanctioned absence doesn't hurt the percentage, while
-`LATE` counts the same as `PRESENT`. The record grid has a "mark all
-as" bulk action per status so taking attendance for a full roster
-doesn't require clicking every member individually.
 
 ## Weekly Progress
 
