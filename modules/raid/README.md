@@ -51,6 +51,15 @@ querying Guild's roster repository directly rather than a Prisma
 join. Mutations reuse the same `GuildVerificationGuard` as the rest
 of Raid and Guild; reading stays open.
 
+The boss list for the selected raid event renders as a visual card
+grid (`BossList.tsx`) rather than a plain list, matching WoWUtils'
+card-based CD Notes/Setups screens — each card shows the boss name
+and CONFIRMED/TENTATIVE/BENCH counts. Grouping stays scoped to the
+single selected `RaidEvent`, since a `RaidBoss` always belongs to
+exactly one raid instance+difficulty; a cross-event view spanning
+multiple raid tiers was considered but deferred as a larger, separate
+feature (would need a new aggregation API, not just a restyle).
+
 ## Raid Planner
 
 `RaidEvent` (title, raid instance, difficulty, scheduled date/time,

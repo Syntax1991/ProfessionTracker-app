@@ -36,46 +36,56 @@ export function BossList({
   }
 
   return (
-    <ul className="boss-list">
+    <div className="boss-card-grid">
       {bosses.map((boss) => (
-        <li key={boss.id}>
+        <div
+          className={
+            boss.id === selectedBossId
+              ? "boss-card selected"
+              : "boss-card"
+          }
+          key={boss.id}
+        >
           <button
-            className={
-              boss.id ===
-              selectedBossId
-                ? "boss-list-button selected"
-                : "boss-list-button"
-            }
+            className="boss-card-select"
             onClick={() =>
               onSelect(boss.id)
             }
             type="button"
           >
-            <strong>
+            <span className="boss-card-name">
               {boss.name}
-            </strong>
-
-            <span>
-              {countByStatus(
-                boss,
-                "CONFIRMED"
-              )}{" "}
-              confirmed ·{" "}
-              {countByStatus(
-                boss,
-                "TENTATIVE"
-              )}{" "}
-              tentative ·{" "}
-              {countByStatus(
-                boss,
-                "BENCH"
-              )}{" "}
-              bench
             </span>
+
+            <div className="boss-card-stats">
+              <span className="boss-card-stat confirmed">
+                {countByStatus(
+                  boss,
+                  "CONFIRMED"
+                )}{" "}
+                confirmed
+              </span>
+
+              <span className="boss-card-stat tentative">
+                {countByStatus(
+                  boss,
+                  "TENTATIVE"
+                )}{" "}
+                tentative
+              </span>
+
+              <span className="boss-card-stat bench">
+                {countByStatus(
+                  boss,
+                  "BENCH"
+                )}{" "}
+                bench
+              </span>
+            </div>
           </button>
 
           <button
-            className="text-button danger"
+            className="text-button danger boss-card-delete"
             onClick={() =>
               onDelete(boss)
             }
@@ -83,8 +93,8 @@ export function BossList({
           >
             Delete
           </button>
-        </li>
+        </div>
       ))}
-    </ul>
+    </div>
   );
 }

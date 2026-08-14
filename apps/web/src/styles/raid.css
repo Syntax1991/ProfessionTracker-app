@@ -15,41 +15,67 @@
   width: 80px;
 }
 
-.boss-list {
+.boss-card-grid {
   display: grid;
-  gap: 8px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(190px, 1fr)
+  );
+  gap: 12px;
 }
 
-.boss-list li {
+.boss-card {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 4px 4px 4px 0;
+  flex-direction: column;
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 12px;
+  overflow: hidden;
 }
 
-.boss-list-button {
+.boss-card.selected {
+  border-color: var(--primary-soft);
+  background: var(--primary-soft);
+}
+
+.boss-card-select {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 3px;
-  padding: 10px 12px;
+  gap: 8px;
+  padding: 14px;
   border: 0;
   background: transparent;
   text-align: left;
 }
 
-.boss-list-button span {
-  color: var(--text-muted);
-  font-size: 0.72rem;
+.boss-card-name {
+  font-weight: 700;
+  font-size: 0.9rem;
 }
 
-.boss-list-button.selected {
-  border-radius: 8px;
-  background: var(--primary-soft);
+.boss-card-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.boss-card-stat {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.boss-card-stat.confirmed {
+  color: var(--success);
+}
+
+.boss-card-stat.tentative {
+  color: var(--warning);
+}
+
+.boss-card-delete {
+  padding: 7px 14px;
+  border: 0;
+  border-top: 1px solid var(--border);
+  border-radius: 0;
+  font-size: 0.7rem;
 }
