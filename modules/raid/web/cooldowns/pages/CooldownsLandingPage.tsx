@@ -38,7 +38,10 @@ export function CooldownsLandingPage() {
     null
   );
 
-  const { setup } = useRaidSetup(
+  const {
+    setup,
+    error: setupError
+  } = useRaidSetup(
     selectedEvent?.id ?? null
   );
 
@@ -122,9 +125,11 @@ export function CooldownsLandingPage() {
         title="Cooldowns"
       />
 
-      {cooldownError && (
+      {(cooldownError ||
+        setupError) && (
         <StatusMessage type="error">
-          {cooldownError}
+          {cooldownError ??
+            setupError}
         </StatusMessage>
       )}
 
