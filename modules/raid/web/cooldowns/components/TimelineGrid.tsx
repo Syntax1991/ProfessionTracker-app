@@ -1,9 +1,5 @@
-import {
-  useState,
-  type CSSProperties
-} from "react";
+import type { CSSProperties } from "react";
 import type { GuildMember } from "../../../../guild/web/roster/types/roster.types";
-import type { BossAbility } from "../../../shared/catalog/bossAbilityCatalog";
 import type {
   RaidBossAbilityCast,
   RaidBossPhaseMarker,
@@ -11,6 +7,8 @@ import type {
 } from "../types/cooldown.types";
 import {
   formatSeconds,
+  groupCastsByAbility,
+  isAssignedMemberInLineup,
   percentOf
 } from "../utils/timelineFormat";
 import { BossAbilityRow } from "./BossAbilityRow";
@@ -21,10 +19,10 @@ const tickCount = 10;
 type TimelineGridProps = {
   fightDurationSeconds: number;
   phaseMarkers: RaidBossPhaseMarker[];
-  bossAbilities: BossAbility[];
   bossAbilityCasts: RaidBossAbilityCast[];
   assignments: RaidCooldownAssignment[];
   rosterMembers: GuildMember[];
+  lineupMemberIds: Set<string>;
   onRaiderTrackClick: (
     memberId: string,
     seconds: number
@@ -44,19 +42,18 @@ type TimelineGridProps = {
 export function TimelineGrid({
   fightDurationSeconds,
   phaseMarkers,
-  bossAbilities,
   bossAbilityCasts,
   assignments,
   rosterMembers,
+  lineupMemberIds,
   onRaiderTrackClick,
   onRemoveAssignment,
   onRepositionAssignment,
   onRemovePhaseMarker
 }: TimelineGridProps) {
-  const [
-    manuallyAddedMemberIds,
-    setManuallyAddedMemberIds
-  ] = useState<string[]>([]);
+  const abilityRows = groupCastsByAbility(
+    bossAbilityCasts
+  );
 
   const memberById = new Map(
     rosterMembers.map((member) => [
@@ -76,7 +73,7 @@ export function TimelineGrid({
 
   const visibleMemberIds = new Set([
     ...assignedMemberIds,
-    ...manuallyAddedMemberIds
+    ...lineupMemberIds
   ]);
 
   const orderedVisibleMemberIds =
@@ -85,14 +82,6 @@ export function TimelineGrid({
       .filter((id) =>
         visibleMemberIds.has(id)
       );
-
-  const addableMembers =
-    rosterMembers.filter(
-      (member) =>
-        !visibleMemberIds.has(
-          member.id
-        )
-    );
 
   const ticks = Array.from(
     { length: tickCount + 1 },
@@ -149,21 +138,17 @@ export function TimelineGrid({
           )}
         </div>
 
-        {bossAbilities.map(
-          (ability) => (
+        {abilityRows.map(
+          (row) => (
             <BossAbilityRow
               abilityName={
-                ability.name
+                row.abilityName
               }
-              casts={bossAbilityCasts.filter(
-                (cast) =>
-                  cast.abilityName ===
-                  ability.name
-              )}
+              casts={row.casts}
               fightDurationSeconds={
                 fightDurationSeconds
               }
-              key={ability.name}
+              key={row.abilityName}
             />
           )
         )}
@@ -196,6 +181,10 @@ export function TimelineGrid({
                 fightDurationSeconds={
                   fightDurationSeconds
                 }
+                isInLineup={isAssignedMemberInLineup(
+                  memberId,
+                  lineupMemberIds
+                )}
                 key={memberId}
                 member={member}
                 onRemoveAssignment={
@@ -217,46 +206,6 @@ export function TimelineGrid({
           }
         )}
       </div>
-
-      {addableMembers.length >
-        0 && (
-        <div className="cooldown-timeline-add-row">
-          <select
-            onChange={(event) => {
-              const memberId =
-                event.target.value;
-
-              if (memberId) {
-                setManuallyAddedMemberIds(
-                  (previous) => [
-                    ...previous,
-                    memberId
-                  ]
-                );
-              }
-
-              event.target.value =
-                "";
-            }}
-            value=""
-          >
-            <option value="">
-              + Add raider…
-            </option>
-
-            {addableMembers.map(
-              (member) => (
-                <option
-                  key={member.id}
-                  value={member.id}
-                >
-                  {member.name}
-                </option>
-              )
-            )}
-          </select>
-        </div>
-      )}
     </div>
   );
 }

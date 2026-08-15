@@ -152,6 +152,58 @@ export function formatRelativeTime(
   return `${diffDays}d ago`;
 }
 
+export function groupCastsByAbility<
+  T extends {
+    abilityName: string;
+    timestampSeconds: number;
+  }
+>(
+  casts: T[]
+): Array<{ abilityName: string; casts: T[] }> {
+  const order: string[] = [];
+  const byAbility = new Map<string, T[]>();
+
+  for (const cast of [...casts].sort(
+    (a, b) =>
+      a.timestampSeconds -
+      b.timestampSeconds
+  )) {
+    if (!byAbility.has(cast.abilityName)) {
+      byAbility.set(
+        cast.abilityName,
+        []
+      );
+      order.push(cast.abilityName);
+    }
+
+    byAbility
+      .get(cast.abilityName)
+      ?.push(cast);
+  }
+
+  return order.map((abilityName) => ({
+    abilityName,
+    casts:
+      byAbility.get(abilityName) ?? []
+  }));
+}
+
+/**
+ * A member with an existing cooldown assignment can fall out of the
+ * current boss lineup (benched, or removed from the Setup pool)
+ * without their assignment ever being deleted. This distinguishes
+ * that state so the row can render with a warning instead of
+ * silently looking like a normal, still-eligible raider.
+ */
+export function isAssignedMemberInLineup(
+  memberId: string,
+  lineupMemberIds: Set<string>
+): boolean {
+  return lineupMemberIds.has(
+    memberId
+  );
+}
+
 export function getWowIconUrl(
   icon: string
 ): string {

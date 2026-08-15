@@ -14,6 +14,7 @@ type BossRosterSectionProps = {
   bosses: RaidBoss[];
   isLoading: boolean;
   rosterMembers: GuildMember[];
+  poolMemberIds: Set<string>;
   signupEntries: RaidSignupEntry[];
   onAddBoss: (
     input: RaidBossInput
@@ -36,6 +37,7 @@ export function BossRosterSection({
   bosses,
   isLoading,
   rosterMembers,
+  poolMemberIds,
   signupEntries,
   onAddBoss,
   onDeleteBoss,
@@ -87,6 +89,9 @@ export function BossRosterSection({
           }
           onSetStatus={
             onSetStatus
+          }
+          poolMemberIds={
+            poolMemberIds
           }
           rosterMembers={
             rosterMembers

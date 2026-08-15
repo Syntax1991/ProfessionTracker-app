@@ -5,6 +5,8 @@ import {
   ROLE_ORDER,
   resolveRoleKey
 } from "../../../../guild/web/roster/utils/rosterRoles";
+import { BossMatrixFooter } from "./BossMatrixFooter";
+import { BossMatrixHeader } from "./BossMatrixHeader";
 import { BossMatrixMemberCell } from "./BossMatrixMemberCell";
 import { BossMatrixStatusCell } from "./BossMatrixStatusCell";
 import { BossForm } from "./BossForm";
@@ -18,6 +20,7 @@ import type { RaidSignupEntry } from "../../signups/types/signup.types";
 type BossRosterMatrixProps = {
   bosses: RaidBoss[];
   rosterMembers: GuildMember[];
+  poolMemberIds: Set<string>;
   signupEntries: RaidSignupEntry[];
   onAddBoss: (
     input: RaidBossInput
@@ -48,6 +51,7 @@ const cycleOrder: Array<
 export function BossRosterMatrix({
   bosses,
   rosterMembers,
+  poolMemberIds,
   signupEntries,
   onAddBoss,
   onDeleteBoss,
@@ -114,11 +118,16 @@ export function BossRosterMatrix({
     );
   }
 
+  const poolMembers =
+    rosterMembers.filter((member) =>
+      poolMemberIds.has(member.id)
+    );
+
   const groupedMembers = ROLE_ORDER.map(
     (roleKey) => ({
       roleKey,
       members:
-        rosterMembers.filter(
+        poolMembers.filter(
           (member) =>
             resolveRoleKey(
               member.role
@@ -165,7 +174,15 @@ export function BossRosterMatrix({
         />
       )}
 
-      {bosses.length === 0 ? (
+      {poolMembers.length === 0 ? (
+        <p className="muted-text">
+          No members in this Setup's
+          pool yet. Add members via
+          the Setup Roster panel
+          above before assigning
+          them to bosses.
+        </p>
+      ) : bosses.length === 0 ? (
         <p className="muted-text">
           No bosses yet. Pick a
           catalog raid instance
@@ -176,38 +193,12 @@ export function BossRosterMatrix({
       ) : (
         <div className="table-scroll">
           <table className="boss-matrix-table">
-            <thead>
-              <tr>
-                <th>Member</th>
-
-                {bosses.map(
-                  (boss) => (
-                    <th
-                      key={boss.id}
-                    >
-                      <div className="boss-matrix-column-header">
-                        <span>
-                          {boss.name}
-                        </span>
-
-                        <button
-                          aria-label={`Delete ${boss.name}`}
-                          className="text-button danger"
-                          onClick={() =>
-                            onDeleteBoss(
-                              boss
-                            )
-                          }
-                          type="button"
-                        >
-                          ×
-                        </button>
-                      </div>
-                    </th>
-                  )
-                )}
-              </tr>
-            </thead>
+            <BossMatrixHeader
+              bosses={bosses}
+              onDeleteBoss={
+                onDeleteBoss
+              }
+            />
 
             <tbody>
               {groupedMembers.map(
@@ -319,6 +310,13 @@ export function BossRosterMatrix({
                 )
               )}
             </tbody>
+
+            <BossMatrixFooter
+              bosses={bosses}
+              poolMemberIds={
+                poolMemberIds
+              }
+            />
           </table>
         </div>
       )}

@@ -100,6 +100,7 @@ type RaiderCooldownRowProps = {
   member: GuildMember;
   fightDurationSeconds: number;
   assignments: RaidCooldownAssignment[];
+  isInLineup: boolean;
   onTrackClick: (
     seconds: number
   ) => void;
@@ -116,6 +117,7 @@ export function RaiderCooldownRow({
   member,
   fightDurationSeconds,
   assignments,
+  isInLineup,
   onTrackClick,
   onRemoveAssignment,
   onRepositionAssignment
@@ -140,7 +142,13 @@ export function RaiderCooldownRow({
   };
 
   return (
-    <div className="cooldown-timeline-row">
+    <div
+      className={
+        isInLineup
+          ? "cooldown-timeline-row"
+          : "cooldown-timeline-row is-not-in-lineup"
+      }
+    >
       <div
         className="cooldown-timeline-row-label"
         style={
@@ -153,6 +161,15 @@ export function RaiderCooldownRow({
         }
       >
         {member.name}
+
+        {!isInLineup && (
+          <span
+            className="cooldown-timeline-row-warning"
+            title="This raider is not in the current Setup lineup for this boss — their assignment is preserved but can't be changed until they're re-added."
+          >
+            Not in current setup
+          </span>
+        )}
       </div>
 
       <div

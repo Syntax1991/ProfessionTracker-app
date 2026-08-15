@@ -1,7 +1,9 @@
 import { Router } from "express";
 import { asyncHandler } from "../../../../apps/api/src/shared/http/asyncHandler.js";
+import { guildRaiderLinkService } from "../../../guild/api/raider-link/raider-link.routes.js";
 import { GuildRosterRepository } from "../../../guild/api/roster/roster.repository.js";
 import { guildVerificationService } from "../../../guild/api/verification/verification.routes.js";
+import { RaidSetupRepository } from "../setups/setup.repository.js";
 import { RaidBossRosterController } from "./boss-roster.controller.js";
 import { RaidBossRosterRepository } from "./boss-roster.repository.js";
 import { RaidBossRosterService } from "./boss-roster.service.js";
@@ -12,11 +14,16 @@ const repository =
 const rosterRepository =
   new GuildRosterRepository();
 
+const setupRepository =
+  new RaidSetupRepository();
+
 const service =
   new RaidBossRosterService(
     repository,
     rosterRepository,
-    guildVerificationService
+    setupRepository,
+    guildVerificationService,
+    guildRaiderLinkService
   );
 
 const controller =
@@ -28,9 +35,9 @@ export const raidBossRosterRouter =
   Router();
 
 raidBossRosterRouter.get(
-  "/events/:eventId",
+  "/setups/:setupId",
   asyncHandler(
-    controller.listForEvent
+    controller.listForSetup
   )
 );
 
@@ -56,14 +63,14 @@ raidBossRosterRouter.delete(
 );
 
 raidBossRosterRouter.put(
-  "/bosses/:bossId/members/:memberId",
+  "/setups/:setupId/bosses/:bossId/members/:memberId",
   asyncHandler(
     controller.setEntry
   )
 );
 
 raidBossRosterRouter.delete(
-  "/bosses/:bossId/members/:memberId",
+  "/setups/:setupId/bosses/:bossId/members/:memberId",
   asyncHandler(
     controller.clearEntry
   )

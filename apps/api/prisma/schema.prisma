@@ -418,9 +418,63 @@ model RaidEvent {
   bosses            RaidBoss[]
   signups           RaidSignup[]
   attendanceRecords RaidAttendanceRecord[]
+  raidSetups        RaidSetup[]
 
   @@index([scheduledAt])
   @@index([teamId])
+}
+
+model RaidWeek {
+  id        String   @id @default(cuid())
+  startsAt  DateTime @unique
+  endsAt    DateTime
+  createdAt DateTime @default(now())
+
+  plans RaidPlan[]
+}
+
+model RaidPlan {
+  id         String   @id @default(cuid())
+  raidWeekId String
+  name       String   @default("Main Progress")
+  status     String   @default("DRAFT")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  week   RaidWeek    @relation(fields: [raidWeekId], references: [id], onDelete: Cascade)
+  setups RaidSetup[]
+
+  @@index([raidWeekId])
+}
+
+model RaidSetup {
+  id          String   @id @default(cuid())
+  raidPlanId  String
+  raidEventId String?
+  key         String   @default("main")
+  name        String   @default("Main Setup")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  plan        RaidPlan              @relation(fields: [raidPlanId], references: [id], onDelete: Cascade)
+  event       RaidEvent?            @relation(fields: [raidEventId], references: [id], onDelete: Cascade)
+  members     RaidSetupMember[]
+  bossEntries RaidBossRosterEntry[]
+
+  @@unique([raidEventId, key])
+  @@index([raidPlanId])
+}
+
+model RaidSetupMember {
+  id        String   @id @default(cuid())
+  setupId   String
+  memberId  String
+  createdAt DateTime @default(now())
+
+  setup RaidSetup @relation(fields: [setupId], references: [id], onDelete: Cascade)
+
+  @@unique([setupId, memberId])
+  @@index([memberId])
 }
 
 model RaidAttendanceRecord {
@@ -504,15 +558,18 @@ model RaidBossAbilityCast {
 model RaidBossRosterEntry {
   id        String   @id @default(cuid())
   bossId    String
+  setupId   String
   memberId  String
   status    String   @default("CONFIRMED")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  boss RaidBoss @relation(fields: [bossId], references: [id], onDelete: Cascade)
+  boss  RaidBoss  @relation(fields: [bossId], references: [id], onDelete: Cascade)
+  setup RaidSetup @relation(fields: [setupId], references: [id], onDelete: Cascade)
 
-  @@unique([bossId, memberId])
+  @@unique([bossId, setupId, memberId])
   @@index([memberId])
+  @@index([setupId])
 }
 
 model RaidCooldownAssignment {

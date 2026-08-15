@@ -1,31 +1,27 @@
 import { env } from "../../../../apps/api/src/config/env.js";
 import { AppError } from "../../../../apps/api/src/shared/errors/AppError.js";
-import { normalizeBattleNetCharacters } from "../../../data-platform/api/integrations/battlenet/battlenet-import.mapper.js";
 import type { BattleNetClient } from "../../../data-platform/api/integrations/battlenet/battlenet.client.js";
 import type { RaiderAccessTokenGuard } from "../../../data-platform/api/raider-auth/raider-auth.types.js";
 import { listGuildCandidatesFromCharacters } from "./verification.candidates.js";
+import { extractGuildSlugFromHref } from "./verification.guild-slug.js";
+import { lookupGuildByName } from "./verification.lookup.js";
+import { OfficerAuthorizationCache } from "./verification.officer-cache.js";
 import {
-  extractGuildSlugFromHref,
-  slugify
-} from "./verification.guild-slug.js";
+  LEADERSHIP_RANK_THRESHOLD,
+  verifyCurrentOfficerRank
+} from "./verification.officer-check.js";
 import { GuildVerificationRepository } from "./verification.repository.js";
 import type {
   GuildVerificationCandidate,
   GuildVerificationInput,
   GuildVerificationLookupInput,
-  GuildVerificationStatus
+  GuildVerificationStatus,
+  LinkedGuildMemberLookup
 } from "./verification.types.js";
 
-/**
- * Blizzard's Game Data API only exposes a numeric guild rank (0 = Guild
- * Master); custom rank titles like "Officer" are never returned. Ranks
- * 0-2 are treated as guild leadership. This threshold is a fixed server
- * policy, never accepted from the client, or verification would be
- * meaningless.
- */
-const LEADERSHIP_RANK_THRESHOLD = 2;
-
 export class GuildVerificationService {
+  private readonly officerCache: OfficerAuthorizationCache;
+
   constructor(
     private readonly repository:
       GuildVerificationRepository,
@@ -34,8 +30,17 @@ export class GuildVerificationService {
       RaiderAccessTokenGuard,
 
     private readonly battleNetClient:
-      BattleNetClient
-  ) {}
+      BattleNetClient,
+
+    private readonly raiderLink:
+      LinkedGuildMemberLookup,
+
+    officerCache?: OfficerAuthorizationCache
+  ) {
+    this.officerCache =
+      officerCache ??
+      new OfficerAuthorizationCache();
+  }
 
   async listCandidates(
     token: string
@@ -62,84 +67,11 @@ export class GuildVerificationService {
         token
       );
 
-    const realmSlug = slugify(
-      input.realmName
+    return lookupGuildByName(
+      this.battleNetClient,
+      accessToken,
+      input
     );
-
-    const guildSlug = slugify(
-      input.guildName
-    );
-
-    const roster =
-      await this.battleNetClient.getGuildRoster(
-        accessToken,
-        realmSlug,
-        guildSlug
-      );
-
-    if (!roster?.guild?.name) {
-      throw new AppError(
-        404,
-        `Gilde "${input.guildName}" auf "${input.realmName}" wurde nicht gefunden.`
-      );
-    }
-
-    const accountProfile =
-      await this.battleNetClient.getAccountProfile(
-        accessToken
-      );
-
-    const myCharacters =
-      normalizeBattleNetCharacters(
-        accountProfile
-      );
-
-    const myCharactersInGuild =
-      myCharacters.filter(
-        (character) =>
-          roster.members?.some(
-            (member) =>
-              member.character
-                ?.name?.toLowerCase() ===
-                character.name.toLowerCase() &&
-              member.character
-                ?.realm?.slug ===
-                character.realmSlug
-          )
-      );
-
-    if (
-      myCharactersInGuild.length ===
-      0
-    ) {
-      throw new AppError(
-        403,
-        `Keiner deiner Battle.net-Charaktere ist Mitglied in ${roster.guild.name}.`
-      );
-    }
-
-    return {
-      guildName: roster.guild.name,
-      guildSlug,
-      realmName:
-        roster.guild.realm?.name ??
-        input.realmName,
-      realmSlug:
-        roster.guild.realm?.slug ??
-        realmSlug,
-      faction:
-        roster.guild.faction
-          ?.name ?? null,
-      characters:
-        myCharactersInGuild.map(
-          (character) => ({
-            name: character.name,
-            realmSlug:
-              character.realmSlug,
-            level: character.level
-          })
-        )
-    };
   }
 
   async verify(
@@ -301,5 +233,53 @@ export class GuildVerificationService {
         "Die Gildenleitung muss den Roster zuerst über Battle.net verifizieren, bevor er verwaltet werden kann."
       );
     }
+  }
+
+  /**
+   * Proves that the CURRENT requester (not just "someone, once") is
+   * a real, live guild officer — unlike ensureVerified(), which only
+   * checks that the guild was verified by anyone at some point. Two
+   * live Blizzard calls on a cache miss; cached per member for a few
+   * minutes afterward (see OfficerAuthorizationCache).
+   */
+  async requireCurrentOfficer(
+    token: string
+  ): Promise<{ id: string }> {
+    const member =
+      await this.raiderLink.getLinkedMember(
+        token
+      );
+
+    if (!member) {
+      throw new AppError(
+        403,
+        "Kein verknüpfter Charakter gefunden. Bitte zuerst deinen Charakter verknüpfen."
+      );
+    }
+
+    if (
+      this.officerCache.isVerified(
+        member.id
+      )
+    ) {
+      return { id: member.id };
+    }
+
+    const { accessToken } =
+      await this.raiderAuth.requireUsableAccessToken(
+        token
+      );
+
+    await verifyCurrentOfficerRank(
+      this.battleNetClient,
+      accessToken,
+      member
+    );
+
+    this.officerCache.markVerified(
+      member.id
+    );
+
+    return { id: member.id };
   }
 }

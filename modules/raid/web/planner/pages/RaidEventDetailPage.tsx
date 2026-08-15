@@ -12,6 +12,8 @@ import { useTeams } from "../../../../guild/web/teams/hooks/useTeams";
 import { GuildVerificationGate } from "../../../../guild/web/verification/components/GuildVerificationGate";
 import { useBossRosters } from "../../boss-rosters/hooks/useBossRosters";
 import type { RaidBoss } from "../../boss-rosters/types/bossRoster.types";
+import { RaidSetupPanel } from "../../raid-setup/components/RaidSetupPanel";
+import { useRaidSetup } from "../../raid-setup/hooks/useRaidSetup";
 import { useSignups } from "../../signups/hooks/useSignups";
 import { BossRosterSection } from "../components/BossRosterSection";
 import { RaidEventActionsBar } from "../components/RaidEventActionsBar";
@@ -62,6 +64,16 @@ export function RaidEventDetailPage() {
     useRoster();
 
   const {
+    setup,
+    isLoading: isLoadingSetup,
+    isSubmitting: isSubmittingSetup,
+    error: setupError,
+    addMembers: addSetupMembers,
+    removeMember: removeSetupMember,
+    updateRosterFromTeam
+  } = useRaidSetup(eventId ?? null);
+
+  const {
     bosses,
     isLoading: isLoadingBosses,
     error: bossError,
@@ -70,7 +82,8 @@ export function RaidEventDetailPage() {
     setEntry,
     clearEntry
   } = useBossRosters(
-    eventId ?? null
+    eventId ?? null,
+    setup?.id ?? null
   );
 
   const {
@@ -172,9 +185,10 @@ export function RaidEventDetailPage() {
       />
 
       {(bossError ||
-        signupError) && (
+        signupError ||
+        setupError) && (
         <StatusMessage type="error">
-          {`${bossError ?? signupError}`}
+          {`${bossError ?? signupError ?? setupError}`}
         </StatusMessage>
       )}
 
@@ -195,6 +209,39 @@ export function RaidEventDetailPage() {
             )
           }
           teams={teams}
+        />
+
+        <RaidSetupPanel
+          hasLinkedTeam={Boolean(
+            event.teamId
+          )}
+          isLoading={
+            isLoadingSetup
+          }
+          isSubmitting={
+            isSubmittingSetup
+          }
+          onAddMember={(
+            memberId
+          ) => {
+            void addSetupMembers([
+              memberId
+            ]);
+          }}
+          onRemoveMember={(
+            memberId
+          ) => {
+            void removeSetupMember(
+              memberId
+            );
+          }}
+          onUpdateRosterFromTeam={() => {
+            void updateRosterFromTeam();
+          }}
+          rosterMembers={
+            rosterMembers
+          }
+          setup={setup}
         />
 
         <BossRosterSection
@@ -230,6 +277,16 @@ export function RaidEventDetailPage() {
               status
             );
           }}
+          poolMemberIds={
+            new Set(
+              (setup?.members ??
+                []
+              ).map(
+                (member) =>
+                  member.memberId
+              )
+            )
+          }
           rosterMembers={
             rosterMembers
           }

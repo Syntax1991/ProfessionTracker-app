@@ -6,11 +6,11 @@ import type {
   RaidBossRosterStatus
 } from "../types/bossRoster.types";
 
-export function getBossesForEvent(
-  eventId: string
+export function getBossesForSetup(
+  setupId: string
 ): Promise<RaidBossListResponse> {
   return apiRequest<RaidBossListResponse>(
-    `/raid/boss-rosters/events/${eventId}`
+    `/raid/boss-rosters/setups/${setupId}`
   );
 }
 
@@ -52,12 +52,13 @@ export function deleteBoss(
 }
 
 export function setBossRosterEntry(
+  setupId: string,
   bossId: string,
   memberId: string,
   status: RaidBossRosterStatus
 ): Promise<RaidBoss> {
   return apiRequest<RaidBoss>(
-    `/raid/boss-rosters/bosses/${bossId}/members/${memberId}`,
+    `/raid/boss-rosters/setups/${setupId}/bosses/${bossId}/members/${memberId}`,
     {
       method: "PUT",
       body: JSON.stringify({
@@ -68,11 +69,12 @@ export function setBossRosterEntry(
 }
 
 export function clearBossRosterEntry(
+  setupId: string,
   bossId: string,
   memberId: string
 ): Promise<RaidBoss> {
   return apiRequest<RaidBoss>(
-    `/raid/boss-rosters/bosses/${bossId}/members/${memberId}`,
+    `/raid/boss-rosters/setups/${setupId}/bosses/${bossId}/members/${memberId}`,
     {
       method: "DELETE"
     }

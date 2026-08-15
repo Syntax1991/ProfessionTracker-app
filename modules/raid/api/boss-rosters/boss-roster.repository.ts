@@ -37,6 +37,41 @@ export class RaidBossRosterRepository {
     });
   }
 
+  findBossesForSetup(
+    raidEventId: string,
+    setupId: string
+  ) {
+    return prisma.raidBoss.findMany({
+      where: {
+        raidEventId
+      },
+      include: {
+        rosterEntries: {
+          where: { setupId }
+        }
+      },
+      orderBy: {
+        sortOrder: "asc"
+      }
+    });
+  }
+
+  findBossWithSetupEntries(
+    bossId: string,
+    setupId: string
+  ) {
+    return prisma.raidBoss.findUnique({
+      where: {
+        id: bossId
+      },
+      include: {
+        rosterEntries: {
+          where: { setupId }
+        }
+      }
+    });
+  }
+
   findMemberById(
     memberId: string
   ) {
@@ -93,18 +128,21 @@ export class RaidBossRosterRepository {
 
   upsertEntry(
     bossId: string,
+    setupId: string,
     memberId: string,
     status: string
   ) {
     return prisma.raidBossRosterEntry.upsert({
       where: {
-        bossId_memberId: {
+        bossId_setupId_memberId: {
           bossId,
+          setupId,
           memberId
         }
       },
       create: {
         bossId,
+        setupId,
         memberId,
         status
       },
@@ -116,11 +154,13 @@ export class RaidBossRosterRepository {
 
   deleteEntry(
     bossId: string,
+    setupId: string,
     memberId: string
   ) {
     return prisma.raidBossRosterEntry.deleteMany({
       where: {
         bossId,
+        setupId,
         memberId
       }
     });

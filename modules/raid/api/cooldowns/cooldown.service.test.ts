@@ -1,29 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
 import type { GuildVerificationGuard } from "../../../guild/api/verification/verification.types.js";
-import { bossAbilityCatalog } from "../../shared/catalog/bossAbilityCatalog.js";
 import type { RaidCooldownRepository } from "./cooldown.repository.js";
 import { RaidCooldownService } from "./cooldown.service.js";
 import type { WarcraftLogsClient } from "./warcraftlogs.client.js";
-
-function requireFirst<T>(items: T[]): T {
-  const [item] = items;
-
-  if (item === undefined) {
-    throw new Error(
-      "Expected at least one item"
-    );
-  }
-
-  return item;
-}
-
-const catalogBoss = requireFirst(
-  bossAbilityCatalog
-);
-
-const catalogAbility = requireFirst(
-  catalogBoss.abilities
-);
 
 function createService() {
   const calls: string[] = [];
@@ -33,7 +12,7 @@ function createService() {
       calls.push("repository");
       return {
         id: "boss-1",
-        name: catalogBoss.bossName,
+        name: "Imperator Averzian",
         fightDurationSeconds: null,
         wclReportCode: null,
         wclFightId: null,
@@ -94,6 +73,10 @@ function createService() {
   const verification: GuildVerificationGuard = {
     ensureVerified: vi.fn(async () => {
       calls.push("verification");
+    }),
+    requireCurrentOfficer: vi.fn(async () => {
+      calls.push("verification");
+      return { id: "member-1" };
     })
   };
 
@@ -114,8 +97,7 @@ function createService() {
         fightId: 1,
         casts: [
           {
-            abilityName:
-              catalogAbility.name,
+            abilityName: "Heaven's Lance",
             abilityIcon: null,
             timestampSeconds: 5
           }

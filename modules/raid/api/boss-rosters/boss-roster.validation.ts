@@ -41,3 +41,6 @@ export const raidBossIdSchema =
 
 export const raidBossMemberIdSchema =
   z.string().min(1);
+
+export const raidSetupIdParamSchema =
+  z.string().min(1);

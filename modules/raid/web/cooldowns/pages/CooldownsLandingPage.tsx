@@ -8,11 +8,12 @@ import { PageHeader } from "../../../../../apps/web/src/shared/components/PageHe
 import { StatusMessage } from "../../../../../apps/web/src/shared/components/StatusMessage";
 import { Tabs } from "../../../../../apps/web/src/shared/components/Tabs";
 import { useRoster } from "../../../../guild/web/roster/hooks/useRoster";
-import { getBossesForEvent } from "../../boss-rosters/api/bossRosterApi";
+import { getBossesForSetup } from "../../boss-rosters/api/bossRosterApi";
 import type { RaidBoss } from "../../boss-rosters/types/bossRoster.types";
 import { RaidEventList } from "../../planner/components/RaidEventList";
 import { useRaidEvents } from "../../planner/hooks/useRaidEvents";
 import type { RaidEvent } from "../../planner/types/raidEvent.types";
+import { useRaidSetup } from "../../raid-setup/hooks/useRaidSetup";
 import {
   syncBossWarcraftLogs,
   updateBossFightDuration
@@ -37,6 +38,10 @@ export function CooldownsLandingPage() {
     null
   );
 
+  const { setup } = useRaidSetup(
+    selectedEvent?.id ?? null
+  );
+
   const [bosses, setBosses] =
     useState<RaidBoss[]>([]);
 
@@ -57,14 +62,14 @@ export function CooldownsLandingPage() {
 
   const loadBosses = useCallback(
     async () => {
-      if (!selectedEvent) {
+      if (!setup) {
         setBosses([]);
         return;
       }
 
       const response =
-        await getBossesForEvent(
-          selectedEvent.id
+        await getBossesForSetup(
+          setup.id
         );
 
       setBosses(response.items);
@@ -76,7 +81,7 @@ export function CooldownsLandingPage() {
           null
       );
     },
-    [selectedEvent]
+    [setup]
   );
 
   useEffect(() => {
@@ -86,6 +91,20 @@ export function CooldownsLandingPage() {
   const selectedBoss = bosses.find(
     (boss) =>
       boss.id === selectedBossId
+  );
+
+  const lineupMemberIds = new Set(
+    (
+      selectedBoss?.rosterEntries ??
+      []
+    )
+      .filter(
+        (entry) =>
+          entry.status !== "BENCH"
+      )
+      .map(
+        (entry) => entry.memberId
+      )
   );
 
   const handleSelectEvent = (
@@ -174,6 +193,9 @@ export function CooldownsLandingPage() {
               }
               fightDurationSeconds={
                 selectedBoss.fightDurationSeconds
+              }
+              lineupMemberIds={
+                lineupMemberIds
               }
               onAddAssignment={
                 addAssignment

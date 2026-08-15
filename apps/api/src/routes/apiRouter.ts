@@ -13,6 +13,7 @@ import { raidCooldownRouter } from "../../../../modules/raid/api/cooldowns/coold
 import { lootWishlistRouter } from "../../../../modules/loot/api/wishlist/wishlist.routes.js";
 import { lootDroptimizerRouter } from "../../../../modules/loot/api/droptimizer/droptimizer.routes.js";
 import { raidPlannerRouter } from "../../../../modules/raid/api/planner/planner.routes.js";
+import { raidSetupRouter } from "../../../../modules/raid/api/setups/setup.routes.js";
 import { raidSignupRouter } from "../../../../modules/raid/api/signups/signup.routes.js";
 import { characterRouter } from "../../../../modules/my-syntrack/api/characters/character.routes.js";
 import { dashboardRouter } from "../../../../modules/my-syntrack/api/dashboard/dashboard.routes.js";
@@ -146,6 +147,11 @@ apiRouter.use(
 apiRouter.use(
   "/raid/signups",
   raidSignupRouter
+);
+
+apiRouter.use(
+  "/raid/setups",
+  raidSetupRouter
 );
 
 apiRouter.use(

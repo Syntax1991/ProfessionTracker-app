@@ -14,6 +14,7 @@ type BossCooldownViewProps = {
   wclSyncedAt: string | null;
   assignments: RaidCooldownAssignment[];
   rosterMembers: GuildMember[];
+  lineupMemberIds: Set<string>;
   abilitySuggestions: string[];
   onUpdateDuration: (
     seconds: number | null
@@ -39,6 +40,7 @@ export function BossCooldownView({
   wclSyncedAt,
   assignments,
   rosterMembers,
+  lineupMemberIds,
   abilitySuggestions,
   onUpdateDuration,
   onSyncWarcraftLogs,
@@ -89,6 +91,9 @@ export function BossCooldownView({
           bossName={bossName}
           fightDurationSeconds={
             fightDurationSeconds
+          }
+          lineupMemberIds={
+            lineupMemberIds
           }
           onAddAssignment={
             onAddAssignment

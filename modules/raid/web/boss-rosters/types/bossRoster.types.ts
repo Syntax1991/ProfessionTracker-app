@@ -16,6 +16,7 @@ export type RaidBossRosterMember = {
 export type RaidBossRosterEntry = {
   id: string;
   bossId: string;
+  setupId: string;
   memberId: string;
   status: RaidBossRosterStatus;
   createdAt: string;

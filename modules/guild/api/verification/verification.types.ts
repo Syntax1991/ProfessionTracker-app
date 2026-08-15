@@ -25,6 +25,17 @@ export type GuildVerificationLookupInput = {
 
 export type GuildVerificationGuard = {
   ensureVerified(): Promise<void>;
+  requireCurrentOfficer(
+    token: string
+  ): Promise<{ id: string }>;
+};
+
+export type LinkedGuildMemberLookup = {
+  getLinkedMember(token: string): Promise<{
+    id: string;
+    name: string;
+    realm: string;
+  } | null>;
 };
 
 export type GuildVerificationStatus = {

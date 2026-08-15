@@ -3,6 +3,8 @@ import {
   formatRelativeTime,
   formatSeconds,
   getWowIconUrl,
+  groupCastsByAbility,
+  isAssignedMemberInLineup,
   parseTimeInput,
   percentOf,
   secondsFromClickX
@@ -100,6 +102,32 @@ describe("secondsFromClickX", () => {
   });
 });
 
+describe("groupCastsByAbility", () => {
+  it("groups casts by ability name, ordered by first occurrence", () => {
+    const rows = groupCastsByAbility([
+      { abilityName: "B", timestampSeconds: 30 },
+      { abilityName: "A", timestampSeconds: 10 },
+      { abilityName: "B", timestampSeconds: 20 }
+    ]);
+
+    expect(
+      rows.map((row) => row.abilityName)
+    ).toEqual(["A", "B"]);
+
+    expect(
+      rows[1]?.casts.map(
+        (cast) => cast.timestampSeconds
+      )
+    ).toEqual([20, 30]);
+  });
+
+  it("returns an empty array for no casts", () => {
+    expect(
+      groupCastsByAbility([])
+    ).toEqual([]);
+  });
+});
+
 describe("getWowIconUrl", () => {
   it("appends .jpg when the icon has no extension", () => {
     expect(
@@ -115,6 +143,26 @@ describe("getWowIconUrl", () => {
     ).toBe(
       "https://wow.zamimg.com/images/wow/icons/medium/spell_holy_auramastery.jpg"
     );
+  });
+});
+
+describe("isAssignedMemberInLineup", () => {
+  it("is true when the member is in the current lineup", () => {
+    expect(
+      isAssignedMemberInLineup(
+        "member-1",
+        new Set(["member-1"])
+      )
+    ).toBe(true);
+  });
+
+  it("is false when the member has fallen out of the lineup", () => {
+    expect(
+      isAssignedMemberInLineup(
+        "member-1",
+        new Set(["member-2"])
+      )
+    ).toBe(false);
   });
 });
 

@@ -2,6 +2,7 @@ import { Router } from "express";
 import { asyncHandler } from "../../../../apps/api/src/shared/http/asyncHandler.js";
 import { BattleNetClient } from "../../../data-platform/api/integrations/battlenet/battlenet.client.js";
 import { raiderAuthService } from "../../../data-platform/api/raider-auth/raider-auth.routes.js";
+import { guildRaiderLinkService } from "../raider-link/raider-link.routes.js";
 import { GuildVerificationController } from "./verification.controller.js";
 import { GuildVerificationRepository } from "./verification.repository.js";
 import { GuildVerificationService } from "./verification.service.js";
@@ -16,7 +17,8 @@ export const guildVerificationService =
   new GuildVerificationService(
     repository,
     raiderAuthService,
-    battleNetClient
+    battleNetClient,
+    guildRaiderLinkService
   );
 
 const controller =

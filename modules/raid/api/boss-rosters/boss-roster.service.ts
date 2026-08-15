@@ -1,8 +1,12 @@
 import { AppError } from "../../../../apps/api/src/shared/errors/AppError.js";
 import { GuildRosterRepository } from "../../../guild/api/roster/roster.repository.js";
 import type { GuildVerificationGuard } from "../../../guild/api/verification/verification.types.js";
+import { RaidSetupRepository } from "../setups/setup.repository.js";
 import { RaidBossRosterRepository } from "./boss-roster.repository.js";
-import type { RaidBossInput } from "./boss-roster.types.js";
+import type {
+  RaidBossInput,
+  RaiderLinkGuard
+} from "./boss-roster.types.js";
 
 export class RaidBossRosterService {
   constructor(
@@ -12,29 +16,41 @@ export class RaidBossRosterService {
     private readonly rosterRepository:
       GuildRosterRepository,
 
+    private readonly setupRepository:
+      RaidSetupRepository,
+
     private readonly verification:
-      GuildVerificationGuard
+      GuildVerificationGuard,
+
+    private readonly raiderLink:
+      RaiderLinkGuard
   ) {}
 
-  async listForEvent(
-    eventId: string
+  async listForSetup(
+    token: string,
+    setupId: string
   ) {
-    const event =
-      await this.repository.findEventById(
-        eventId
+    await this.requireLinkedMember(
+      token
+    );
+
+    const setup =
+      await this.setupRepository.findSetupById(
+        setupId
       );
 
-    if (!event) {
+    if (!setup || !setup.raidEventId) {
       throw new AppError(
         404,
-        "Raid-Termin nicht gefunden."
+        "Setup nicht gefunden."
       );
     }
 
     const [bosses, members] =
       await Promise.all([
-        this.repository.findBossesForEvent(
-          eventId
+        this.repository.findBossesForSetup(
+          setup.raidEventId,
+          setupId
         ),
         this.rosterRepository.findAll()
       ]);
@@ -116,23 +132,21 @@ export class RaidBossRosterService {
   }
 
   async setEntry(
+    token: string,
     bossId: string,
+    setupId: string,
     memberId: string,
     status: string
   ) {
-    await this.verification.ensureVerified();
+    await this.verification.requireCurrentOfficer(
+      token
+    );
 
-    const boss =
-      await this.repository.findBossById(
-        bossId
+    const { boss, setup } =
+      await this.requireConsistentBossAndSetup(
+        bossId,
+        setupId
       );
-
-    if (!boss) {
-      throw new AppError(
-        404,
-        "Boss nicht gefunden."
-      );
-    }
 
     const member =
       await this.repository.findMemberById(
@@ -146,25 +160,89 @@ export class RaidBossRosterService {
       );
     }
 
+    const isSetupMember =
+      await this.setupRepository.isSetupMember(
+        setup.id,
+        memberId
+      );
+
+    if (!isSetupMember) {
+      throw new AppError(
+        400,
+        "Dieses Mitglied muss zuerst wieder zum Setup hinzugefügt werden, um die Teilnahme zu ändern."
+      );
+    }
+
     await this.repository.upsertEntry(
-      bossId,
+      boss.id,
+      setup.id,
       memberId,
       status
     );
 
-    return this.enrichBoss(bossId);
+    return this.enrichBossForSetup(
+      boss.id,
+      setup.id
+    );
   }
 
   async clearEntry(
+    token: string,
     bossId: string,
+    setupId: string,
     memberId: string
   ) {
-    await this.verification.ensureVerified();
+    await this.verification.requireCurrentOfficer(
+      token
+    );
 
-    const boss =
-      await this.repository.findBossById(
-        bossId
+    const { boss, setup } =
+      await this.requireConsistentBossAndSetup(
+        bossId,
+        setupId
       );
+
+    await this.repository.deleteEntry(
+      boss.id,
+      setup.id,
+      memberId
+    );
+
+    return this.enrichBossForSetup(
+      boss.id,
+      setup.id
+    );
+  }
+
+  private async requireLinkedMember(
+    token: string
+  ): Promise<void> {
+    const member =
+      await this.raiderLink.getLinkedMember(
+        token
+      );
+
+    if (!member) {
+      throw new AppError(
+        403,
+        "Bitte zuerst dein Battle.net-Konto verknüpfen."
+      );
+    }
+  }
+
+  private async requireConsistentBossAndSetup(
+    bossId: string,
+    setupId: string
+  ) {
+    const [boss, setup] =
+      await Promise.all([
+        this.repository.findBossById(
+          bossId
+        ),
+        this.setupRepository.findSetupById(
+          setupId
+        )
+      ]);
 
     if (!boss) {
       throw new AppError(
@@ -173,20 +251,34 @@ export class RaidBossRosterService {
       );
     }
 
-    await this.repository.deleteEntry(
-      bossId,
-      memberId
-    );
+    if (!setup) {
+      throw new AppError(
+        404,
+        "Setup nicht gefunden."
+      );
+    }
 
-    return this.enrichBoss(bossId);
+    if (
+      boss.raidEventId !==
+      setup.raidEventId
+    ) {
+      throw new AppError(
+        400,
+        "Boss und Setup gehören zu unterschiedlichen Terminen."
+      );
+    }
+
+    return { boss, setup };
   }
 
-  private async enrichBoss(
-    bossId: string
+  private async enrichBossForSetup(
+    bossId: string,
+    setupId: string
   ) {
     const boss =
-      await this.repository.findBossById(
-        bossId
+      await this.repository.findBossWithSetupEntries(
+        bossId,
+        setupId
       );
 
     if (!boss) {
@@ -208,7 +300,7 @@ export class RaidBossRosterService {
   private enrichBosses(
     bosses: Awaited<
       ReturnType<
-        RaidBossRosterRepository["findBossesForEvent"]
+        RaidBossRosterRepository["findBossesForSetup"]
       >
     >,
     members: Awaited<

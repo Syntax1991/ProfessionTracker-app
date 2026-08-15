@@ -22,6 +22,7 @@ logging.
 - Raid Planner (available)
 - Signups (available)
 - Boss Rosters (available)
+- Raid Setup (available — see below)
 - Attendance (available)
 - Cooldown Planning (available — see below)
 - Bench Management (planned)
@@ -35,17 +36,20 @@ does not own the guild roster.
 ## Current source
 
 - API: `modules/raid/api/planner`, `modules/raid/api/boss-rosters`,
-  `modules/raid/api/signups`, `modules/raid/api/attendance`,
-  `modules/raid/api/cooldowns`
+  `modules/raid/api/setups`, `modules/raid/api/signups`,
+  `modules/raid/api/attendance`, `modules/raid/api/cooldowns`
 - Web: `modules/raid/web/planner` (routed pages — Planner index +
   Event Detail) and `modules/raid/web/attendance` (routed page — the
-  season rollup), `modules/raid/web/boss-rosters` and
-  `modules/raid/web/signups` (components/hooks/types only, composed
-  into the Event Detail page, no page/route of their own),
-  `modules/raid/web/cooldowns` (its own routed page,
-  `/raid/cooldowns` — see below, not composed into Event Detail)
+  season rollup), `modules/raid/web/boss-rosters`,
+  `modules/raid/web/raid-setup` and `modules/raid/web/signups`
+  (components/hooks/types only, composed into the Event Detail page,
+  no page/route of their own), `modules/raid/web/cooldowns` (its own
+  routed page, `/raid/cooldowns` — see below, not composed into Event
+  Detail)
 - Shared: `modules/raid/shared/catalog/raidCatalog.ts` (Midnight raid
-  instances by season, used by both API and web)
+  instances by season, used by both API and web),
+  `modules/raid/shared/catalog/raidWeek.ts` (pure EU reset-week
+  boundary computation, used by the Setup module below)
 
 ## Cooldown Planning
 
@@ -520,6 +524,141 @@ not currently composed onto this page. If they should come back (a
 leaner "My status" line, attendance recording elsewhere) or be
 removed for good, that needs its own
 decision, not a default from decluttering this one page.
+
+## Raid Setup
+
+Built 2026-08-15 after the user pointed at WoWUtils' roster-mapping
+concept directly and, over six rounds of plan review, converged on a
+scope that is deliberately narrower than the first two drafts: **no
+Warcraft Logs roster import** (deferred entirely — a separate future
+capability, not bolted onto this schema) and **no encounter-timing
+change** (Cooldown Planning's existing WCL sync, above, is completely
+untouched — Setup answers *who plays which boss*, Cooldowns answers
+*when things happen*, Cooldown Assignment answers *who uses what
+cooldown when*; these stay three separate concerns on purpose).
+
+**Domain model**, new: `RaidWeek` (real EU Wednesday-reset week
+boundaries, `resolveRaidWeek()` in `raidWeek.ts`, `startsAt` unique) →
+`RaidPlan` (one default "Main Progress" plan per week) → `RaidSetup`
+(`raidPlanId`, optional `raidEventId`, a stable `key` slug distinct
+from the officer-renameable `name`). `RaidSetup.raidEventId` is
+deliberately **not** unique — the schema already allows
+`RaidEvent → RaidSetup[]`, so a later "Progress"/"Farm" setup for the
+same event needs no further migration — but Phase 1's application
+logic only ever creates/exposes one per event, via `key: "main"` and
+`@@unique([raidEventId, key])`. `getOrCreateForEvent` is a real
+`upsert` on that composite key, not a racy find-then-create — the
+unique constraint itself is what guarantees two concurrent requests
+for the same event can never create two default setups, a correction
+the user pushed for directly rather than accepting
+"a transaction probably makes this safe."
+
+**Two intentionally separate tiers**, per explicit user correction —
+"a curated Setup pool must not silently become the whole guild":
+`RaidSetupMember` (the curated candidate pool for a Setup — what
+"Update Roster" syncs and what `+ Member` adds to) is distinct from
+`RaidBossRosterEntry` (the actual per-boss IN/TENTATIVE/BENCH lineup,
+unchanged model, refactored — not duplicated — to carry a real
+`setupId` so two Setups of the same event could someday hold different
+lineups for the same boss). "Update Roster" pulls from the event's
+linked `GuildTeam` (`GuildTeamRepository.findById`, already-curated
+membership) rather than the full guild roster — confirmed with the
+user directly via `AskUserQuestion` rather than assumed — and is
+**strictly additive**: a pool member who later leaves the linked team
+is never auto-removed, only an explicit "×" click removes them.
+
+**Orphaned lineup entries are preserved but not mutable.** A
+`RaidBossRosterEntry` can only be created, or have its status changed,
+for a `memberId` currently in `RaidSetupMember` for that setup
+(`RaidSetupRepository.isSetupMember`, checked in
+`RaidBossRosterService.setEntry`) — a member removed from the pool
+keeps their existing lineup entries and any `RaidCooldownAssignment`
+referencing them untouched, just not further editable until they're
+re-added. `clearEntry` (removing a lineup entry outright) is
+deliberately **not** gated the same way — clearing can't misrepresent
+someone's participation the way changing their status could, so it
+stays available as a cleanup action regardless of current pool
+membership. `BossRosterMatrix.tsx` filters its rows to the current
+pool (`poolMemberIds`) and gained a "Confirmed" total footer row
+(`BossMatrixFooter.tsx`, split out to stay under the 350-line file
+limit, same for the extracted `BossMatrixHeader.tsx`); the Cooldown
+Planner's `TimelineGrid.tsx` dropped its old local
+`manuallyAddedMemberIds` state and the "+ Add raider" picker entirely
+— visible raider rows are now `assignedMemberIds ∪ lineupMemberIds`
+(real `RaidBossRosterEntry` data, excluding BENCH), with
+`isAssignedMemberInLineup()` (`timelineFormat.ts`) driving a muted
+row + "Not in current setup" badge (`RaiderCooldownRow.tsx`) for
+anyone whose assignment survived a bench/pool-removal.
+
+**Actor-aware authorization — a real, pre-existing gap fixed for this
+surface.** The user stopped implementation directly to demand
+verification, not assumption, of what the existing
+`GuildVerificationGuard.ensureVerified()` actually proves: reading
+`verification.service.ts` in full confirmed it only checks a single
+**global** `GuildVerification` row (the guild was verified by
+*someone, once*) — never the current requester's identity. Every
+"officer-protected" mutation across the whole app was reachable by
+anyone able to hit the API, as long as the guild had ever been
+verified. Real, pre-existing, not specific to this feature — fixing it
+everywhere was explicitly out of scope; only the Setup + Boss Lineup
+surface was hardened. New `GuildVerificationService.requireCurrentOfficer(token)`
+(`verification.officer-check.ts` — `verifyCurrentOfficerRank`, split
+out to stay under 350 lines) resolves the caller's own linked
+character via `GuildRaiderLinkService`, then makes the same two live
+Blizzard calls `verify()` already trusts
+(`getCharacterProfile`/`getGuildRoster`) to check their **current**
+rank — never the addon-imported `GuildMember.rank`, which is
+self-reported SavedVariables data. A small `OfficerAuthorizationCache`
+(`verification.officer-cache.ts`, injectable clock for tests) caches
+only confirmed-positive results for 5 minutes so a planning session
+isn't two live Blizzard calls per matrix click; a failed check is
+never cached, and session/link validity is always re-checked live
+regardless of the cache. All new Setup endpoints (`raidSetupRouter`,
+`/raid/setups`) and `boss-roster.service.ts`'s `setEntry`/`clearEntry`
+use this; `listForSetup`/`getForEvent` (reads) require only an
+authenticated, guild-linked member (`GuildRaiderLinkService`), not
+full officer rank. `createBoss`/`updateBoss`/`deleteBoss` deliberately
+stay on the old `ensureVerified()` pattern — boss/encounter CRUD is a
+different, pre-existing concern this task wasn't scoped to harden.
+
+**Migration.** `RaidBossRosterEntry` (90 real rows from this project's
+own usage) was rebuilt with a `NOT NULL setupId` via SQLite's
+table-rebuild pattern (can't add a backfilled NOT NULL FK column via
+plain `ALTER TABLE`); the migration bootstraps exactly one real
+`RaidWeek`/`RaidPlan`/`RaidSetup` per event that had roster data,
+deduplicating weeks by their real computed reset-week `startsAt` so
+multiple events in the same week correctly share one `RaidWeek` — the
+same rule `getOrCreateForEvent` applies to all future data, not a
+special migration-only case. Verified via a fresh Prisma read-back
+after applying: row count unchanged, correct linkage.
+
+Live-tested end to end: opened "Voidspire Night 1", confirmed its
+Setup auto-provisioned by reusing the migration-created "main" setup
+(not creating a duplicate), confirmed the read gate correctly blocks
+an unlinked session ("Bitte zuerst dein Battle.net-Konto
+verknüpfen."), confirmed `BossRosterMatrix` shows the correct
+pool-empty message, confirmed "Update Roster" triggers a real
+`requireCurrentOfficer` check — a real live Blizzard call against a
+demo (non-Battle.net-backed) character correctly failed with "…ist
+aktuell in keiner Gilde," proving the full authorization chain is
+wired end to end even though this project's demo roster can't satisfy
+a positive officer match live. The positive-path auth/cache matrix
+(unauthenticated → 403, non-officer → 403 not cached, officer →
+allowed and cached, cache expiry re-checks live) is covered instead by
+27 new unit tests (`verification.service.test.ts`,
+`boss-roster.service.test.ts`, `setup.service.test.ts`) against mocked
+Blizzard responses. Confirmed the Cooldowns page's setup-scoped boss
+listing renders real preserved lineup data with zero false warning
+rows against the migrated dataset (all real entries are `CONFIRMED`,
+none `BENCH`, so the warning path itself is unit-tested rather than
+visually confirmed against this particular dataset).
+
+**Phase 2 — direct-manipulation timeline UX (hover playhead,
+tooltips, click-to-edit, drag-to-create from a structured Healing
+palette) is design-only**, explicitly scoped out of this pass at the
+user's request. The target architecture is documented in the approved
+plan, not implemented — today's click-to-place/drag-to-reposition
+timeline (Cooldown Planning, above) is unchanged.
 
 ## Raid Planner
 

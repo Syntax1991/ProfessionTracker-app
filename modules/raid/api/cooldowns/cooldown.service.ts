@@ -1,6 +1,5 @@
 import { AppError } from "../../../../apps/api/src/shared/errors/AppError.js";
 import type { GuildVerificationGuard } from "../../../guild/api/verification/verification.types.js";
-import { getAbilitiesForBoss } from "../../shared/catalog/bossAbilityCatalog.js";
 import { RaidCooldownRepository } from "./cooldown.repository.js";
 import type {
   RaidBossFightDurationInput,
@@ -225,22 +224,6 @@ export class RaidCooldownService {
       );
     }
 
-    const knownAbilityNames = new Set(
-      getAbilitiesForBoss(
-        boss.name
-      ).map(
-        (ability) => ability.name
-      )
-    );
-
-    const realCasts =
-      fightCasts.casts.filter(
-        (cast) =>
-          knownAbilityNames.has(
-            cast.abilityName
-          )
-      );
-
     await this.repository.replaceAbilityCastsFromSync(
       bossId,
       {
@@ -249,7 +232,7 @@ export class RaidCooldownService {
         wclReportCode:
           fightCasts.reportCode,
         wclFightId: fightCasts.fightId,
-        casts: realCasts
+        casts: fightCasts.casts
       }
     );
 

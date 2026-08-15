@@ -132,6 +132,23 @@
   text-overflow: ellipsis;
 }
 
+.cooldown-timeline-row.is-not-in-lineup {
+  opacity: 0.55;
+}
+
+.cooldown-timeline-row-warning {
+  flex: 0 0 auto;
+  padding: 1px 6px;
+  border-radius: 999px;
+  border: 1px solid var(--border-strong);
+  color: var(--text-muted);
+  font-size: 0.58rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
 .cooldown-timeline-row-icon {
   flex: 0 0 auto;
   width: 18px;
@@ -256,14 +273,6 @@
   border-radius: 4px;
   cursor: default;
   object-fit: cover;
-}
-
-.cooldown-timeline-add-row {
-  margin: 6px 0 0 148px;
-}
-
-.cooldown-timeline-add-row select {
-  min-width: 180px;
 }
 
 .cooldown-timeline-placing-at {

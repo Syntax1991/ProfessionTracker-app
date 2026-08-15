@@ -7,7 +7,7 @@ import {
   clearBossRosterEntry,
   createBoss,
   deleteBoss,
-  getBossesForEvent,
+  getBossesForSetup,
   setBossRosterEntry,
   updateBoss
 } from "../api/bossRosterApi";
@@ -18,7 +18,8 @@ import type {
 } from "../types/bossRoster.types";
 
 export function useBossRosters(
-  eventId: string | null
+  eventId: string | null,
+  setupId: string | null
 ) {
   const [bosses, setBosses] =
     useState<RaidBoss[]>([]);
@@ -31,7 +32,7 @@ export function useBossRosters(
 
   const loadBosses = useCallback(
     async () => {
-      if (!eventId) {
+      if (!setupId) {
         setBosses([]);
         return;
       }
@@ -41,8 +42,8 @@ export function useBossRosters(
 
       try {
         const response =
-          await getBossesForEvent(
-            eventId
+          await getBossesForSetup(
+            setupId
           );
 
         setBosses(response.items);
@@ -58,7 +59,7 @@ export function useBossRosters(
         setIsLoading(false);
       }
     },
-    [eventId]
+    [setupId]
   );
 
   useEffect(() => {
@@ -143,10 +144,15 @@ export function useBossRosters(
     memberId: string,
     status: RaidBossRosterStatus
   ) => {
+    if (!setupId) {
+      return;
+    }
+
     setError(null);
 
     try {
       await setBossRosterEntry(
+        setupId,
         bossId,
         memberId,
         status
@@ -169,10 +175,15 @@ export function useBossRosters(
     bossId: string,
     memberId: string
   ) => {
+    if (!setupId) {
+      return;
+    }
+
     setError(null);
 
     try {
       await clearBossRosterEntry(
+        setupId,
         bossId,
         memberId
       );

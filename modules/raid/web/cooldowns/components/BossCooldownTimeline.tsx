@@ -4,7 +4,6 @@ import {
 } from "react";
 import { StatusMessage } from "../../../../../apps/web/src/shared/components/StatusMessage";
 import type { GuildMember } from "../../../../guild/web/roster/types/roster.types";
-import { getAbilitiesForBoss } from "../../../shared/catalog/bossAbilityCatalog";
 import { useBossAbilityCasts } from "../hooks/useBossAbilityCasts";
 import { usePhaseMarkers } from "../hooks/usePhaseMarkers";
 import type {
@@ -27,6 +26,7 @@ type BossCooldownTimelineProps = {
   wclSyncedAt: string | null;
   assignments: RaidCooldownAssignment[];
   rosterMembers: GuildMember[];
+  lineupMemberIds: Set<string>;
   onUpdateDuration: (
     seconds: number | null
   ) => Promise<void>;
@@ -51,6 +51,7 @@ export function BossCooldownTimeline({
   wclSyncedAt,
   assignments,
   rosterMembers,
+  lineupMemberIds,
   onUpdateDuration,
   onSyncWarcraftLogs,
   onAddAssignment,
@@ -98,9 +99,6 @@ export function BossCooldownTimeline({
         )
       )
     ).sort();
-
-  const bossAbilities =
-    getAbilitiesForBoss(bossName);
 
   const handleDurationSubmit = async (
     event: FormEvent<HTMLFormElement>
@@ -249,14 +247,14 @@ export function BossCooldownTimeline({
             assignments={
               assignments
             }
-            bossAbilities={
-              bossAbilities
-            }
             bossAbilityCasts={
               abilityCasts.casts
             }
             fightDurationSeconds={
               fightDurationSeconds
+            }
+            lineupMemberIds={
+              lineupMemberIds
             }
             onRaiderTrackClick={(
               memberId,
