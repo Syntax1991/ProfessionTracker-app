@@ -5,6 +5,7 @@ import {
   type MouseEvent as ReactMouseEvent,
   type RefObject
 } from "react";
+import { secondsFromClickX } from "../utils/timelineFormat";
 
 const dragThresholdPx = 4;
 
@@ -13,24 +14,35 @@ function computeSeconds(
   trackRef: RefObject<HTMLDivElement | null>,
   fightDurationSeconds: number
 ): number {
-  const rect =
-    trackRef.current?.getBoundingClientRect();
-
-  if (!rect || rect.width === 0) {
+  if (!trackRef.current) {
     return 0;
   }
 
-  const ratio = Math.min(
-    1,
-    Math.max(
-      0,
-      (clientX - rect.left) /
-        rect.width
-    )
+  return secondsFromClickX(
+    clientX,
+    trackRef.current,
+    fightDurationSeconds
   );
+}
 
-  return Math.round(
-    ratio * fightDurationSeconds
+// After a drag, the marker re-renders at the drop position before the
+// browser's native click fires, so click lands on the track underneath
+// and would otherwise open the click-to-place form. Swallow that one
+// synthesized click in the capture phase, before React sees it.
+function suppressNextClick(): void {
+  const swallow = (event: MouseEvent) => {
+    event.stopPropagation();
+    document.removeEventListener(
+      "click",
+      swallow,
+      true
+    );
+  };
+
+  document.addEventListener(
+    "click",
+    swallow,
+    true
   );
 }
 
@@ -104,6 +116,8 @@ export function useMarkerDrag(params: {
         );
 
         if (draggedRef.current) {
+          suppressNextClick();
+
           onDrop(
             computeSeconds(
               upEvent.clientX,

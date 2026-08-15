@@ -196,6 +196,10 @@ export function CooldownsLandingPage() {
                       assignment.memberId,
                     abilityName:
                       assignment.abilityName,
+                    spellId:
+                      assignment.spellId,
+                    abilityIcon:
+                      assignment.abilityIcon,
                     phaseLabel:
                       assignment.phaseLabel,
                     timestampSeconds:

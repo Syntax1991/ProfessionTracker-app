@@ -12,6 +12,7 @@ import type {
   RaidCooldownAssignmentInput
 } from "../types/cooldown.types";
 import {
+  formatRelativeTime,
   formatSeconds,
   parseTimeInput
 } from "../utils/timelineFormat";
@@ -85,6 +86,9 @@ export function BossCooldownTimeline({
   const [syncError, setSyncError] =
     useState<string | null>(null);
 
+  const [isPhaseFormOpen, setIsPhaseFormOpen] =
+    useState(false);
+
   const abilitySuggestions =
     Array.from(
       new Set(
@@ -128,61 +132,68 @@ export function BossCooldownTimeline({
   };
 
   return (
-    <section className="panel">
-      <div className="panel-header">
-        <div>
-          <p className="eyebrow">
-            TIMELINE
-          </p>
+    <section className="cooldown-timeline-panel">
+      <div className="cooldown-timeline-toolbar">
+        <h2>{bossName}</h2>
 
-          <h2>{bossName}</h2>
-
-          <p className="muted-text">
-            {wclSyncedAt
+        <span
+          className="cooldown-sync-pill"
+          title={
+            wclSyncedAt
               ? `Synced from Warcraft Logs — ${new Date(wclSyncedAt).toLocaleString()}`
-              : "Not synced from Warcraft Logs yet."}
-          </p>
-        </div>
+              : "Not synced from Warcraft Logs yet."
+          }
+        >
+          {wclSyncedAt
+            ? `⟳ ${formatRelativeTime(wclSyncedAt)}`
+            : "⟳ Not synced"}
+        </span>
 
-        <div className="cooldown-duration-form">
+        <button
+          className="button button-primary"
+          disabled={isSyncing}
+          onClick={() =>
+            void handleSync()
+          }
+          type="button"
+        >
+          {isSyncing
+            ? "Syncing…"
+            : "Sync from Warcraft Logs"}
+        </button>
+
+        <form
+          className="cooldown-duration-form"
+          onSubmit={
+            handleDurationSubmit
+          }
+        >
+          <input
+            onChange={(event) =>
+              setDurationInput(
+                event.target.value
+              )
+            }
+            placeholder="mm:ss"
+            value={durationInput}
+          />
+
           <button
-            className="button button-primary"
-            disabled={isSyncing}
-            onClick={() =>
-              void handleSync()
-            }
-            type="button"
+            className="button button-secondary"
+            type="submit"
           >
-            {isSyncing
-              ? "Syncing…"
-              : "Sync from Warcraft Logs"}
+            Set duration
           </button>
+        </form>
 
-          <form
-            className="cooldown-duration-form"
-            onSubmit={
-              handleDurationSubmit
-            }
-          >
-            <input
-              onChange={(event) =>
-                setDurationInput(
-                  event.target
-                    .value
-                )
-              }
-              placeholder="mm:ss"
-              value={durationInput}
-            />
-
-            <button
-              className="button button-secondary"
-              type="submit"
-            >
-              Set duration
-            </button>
-          </form>
-        </div>
+        <button
+          aria-label="How this timeline works"
+          className="cooldown-help-button"
+          title="Boss ability rows are synced from Warcraft Logs. Click a raider's row to assign their cooldown — drag a placed cooldown to move it."
+          type="button"
+        >
+          ⓘ
+        </button>
       </div>
 
       {syncError && (
@@ -201,20 +212,38 @@ export function BossCooldownTimeline({
         </p>
       ) : (
         <>
-          <PhaseMarkerForm
-            onSubmit={
-              phaseMarkers.addMarker
-            }
-          />
+          <div className="cooldown-timeline-actions">
+            <button
+              className="text-button"
+              onClick={() =>
+                setIsPhaseFormOpen(
+                  (current) =>
+                    !current
+                )
+              }
+              type="button"
+            >
+              {isPhaseFormOpen
+                ? "Cancel"
+                : "+ Phase"}
+            </button>
+          </div>
 
-          <p className="muted-text">
-            Boss ability rows are
-            synced from Warcraft Logs.
-            Click a raider's row to
-            assign their cooldown —
-            drag a placed cooldown to
-            move it.
-          </p>
+          {isPhaseFormOpen && (
+            <PhaseMarkerForm
+              onSubmit={async (
+                input
+              ) => {
+                await phaseMarkers.addMarker(
+                  input
+                );
+
+                setIsPhaseFormOpen(
+                  false
+                );
+              }}
+            />
+          )}
 
           <TimelineGrid
             assignments={

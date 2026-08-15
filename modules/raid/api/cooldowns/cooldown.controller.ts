@@ -57,6 +57,12 @@ export class RaidCooldownController {
         bossId,
         {
           ...input,
+          spellId:
+            input.spellId ??
+            null,
+          abilityIcon:
+            input.abilityIcon ??
+            null,
           phaseLabel:
             input.phaseLabel ??
             null,
@@ -90,6 +96,12 @@ export class RaidCooldownController {
         assignmentId,
         {
           ...input,
+          spellId:
+            input.spellId ??
+            null,
+          abilityIcon:
+            input.abilityIcon ??
+            null,
           phaseLabel:
             input.phaseLabel ??
             null,

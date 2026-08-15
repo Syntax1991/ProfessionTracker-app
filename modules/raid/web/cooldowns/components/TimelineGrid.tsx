@@ -168,6 +168,13 @@ export function TimelineGrid({
           )
         )}
 
+        {orderedVisibleMemberIds.length >
+          0 && (
+          <div className="cooldown-timeline-section-label">
+            RAIDERS
+          </div>
+        )}
+
         {orderedVisibleMemberIds.map(
           (memberId) => {
             const member =

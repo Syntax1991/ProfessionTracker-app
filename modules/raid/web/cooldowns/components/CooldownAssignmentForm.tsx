@@ -5,6 +5,7 @@ import {
 import type { GuildMember } from "../../../../guild/web/roster/types/roster.types";
 import type { RaidCooldownAssignmentInput } from "../types/cooldown.types";
 import { formatSeconds } from "../utils/timelineFormat";
+import { SpellPicker } from "./SpellPicker";
 
 type CooldownAssignmentFormProps = {
   rosterMembers: GuildMember[];
@@ -32,6 +33,15 @@ export function CooldownAssignmentForm({
         ""
     );
 
+  const [spellId, setSpellId] =
+    useState<number | null>(null);
+
+  const [abilityIcon, setAbilityIcon] =
+    useState<string | null>(null);
+
+  const [useFreeText, setUseFreeText] =
+    useState(false);
+
   const [abilityName, setAbilityName] =
     useState("");
 
@@ -41,6 +51,16 @@ export function CooldownAssignmentForm({
   const [isSubmitting, setIsSubmitting] =
     useState(false);
 
+  const selectedMember =
+    rosterMembers.find(
+      (member) => member.id === memberId
+    );
+
+  const resolvedAbilityName =
+    useFreeText
+      ? abilityName.trim()
+      : abilityName;
+
   const handleSubmit = async (
     event: FormEvent<HTMLFormElement>
   ) => {
@@ -48,7 +68,7 @@ export function CooldownAssignmentForm({
 
     if (
       !memberId ||
-      !abilityName.trim()
+      !resolvedAbilityName
     ) {
       return;
     }
@@ -59,7 +79,13 @@ export function CooldownAssignmentForm({
       await onSubmit({
         memberId,
         abilityName:
-          abilityName.trim(),
+          resolvedAbilityName,
+        spellId: useFreeText
+          ? null
+          : spellId,
+        abilityIcon: useFreeText
+          ? null
+          : abilityIcon,
         phaseLabel:
           phaseLabel.trim() ||
           null,
@@ -68,6 +94,8 @@ export function CooldownAssignmentForm({
         sortOrder: 0
       });
 
+      setSpellId(null);
+      setAbilityIcon(null);
       setAbilityName("");
       setPhaseLabel("");
     }
@@ -111,28 +139,68 @@ export function CooldownAssignmentForm({
         )}
       </select>
 
-      <input
-        list={datalistId}
-        maxLength={80}
-        onChange={(event) =>
-          setAbilityName(
-            event.target.value
-          )
-        }
-        placeholder="Ability (e.g. Aura Mastery)"
-        value={abilityName}
-      />
+      {useFreeText ? (
+        <>
+          <input
+            list={datalistId}
+            maxLength={80}
+            onChange={(event) =>
+              setAbilityName(
+                event.target.value
+              )
+            }
+            placeholder="Ability (e.g. Aura Mastery)"
+            value={abilityName}
+          />
 
-      <datalist id={datalistId}>
-        {abilitySuggestions.map(
-          (name) => (
-            <option
-              key={name}
-              value={name}
-            />
-          )
-        )}
-      </datalist>
+          <datalist id={datalistId}>
+            {abilitySuggestions.map(
+              (name) => (
+                <option
+                  key={name}
+                  value={name}
+                />
+              )
+            )}
+          </datalist>
+        </>
+      ) : (
+        <SpellPicker
+          className={
+            selectedMember?.className ??
+            ""
+          }
+          onSelect={(spell) => {
+            setSpellId(
+              spell?.spellId ?? null
+            );
+            setAbilityIcon(
+              spell?.icon ?? null
+            );
+            setAbilityName(
+              spell?.name ?? ""
+            );
+          }}
+          selectedSpellId={spellId}
+        />
+      )}
+
+      <button
+        className="text-button"
+        onClick={() => {
+          setUseFreeText(
+            (current) => !current
+          );
+          setSpellId(null);
+          setAbilityIcon(null);
+          setAbilityName("");
+        }}
+        type="button"
+      >
+        {useFreeText
+          ? "Use spell picker instead"
+          : "Can't find it? Type a name instead"}
+      </button>
 
       <input
         maxLength={60}
@@ -150,7 +218,7 @@ export function CooldownAssignmentForm({
         disabled={
           isSubmitting ||
           !memberId ||
-          !abilityName.trim()
+          !resolvedAbilityName
         }
         type="submit"
       >

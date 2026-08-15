@@ -1,6 +1,8 @@
 export type RaidCooldownAssignmentInput = {
   memberId: string;
   abilityName: string;
+  spellId: number | null;
+  abilityIcon: string | null;
   phaseLabel: string | null;
   timestampSeconds: number | null;
   sortOrder: number;

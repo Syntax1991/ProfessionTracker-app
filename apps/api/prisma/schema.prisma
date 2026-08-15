@@ -520,6 +520,8 @@ model RaidCooldownAssignment {
   bossId           String
   memberId         String
   abilityName      String
+  spellId          Int?
+  abilityIcon      String?
   phaseLabel       String?
   timestampSeconds Int?
   sortOrder        Int      @default(0)

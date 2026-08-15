@@ -46,13 +46,19 @@ function AssignmentMarker({
     assignment.timestampSeconds ??
     0;
 
+  const markerClassName = [
+    "cooldown-timeline-marker",
+    assignment.abilityIcon
+      ? "cooldown-timeline-marker-icon"
+      : "",
+    isDragging ? "is-dragging" : ""
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   return (
     <button
-      className={
-        isDragging
-          ? "cooldown-timeline-marker is-dragging"
-          : "cooldown-timeline-marker"
-      }
+      className={markerClassName}
       onMouseDown={onMouseDown}
       style={
         {
@@ -66,9 +72,26 @@ function AssignmentMarker({
       title={`${member?.name ?? "Unknown"} — ${assignment.abilityName} at ${formatSeconds(displaySeconds)} — click to remove, drag to move`}
       type="button"
     >
-      {(member?.name ?? "?")
-        .slice(0, 2)
-        .toUpperCase()}
+      {isDragging && (
+        <span className="cooldown-timeline-drag-label">
+          {formatSeconds(
+            displaySeconds
+          )}
+        </span>
+      )}
+
+      {assignment.abilityIcon ? (
+        <img
+          alt=""
+          src={
+            assignment.abilityIcon
+          }
+        />
+      ) : (
+        (member?.name ?? "?")
+          .slice(0, 2)
+          .toUpperCase()
+      )}
     </button>
   );
 }

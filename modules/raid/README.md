@@ -277,6 +277,104 @@ re-sync used in Step 3: confirmed 4 real icon images
 (`ability_priest_voidentropy.jpg`) all loaded successfully
 (`naturalWidth: 36`, not broken), reverted afterward.
 
+### Step 4 — UX overhaul + structured spell picker (2026-08-15)
+
+The user came back with a detailed, structured brief: the timeline
+worked technically, but its UX — density, workflow, visual clarity —
+was still noticeably behind the WoWUtils reference, and "ungefähr
+richtig" (approximately right) wasn't good enough this time. The
+brief explicitly permitted rebuilding earlier UX decisions that worked
+against the target, not just adding on top, and explicitly ruled out
+placeholder/fake data anywhere.
+
+**Audit first, then design.** Re-read every file fresh (not from
+session memory) before changing anything. Findings: the data pipeline
+(WCL sync, drag repositioning, permission guard) was already solid and
+kept untouched; the real gaps were (1) raider cooldowns were still
+free-text with no icon or structure — the single biggest functional
+gap versus the reference — and (2) the screen was visually loose:
+`.panel`/`.panel-header` chrome sized for dashboard cards, a permanent
+instructional paragraph, an always-visible phase-marker form
+(inconsistent with this same module's own "+ Add X" toggle pattern
+elsewhere), 36px row tracks, no visual boundary between boss rows and
+raider rows, and a diamond-vs-square marker mismatch between synced
+and not-yet-synced boss casts.
+
+**Structured spell picker.** Verified live against Blizzard's Game
+Data API (`/data/wow/spell/{id}` for the real name, `/data/wow/media/
+spell/{id}` for the real official icon URL) — guessed a candidate
+spell id from game knowledge per ability, kept it only on an exact
+name match, discarded on 404 rather than re-guessing (3 candidates
+discarded this way: Death Knight "Rune Tap", Mage "Alter Time", Hunter
+"Aspect of the Wild"). Also confirmed live that Blizzard's API has
+**no structured cooldown-duration field anywhere** — only prose
+descriptions — so `raidCooldownSpellCatalog.ts`'s
+`baseCooldownSeconds` field exists (for a future plausibility check:
+"Aura Mastery placed at 2:10 and 3:15 but not back up yet") but is
+`null` on every one of the 39 verified entries; no number is
+fabricated to fill it. The 39 entries cover all 13 classes (2-4 each)
+across five categories (Heal CD, Raid DR, External, Defensive,
+Utility) — deliberately not exhaustive, extendable later via the same
+verify-then-append process.
+
+`RaidCooldownAssignment` gained nullable `spellId`/`abilityIcon`
+columns. `SpellPicker.tsx` is the **default** input in
+`CooldownAssignmentForm.tsx`, filtered to the selected raider's real
+`className`; a "Can't find it? Type a name instead" toggle reveals the
+original free-text input as an explicit fallback (the catalog is real
+but not exhaustive, so a hard cutover to picker-only would regress
+real usage). Markers with a `spellId` render the real icon
+(class-color-bordered, matching the boss row's icon-square language);
+legacy/free-text assignments keep the colored-initials circle. List
+view shows the same icon inline.
+
+**Density rework.** `BossCooldownTimeline.tsx` dropped `.panel`/
+`.panel-header` for a purpose-built compact toolbar (boss name, a
+small `⟳ 2m ago`-style sync-status pill instead of a full sentence,
+sync button, inline duration form, a ⓘ help affordance replacing the
+permanent instructional paragraph). `PhaseMarkerForm` is now
+toggle-revealed via "+ Phase", matching `CooldownBossPanel.tsx`'s own
+"+ Add assignment" toggle. Row track height 36px → 28px, row gap 4px →
+2px. A "RAIDERS" section label (same treatment as boss row labels)
+now separates the two row groups visually, not just by background
+tint. The boss-marker fallback (no icon yet) is a plain square instead
+of a rotated diamond, so every marker in the grid — synced or not,
+boss or raider — reads as one consistent square-marker language.
+Dragging shows a small floating live timestamp above the marker
+(reusing the `previewSeconds` state that already existed, just
+rendered visibly). `useMarkerDrag.ts`'s duplicate click→seconds math
+was consolidated onto `timelineFormat.ts`'s `secondsFromClickX`.
+
+**Real bug found and fixed during live-testing, not just cosmetic
+polish:** after any drag, the marker re-renders at the drop position
+*before* the browser's native `click` event fires — so that click
+lands on the track underneath and was reopening the click-to-place
+form immediately after every drag, an unexpected extra popup that
+directly violates "position darf nicht überraschend springen."
+`useMarkerDrag.ts` now swallows exactly one native `click` in the
+capture phase right after a real drag completes.
+
+**Test infrastructure**, none existed before this: `vitest` added as
+a root dependency, `npm run verify` now includes `npm run test`.
+`timelineFormat.test.ts` (including the drag-bounds clamping and the
+`getWowIconUrl` double-`.jpg` regression from Step 3b),
+`raidCooldownSpellCatalog.test.ts`, and `cooldown.service.test.ts`
+(confirms every mutating service method calls
+`GuildVerificationGuard.ensureVerified()` before touching the
+repository, and that read methods don't require it).
+
+Live-tested end to end against the real account and the real
+"Imperator Averzian" boss (the same currently-logged Voidspire
+encounter used for Step 3's WCL validation, still real data — not a
+renamed placeholder this time): re-synced, added a raider row, used
+the spell picker filtered to a Paladin, placed Aura Mastery with its
+real icon, dragged it (confirmed `spellId`/`abilityIcon` survive the
+reposition — the exact regression the payload fix above prevents),
+confirmed the free-text fallback still works and stores `spellId:
+null`, confirmed List view shows the same icon, confirmed the RAIDERS
+label and compact toolbar render correctly. Test assignments deleted
+afterward.
+
 ## Signups
 
 The first genuinely self-service Raid feature, built 2026-08-14 after

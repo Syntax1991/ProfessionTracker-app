@@ -13,6 +13,20 @@ export const raidCooldownAssignmentInputSchema =
         .min(1)
         .max(80),
 
+      spellId: z.coerce
+        .number()
+        .int()
+        .positive()
+        .nullable()
+        .optional(),
+
+      abilityIcon: z
+        .string()
+        .trim()
+        .url()
+        .nullable()
+        .optional(),
+
       phaseLabel: z
         .string()
         .trim()

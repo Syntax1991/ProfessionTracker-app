@@ -14,7 +14,8 @@
     "check:addons": "node scripts/check-wow-addons.mjs",
     "check:addon-import": "node scripts/check-saved-variables-contract.mjs",
     "check:architecture": "node scripts/check-source-files.mjs && npm run check:addons",
-    "verify": "npm run check:architecture && npm run lint && npm run build && npm run check:addon-import",
+    "test": "vitest run",
+    "verify": "npm run check:architecture && npm run lint && npm run build && npm run check:addon-import && npm run test",
     "db:generate": "npm run db:generate --workspace syntrack-api",
     "db:migrate": "npm run db:migrate --workspace syntrack-api",
     "db:seed": "npm run db:seed --workspace syntrack-api",
@@ -32,7 +33,8 @@
     "dev:stop": "node scripts/dev-manager.mjs stop"
   },
   "devDependencies": {
-    "concurrently": "^10.0.4"
+    "concurrently": "^10.0.4",
+    "vitest": "^4.1.10"
   },
   "allowScripts": {
     "better-sqlite3@13.0.3": true,

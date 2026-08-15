@@ -69,6 +69,10 @@ export class RaidCooldownRepository {
           memberId: input.memberId,
           abilityName:
             input.abilityName,
+          spellId:
+            input.spellId,
+          abilityIcon:
+            input.abilityIcon,
           phaseLabel:
             input.phaseLabel,
           timestampSeconds:
@@ -93,6 +97,10 @@ export class RaidCooldownRepository {
           memberId: input.memberId,
           abilityName:
             input.abilityName,
+          spellId:
+            input.spellId,
+          abilityIcon:
+            input.abilityIcon,
           phaseLabel:
             input.phaseLabel,
           timestampSeconds:

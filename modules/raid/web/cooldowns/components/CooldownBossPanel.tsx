@@ -132,9 +132,21 @@ export function CooldownBossPanel({
                       </td>
 
                       <td>
-                        {
-                          assignment.abilityName
-                        }
+                        <span className="cooldown-list-ability">
+                          {assignment.abilityIcon && (
+                            <img
+                              alt=""
+                              className="cooldown-list-ability-icon"
+                              src={
+                                assignment.abilityIcon
+                              }
+                            />
+                          )}
+
+                          {
+                            assignment.abilityName
+                          }
+                        </span>
                       </td>
 
                       <td>
