@@ -4,8 +4,10 @@ import {
   type MouseEvent,
   type RefObject
 } from "react";
+import { Tooltip } from "../../../../../apps/web/src/shared/components/Tooltip";
 import type { GuildMember } from "../../../../guild/web/roster/types/roster.types";
 import { resolveClassColor } from "../../../../guild/web/roster/utils/classColors";
+import { getSpellById } from "../../../shared/catalog/raidCooldownSpellCatalog";
 import { useMarkerDrag } from "../hooks/useMarkerDrag";
 import type { RaidCooldownAssignment } from "../types/cooldown.types";
 import {
@@ -19,9 +21,14 @@ type AssignmentMarkerProps = {
   member: GuildMember | undefined;
   fightDurationSeconds: number;
   trackRef: RefObject<HTMLDivElement | null>;
+  isInLineup: boolean;
+  isTooltipSuppressed: boolean;
   onRemove: () => void;
   onReposition: (
     seconds: number
+  ) => void;
+  onDragPreview: (
+    seconds: number | null
   ) => void;
 };
 
@@ -30,21 +37,26 @@ function AssignmentMarker({
   member,
   fightDurationSeconds,
   trackRef,
+  isInLineup,
+  isTooltipSuppressed,
   onRemove,
-  onReposition
+  onReposition,
+  onDragPreview
 }: AssignmentMarkerProps) {
   const { onMouseDown, isDragging, previewSeconds } =
     useMarkerDrag({
       trackRef,
       fightDurationSeconds,
       onDrop: onReposition,
-      onClick: onRemove
+      onClick: onRemove,
+      onDragPreview
     });
 
+  const originalSeconds =
+    assignment.timestampSeconds ?? 0;
+
   const displaySeconds =
-    previewSeconds ??
-    assignment.timestampSeconds ??
-    0;
+    previewSeconds ?? originalSeconds;
 
   const markerClassName = [
     "cooldown-timeline-marker",
@@ -56,43 +68,113 @@ function AssignmentMarker({
     .filter(Boolean)
     .join(" ");
 
-  return (
-    <button
-      className={markerClassName}
-      onMouseDown={onMouseDown}
-      style={
-        {
-          left: `${percentOf(displaySeconds, fightDurationSeconds)}%`,
-          "--marker-color":
-            resolveClassColor(
-              member?.className ?? ""
-            )
-        } as CSSProperties
-      }
-      title={`${member?.name ?? "Unknown"} — ${assignment.abilityName} at ${formatSeconds(displaySeconds)} — click to remove, drag to move`}
-      type="button"
-    >
-      {isDragging && (
-        <span className="cooldown-timeline-drag-label">
-          {formatSeconds(
-            displaySeconds
-          )}
+  const category = assignment.spellId
+    ? getSpellById(assignment.spellId)
+        ?.category
+    : null;
+
+  const tooltipContent = (
+    <>
+      <span className="tooltip-title">
+        {assignment.abilityIcon && (
+          <img
+            alt=""
+            src={
+              assignment.abilityIcon
+            }
+          />
+        )}
+        {assignment.abilityName}
+      </span>
+
+      <span className="tooltip-meta">
+        {member?.name ?? "Unknown"}
+        {member?.className
+          ? ` — ${member.className}`
+          : ""}
+      </span>
+
+      <span className="tooltip-time">
+        {formatSeconds(
+          originalSeconds
+        )}
+      </span>
+
+      {category && (
+        <span className="tooltip-meta">
+          {category}
         </span>
       )}
 
-      {assignment.abilityIcon ? (
-        <img
-          alt=""
-          src={
-            assignment.abilityIcon
+      {!isInLineup && (
+        <span className="tooltip-warning">
+          Not in current setup
+        </span>
+      )}
+    </>
+  );
+
+  return (
+    <>
+      {isDragging && (
+        <span
+          className="cooldown-timeline-marker cooldown-timeline-marker-ghost"
+          style={
+            {
+              left: `${percentOf(originalSeconds, fightDurationSeconds)}%`
+            } as CSSProperties
           }
         />
-      ) : (
-        (member?.name ?? "?")
-          .slice(0, 2)
-          .toUpperCase()
       )}
-    </button>
+
+      <Tooltip
+        anchorClassName={
+          markerClassName
+        }
+        anchorStyle={
+          {
+            left: `${percentOf(displaySeconds, fightDurationSeconds)}%`,
+            "--marker-color":
+              resolveClassColor(
+                member?.className ??
+                  ""
+              )
+          } as CSSProperties
+        }
+        content={tooltipContent}
+        disabled={
+          isTooltipSuppressed
+        }
+      >
+        <button
+          aria-label={`${member?.name ?? "Unknown"} — ${assignment.abilityName} at ${formatSeconds(displaySeconds)} — click to remove, drag to move`}
+          className="cooldown-timeline-marker-button"
+          onMouseDown={onMouseDown}
+          type="button"
+        >
+          {isDragging && (
+            <span className="cooldown-timeline-drag-label">
+              {formatSeconds(
+                displaySeconds
+              )}
+            </span>
+          )}
+
+          {assignment.abilityIcon ? (
+            <img
+              alt=""
+              src={
+                assignment.abilityIcon
+              }
+            />
+          ) : (
+            (member?.name ?? "?")
+              .slice(0, 2)
+              .toUpperCase()
+          )}
+        </button>
+      </Tooltip>
+    </>
   );
 }
 
@@ -101,6 +183,7 @@ type RaiderCooldownRowProps = {
   fightDurationSeconds: number;
   assignments: RaidCooldownAssignment[];
   isInLineup: boolean;
+  isTooltipSuppressed: boolean;
   onTrackClick: (
     seconds: number
   ) => void;
@@ -111,6 +194,9 @@ type RaiderCooldownRowProps = {
     assignment: RaidCooldownAssignment,
     seconds: number
   ) => void;
+  onDragPreview: (
+    seconds: number | null
+  ) => void;
 };
 
 export function RaiderCooldownRow({
@@ -118,9 +204,11 @@ export function RaiderCooldownRow({
   fightDurationSeconds,
   assignments,
   isInLineup,
+  isTooltipSuppressed,
   onTrackClick,
   onRemoveAssignment,
-  onRepositionAssignment
+  onRepositionAssignment,
+  onDragPreview
 }: RaiderCooldownRowProps) {
   const trackRef =
     useRef<HTMLDivElement>(null);
@@ -193,8 +281,17 @@ export function RaiderCooldownRow({
               fightDurationSeconds={
                 fightDurationSeconds
               }
+              isInLineup={
+                isInLineup
+              }
+              isTooltipSuppressed={
+                isTooltipSuppressed
+              }
               key={assignment.id}
               member={member}
+              onDragPreview={
+                onDragPreview
+              }
               onRemove={() =>
                 onRemoveAssignment(
                   assignment.id

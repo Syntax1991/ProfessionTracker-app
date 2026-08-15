@@ -51,12 +51,16 @@ export function useMarkerDrag(params: {
   fightDurationSeconds: number;
   onDrop: (seconds: number) => void;
   onClick: () => void;
+  onDragPreview?: (
+    seconds: number | null
+  ) => void;
 }) {
   const {
     trackRef,
     fightDurationSeconds,
     onDrop,
-    onClick
+    onClick,
+    onDragPreview
   } = params;
 
   const [isDragging, setIsDragging] =
@@ -93,13 +97,15 @@ export function useMarkerDrag(params: {
         }
 
         if (draggedRef.current) {
-          setPreviewSeconds(
+          const seconds =
             computeSeconds(
               moveEvent.clientX,
               trackRef,
               fightDurationSeconds
-            )
-          );
+            );
+
+          setPreviewSeconds(seconds);
+          onDragPreview?.(seconds);
         }
       };
 
@@ -132,6 +138,7 @@ export function useMarkerDrag(params: {
 
         setIsDragging(false);
         setPreviewSeconds(null);
+        onDragPreview?.(null);
       };
 
       document.addEventListener(
@@ -147,7 +154,8 @@ export function useMarkerDrag(params: {
       trackRef,
       fightDurationSeconds,
       onDrop,
-      onClick
+      onClick,
+      onDragPreview
     ]
   );
 

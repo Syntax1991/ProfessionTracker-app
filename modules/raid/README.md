@@ -379,6 +379,121 @@ null`, confirmed List view shows the same icon, confirmed the RAIDERS
 label and compact toolbar render correctly. Test assignments deleted
 afterward.
 
+### Step 5 — direct-manipulation polish: shared playhead, real tooltips, drag ghost (2026-08-15)
+
+This is the Phase 2 timeline UX work that the [[project_raid_setup]]
+plan had deliberately scoped as design-only — the user came back with
+a fully detailed WoWUtils-referenced brief (two real screenshots of
+Viserio Cooldowns' hover playhead and hover tooltip) and asked for it
+built for real this time, plus a separate top-bar cleanup request.
+
+**Real, pre-existing coordinate-system bug found and fixed before
+building the playhead.** Before adding anything, checked empirically
+(via live `getBoundingClientRect()` inspection, not assumption)
+whether phase markers already aligned with boss-ability/raider
+markers, since the brief explicitly required "dropping at 1:38
+produces the same X coordinate as a boss mechanic at 1:38."
+`.cooldown-timeline-phase-overlay` was `position:absolute; inset:0`
+relative to `.cooldown-timeline-rows` — which includes the 148px
+label column — while every marker's `left:X%` is computed against
+`.cooldown-timeline-row-track` (excluding the label). Measured: rows
+box started at `left:288`, track box at `left:436` — a real 148px
+misalignment, meaning a phase marker at the "same" percentage as a
+boss cast never actually lined up with it. Renamed the class to
+`.cooldown-timeline-track-overlay` and gave it `left:148px` (matching
+the ticks' existing `margin-left:148px`) instead of `inset:0` — fixes
+phase markers and gives the new playhead the correct shared basis.
+
+**`TimelineHoverPlayhead.tsx`** (new) — one component, owned by
+`TimelineGrid.tsx`, not one listener per row as the brief explicitly
+required. A single `onMouseMove` on `.cooldown-timeline-rows` computes
+`hoverSeconds` via the existing `secondsFromClickX` against a ref to
+the (now-correct) track overlay; the line only renders when the
+pointer is actually over the track region, not the label column.
+`useMarkerDrag.ts` gained an optional `onDragPreview(seconds | null)`
+callback so an active drag's live target seconds are lifted up to
+`TimelineGrid` too — `dragSeconds ?? hoverSeconds` decides what the
+shared playhead shows, so grabbing a cooldown marker moves the same
+line that hovering does, across both boss-ability rows and raider
+rows. Verified live via simulated drag events: mid-drag, the dragged
+marker and the playhead reported the identical `left` percentage.
+
+**Shared `Tooltip.tsx`** (new, `apps/web/src/shared/components/`,
+first of its kind in the app — confirmed no Tooltip/Popover existed
+before) replaces every native `title` attribute on timeline markers.
+Hover-triggered, `disabled` prop forces it hidden — wired to an
+`isTooltipSuppressed` flag threaded down from `TimelineGrid` so
+*every* tooltip disappears the instant *any* drag starts, not just the
+dragged marker's own. One real positioning wrinkle: the tooltip's
+anchor `<span>` needs `position:relative`, which would have broken
+markers relying on being positioned relative to the track (not a tiny
+wrapper one level deeper) — solved with `anchorClassName`/`anchorStyle`
+props so the marker's own absolute-positioning styles land on the
+anchor itself rather than nesting the marker one level deeper into a
+fresh positioning context.
+
+**Real tooltip content, nothing fabricated.** Boss-ability tooltips
+(`BossAbilityRow.tsx`) show the real icon, name, exact timestamp, the
+phase label active at that timestamp (derived by finding the latest
+phase marker whose `startSeconds` is at or before the cast — real
+data, only shown when phase markers exist), and a genuinely-derived
+"Time since last: Xs" (the gap to the previous real cast of the same
+ability, sorted array, only shown from the second cast on). No boss
+cast has a duration field anywhere in the data model, so none is
+shown — confirmed via the schema rather than assumed. Cooldown
+assignment tooltips (`RaiderCooldownRow.tsx`) show the real spell
+icon/name, player name, `member.className` (never a spec — `GuildMember`
+has no spec field, confirmed via the same constraint noted in
+[[project_raid_cooldown_planning]]), the exact timestamp, the real
+category via `getSpellById(spellId)?.category` when the assignment
+used the structured picker, and a "Not in current setup" line reusing
+the existing `isInLineup` flag from the Raid Setup work above.
+
+**Drag polish**: while dragging, a dimmed dashed "ghost" marker renders
+at the assignment's original stored position (`.cooldown-timeline-marker-ghost`,
+`pointer-events:none` so it can never be grabbed itself) alongside the
+live marker following the pointer — both the existing floating
+per-marker time label and the new shared playhead's time label update
+together. Grab/grabbing cursor, the 4px drag threshold, and the
+click-vs-drag distinction were already correct from Step 3 and are
+unchanged. Verified live end to end via simulated drag events on a
+real assignment: mid-drag showed the ghost, the dragging marker and
+shared playhead both at the same `left:59.8726%`, and the tooltip
+absent; on drop, a real `PUT /raid/cooldowns/:id` persisted
+`timestampSeconds: 94` (exactly 1:34, a whole integer — the click-X
+math already rounds to whole seconds, so no new sub-second precision
+was invented) with `spellId`/`abilityIcon` intact; reverted the test
+assignment's timestamp back to its original value afterward, since it
+was real existing data, not test data set up for this pass.
+
+**Top-bar cleanup, in the same pass.** `BossCooldownTimeline.tsx`'s
+toolbar dropped the separate "Sync from Warcraft Logs" button and the
+manual duration `<input>`/"Set duration" button entirely — the user
+was explicit that fight duration should come from the synced WCL fight
+automatically and that raiders "should not normally have to manually
+type a fight duration." The existing sync-status pill (`⟳ 2m ago` /
+`⟳ Not synced`) became the sync trigger itself (a compact clickable
+button, not a prominent separate one) rather than adding a new home
+for the action — no dedicated higher-level "WCL Analysis" workflow
+page exists yet to move it to, and building one was out of scope for
+this pass. When `fightDurationSeconds` is `null`, a compact
+informational message replaces the old manual editor rather than
+exposing it by default. The backend — `WarcraftLogsClient`, the sync
+service, `groupCastsByAbility()`, stored `fightDurationSeconds`, and
+every other WCL-derived field — is completely untouched; only the
+now-dead `onUpdateDuration` prop was removed from the three components
+that threaded it (`CooldownsLandingPage.tsx` → `BossCooldownView.tsx`
+→ `BossCooldownTimeline.tsx`), since `updateBossFightDuration` in
+`cooldownApi.ts` stays exported and the backend route stays live for
+future reuse.
+
+`cooldown-timeline.css` split into two files
+(`cooldown-timeline.css` + new `cooldown-timeline-markers.css`) to
+stay under the project's 350-line file limit — grid/row/toolbar rules
+in the first, marker/drag/tooltip-adjacent rules in the second: same
+architecture split already used for `BossRosterMatrix.tsx`'s
+`BossMatrixHeader.tsx`/`BossMatrixFooter.tsx` extraction.
+
 ## Signups
 
 The first genuinely self-service Raid feature, built 2026-08-14 after

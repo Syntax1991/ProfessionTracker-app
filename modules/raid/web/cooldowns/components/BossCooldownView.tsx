@@ -16,9 +16,6 @@ type BossCooldownViewProps = {
   rosterMembers: GuildMember[];
   lineupMemberIds: Set<string>;
   abilitySuggestions: string[];
-  onUpdateDuration: (
-    seconds: number | null
-  ) => Promise<void>;
   onSyncWarcraftLogs: () => Promise<void>;
   onAddAssignment: (
     bossId: string,
@@ -42,7 +39,6 @@ export function BossCooldownView({
   rosterMembers,
   lineupMemberIds,
   abilitySuggestions,
-  onUpdateDuration,
   onSyncWarcraftLogs,
   onAddAssignment,
   onRemoveAssignment,
@@ -106,9 +102,6 @@ export function BossCooldownView({
           }
           onSyncWarcraftLogs={
             onSyncWarcraftLogs
-          }
-          onUpdateDuration={
-            onUpdateDuration
           }
           rosterMembers={
             rosterMembers

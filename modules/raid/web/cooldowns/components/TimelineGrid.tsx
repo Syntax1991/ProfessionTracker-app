@@ -1,4 +1,9 @@
-import type { CSSProperties } from "react";
+import {
+  useRef,
+  useState,
+  type CSSProperties,
+  type MouseEvent as ReactMouseEvent
+} from "react";
 import type { GuildMember } from "../../../../guild/web/roster/types/roster.types";
 import type {
   RaidBossAbilityCast,
@@ -9,10 +14,12 @@ import {
   formatSeconds,
   groupCastsByAbility,
   isAssignedMemberInLineup,
-  percentOf
+  percentOf,
+  secondsFromClickX
 } from "../utils/timelineFormat";
 import { BossAbilityRow } from "./BossAbilityRow";
 import { RaiderCooldownRow } from "./RaiderCooldownRow";
+import { TimelineHoverPlayhead } from "./TimelineHoverPlayhead";
 
 const tickCount = 10;
 
@@ -54,6 +61,48 @@ export function TimelineGrid({
   const abilityRows = groupCastsByAbility(
     bossAbilityCasts
   );
+
+  const trackOverlayRef =
+    useRef<HTMLDivElement>(null);
+
+  const [hoverSeconds, setHoverSeconds] =
+    useState<number | null>(null);
+
+  const [dragSeconds, setDragSeconds] =
+    useState<number | null>(null);
+
+  const isDragActive =
+    dragSeconds !== null;
+
+  const playheadSeconds =
+    dragSeconds ?? hoverSeconds;
+
+  const handleRowsMouseMove = (
+    event: ReactMouseEvent<HTMLDivElement>
+  ) => {
+    if (!trackOverlayRef.current) {
+      return;
+    }
+
+    const trackRect =
+      trackOverlayRef.current.getBoundingClientRect();
+
+    if (
+      event.clientX < trackRect.left ||
+      event.clientX > trackRect.right
+    ) {
+      setHoverSeconds(null);
+      return;
+    }
+
+    setHoverSeconds(
+      secondsFromClickX(
+        event.clientX,
+        trackOverlayRef.current,
+        fightDurationSeconds
+      )
+    );
+  };
 
   const memberById = new Map(
     rosterMembers.map((member) => [
@@ -110,8 +159,19 @@ export function TimelineGrid({
         ))}
       </div>
 
-      <div className="cooldown-timeline-rows">
-        <div className="cooldown-timeline-phase-overlay">
+      <div
+        className="cooldown-timeline-rows"
+        onMouseLeave={() =>
+          setHoverSeconds(null)
+        }
+        onMouseMove={
+          handleRowsMouseMove
+        }
+      >
+        <div
+          className="cooldown-timeline-track-overlay"
+          ref={trackOverlayRef}
+        >
           {phaseMarkers.map(
             (marker) => (
               <div
@@ -136,6 +196,14 @@ export function TimelineGrid({
               </div>
             )
           )}
+
+          <TimelineHoverPlayhead
+            fightDurationSeconds={
+              fightDurationSeconds
+            }
+            isDragging={isDragActive}
+            seconds={playheadSeconds}
+          />
         </div>
 
         {abilityRows.map(
@@ -148,7 +216,13 @@ export function TimelineGrid({
               fightDurationSeconds={
                 fightDurationSeconds
               }
+              isTooltipSuppressed={
+                isDragActive
+              }
               key={row.abilityName}
+              phaseMarkers={
+                phaseMarkers
+              }
             />
           )
         )}
@@ -185,8 +259,14 @@ export function TimelineGrid({
                   memberId,
                   lineupMemberIds
                 )}
+                isTooltipSuppressed={
+                  isDragActive
+                }
                 key={memberId}
                 member={member}
+                onDragPreview={
+                  setDragSeconds
+                }
                 onRemoveAssignment={
                   onRemoveAssignment
                 }

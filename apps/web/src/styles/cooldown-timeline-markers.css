@@ -1,0 +1,141 @@
+.cooldown-timeline-marker {
+  position: absolute;
+  top: 50%;
+  width: 20px;
+  height: 20px;
+  display: grid;
+  place-items: center;
+  transform: translate(-50%, -50%);
+  border: 2px solid var(--marker-color, var(--border-strong));
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.54rem;
+  font-weight: 800;
+  cursor: grab;
+  padding: 0;
+  overflow: visible;
+}
+
+.cooldown-timeline-marker-icon {
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.cooldown-timeline-marker-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 2px;
+}
+
+.cooldown-timeline-marker.is-dragging {
+  cursor: grabbing;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.35);
+  z-index: 3;
+}
+
+.cooldown-timeline-marker-button {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  cursor: inherit;
+}
+
+.cooldown-timeline-marker-ghost {
+  opacity: 0.35;
+  border-style: dashed;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.cooldown-timeline-drag-label {
+  position: absolute;
+  bottom: calc(100% + 4px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border-strong);
+  color: var(--text);
+  font-size: 0.6rem;
+  font-weight: 700;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.cooldown-timeline-boss-marker {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  border-color: var(--primary);
+  background: var(--primary-soft);
+  cursor: default;
+}
+
+.cooldown-timeline-boss-marker-icon {
+  position: absolute;
+  top: 50%;
+  width: 22px;
+  height: 22px;
+  transform: translate(-50%, -50%);
+  border: 1px solid var(--border-strong);
+  border-radius: 4px;
+  cursor: default;
+  overflow: hidden;
+}
+
+.cooldown-timeline-boss-marker-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cooldown-timeline-placing-at {
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: var(--primary-soft);
+  color: var(--text);
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.cooldown-spell-picker {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 180px;
+}
+
+.cooldown-spell-picker select {
+  flex: 1;
+}
+
+.cooldown-spell-picker-icon {
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  border: 1px solid var(--border-strong);
+}
+
+.cooldown-list-ability {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cooldown-list-ability-icon {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  border: 1px solid var(--border-strong);
+}

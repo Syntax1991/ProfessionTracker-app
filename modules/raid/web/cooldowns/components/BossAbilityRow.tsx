@@ -1,5 +1,9 @@
 import type { CSSProperties } from "react";
-import type { RaidBossAbilityCast } from "../types/cooldown.types";
+import { Tooltip } from "../../../../../apps/web/src/shared/components/Tooltip";
+import type {
+  RaidBossAbilityCast,
+  RaidBossPhaseMarker
+} from "../types/cooldown.types";
 import {
   formatSeconds,
   getWowIconUrl,
@@ -10,12 +14,35 @@ type BossAbilityRowProps = {
   abilityName: string;
   fightDurationSeconds: number;
   casts: RaidBossAbilityCast[];
+  phaseMarkers: RaidBossPhaseMarker[];
+  isTooltipSuppressed: boolean;
 };
+
+function resolvePhaseLabel(
+  timestampSeconds: number,
+  phaseMarkers: RaidBossPhaseMarker[]
+): string | null {
+  const activePhase = [...phaseMarkers]
+    .filter(
+      (marker) =>
+        marker.startSeconds <=
+        timestampSeconds
+    )
+    .sort(
+      (a, b) =>
+        b.startSeconds -
+        a.startSeconds
+    )[0];
+
+  return activePhase?.label ?? null;
+}
 
 export function BossAbilityRow({
   abilityName,
   fightDurationSeconds,
-  casts
+  casts,
+  phaseMarkers,
+  isTooltipSuppressed
 }: BossAbilityRowProps) {
   const rowIcon = casts.find(
     (cast) => cast.abilityIcon
@@ -41,35 +68,95 @@ export function BossAbilityRow({
       </div>
 
       <div className="cooldown-timeline-row-track cooldown-timeline-row-track-readonly">
-        {casts.map((cast) =>
-          cast.abilityIcon ? (
-            <img
-              alt={abilityName}
-              className="cooldown-timeline-marker cooldown-timeline-boss-marker-icon"
-              key={cast.id}
-              src={getWowIconUrl(
-                cast.abilityIcon
+        {casts.map((cast, index) => {
+          const phaseLabel =
+            resolvePhaseLabel(
+              cast.timestampSeconds,
+              phaseMarkers
+            );
+
+          const previousCast =
+            index > 0
+              ? casts[index - 1]
+              : null;
+
+          const secondsSincePrevious =
+            previousCast
+              ? cast.timestampSeconds -
+                previousCast.timestampSeconds
+              : null;
+
+          const tooltipContent = (
+            <>
+              <span className="tooltip-title">
+                {cast.abilityIcon && (
+                  <img
+                    alt=""
+                    src={getWowIconUrl(
+                      cast.abilityIcon
+                    )}
+                  />
+                )}
+                {abilityName}
+              </span>
+
+              <span className="tooltip-time">
+                {formatSeconds(
+                  cast.timestampSeconds
+                )}
+              </span>
+
+              {phaseLabel && (
+                <span className="tooltip-meta">
+                  {phaseLabel}
+                </span>
               )}
-              style={
-                {
-                  left: `${percentOf(cast.timestampSeconds, fightDurationSeconds)}%`
-                } as CSSProperties
+
+              {secondsSincePrevious !==
+                null && (
+                <span className="tooltip-meta">
+                  Time since last:{" "}
+                  {formatSeconds(
+                    secondsSincePrevious
+                  )}
+                </span>
+              )}
+            </>
+          );
+
+          const markerStyle = {
+            left: `${percentOf(cast.timestampSeconds, fightDurationSeconds)}%`
+          } as CSSProperties;
+
+          return (
+            <Tooltip
+              anchorClassName={
+                cast.abilityIcon
+                  ? "cooldown-timeline-marker cooldown-timeline-boss-marker-icon"
+                  : "cooldown-timeline-marker cooldown-timeline-boss-marker"
               }
-              title={`${abilityName} at ${formatSeconds(cast.timestampSeconds)}`}
-            />
-          ) : (
-            <span
-              className="cooldown-timeline-marker cooldown-timeline-boss-marker"
+              anchorStyle={
+                markerStyle
+              }
+              content={
+                tooltipContent
+              }
+              disabled={
+                isTooltipSuppressed
+              }
               key={cast.id}
-              style={
-                {
-                  left: `${percentOf(cast.timestampSeconds, fightDurationSeconds)}%`
-                } as CSSProperties
-              }
-              title={`${abilityName} at ${formatSeconds(cast.timestampSeconds)}`}
-            />
-          )
-        )}
+            >
+              {cast.abilityIcon && (
+                <img
+                  alt={abilityName}
+                  src={getWowIconUrl(
+                    cast.abilityIcon
+                  )}
+                />
+              )}
+            </Tooltip>
+          );
+        })}
       </div>
     </div>
   );

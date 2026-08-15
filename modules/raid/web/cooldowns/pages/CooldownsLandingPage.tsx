@@ -14,10 +14,7 @@ import { RaidEventList } from "../../planner/components/RaidEventList";
 import { useRaidEvents } from "../../planner/hooks/useRaidEvents";
 import type { RaidEvent } from "../../planner/types/raidEvent.types";
 import { useRaidSetup } from "../../raid-setup/hooks/useRaidSetup";
-import {
-  syncBossWarcraftLogs,
-  updateBossFightDuration
-} from "../api/cooldownApi";
+import { syncBossWarcraftLogs } from "../api/cooldownApi";
 import { BossCooldownView } from "../components/BossCooldownView";
 import { useCooldownAssignments } from "../hooks/useCooldownAssignments";
 
@@ -128,8 +125,7 @@ export function CooldownsLandingPage() {
       {(cooldownError ||
         setupError) && (
         <StatusMessage type="error">
-          {cooldownError ??
-            setupError}
+          {`${cooldownError ?? setupError}`}
         </StatusMessage>
       )}
 
@@ -239,16 +235,6 @@ export function CooldownsLandingPage() {
               onSyncWarcraftLogs={async () => {
                 await syncBossWarcraftLogs(
                   selectedBoss.id
-                );
-
-                await loadBosses();
-              }}
-              onUpdateDuration={async (
-                seconds
-              ) => {
-                await updateBossFightDuration(
-                  selectedBoss.id,
-                  seconds
                 );
 
                 await loadBosses();
